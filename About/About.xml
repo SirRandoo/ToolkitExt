@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+    <name>ToolkitExt</name>
+    <packageId>com.toolkit.extension</packageId>
+    <description>The nExt version of Twitch Toolkit.</description>
+
+    <authors>
+        <li>SirRandoo</li>
+        <li>Hodlhodl</li>
+        <li>Saschahi</li>
+    </authors>
+    
+    <modDependencies>
+        <li>
+            <displayName>Harmony</displayName>
+            <packageId>brrainz.harmony</packageId>
+            <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+            <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+        </li>
+    </modDependencies>
+</ModMetaData>
