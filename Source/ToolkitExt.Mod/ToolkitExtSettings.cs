@@ -5,7 +5,8 @@ namespace ToolkitNxt.Mod
 {
     public class ToolkitExtSettings : Verse.ModSettings
     {
-        public static string broadcasterKey = "1|fB37MPyzpu0aliQbtshblyRpCNiuf9dNRkuShLei.124055459";
+        // Insert broadcaster key from extension page here
+        public static string broadcasterKey = "";
         public static string token = "";
         public static string channel_id = "";
 
