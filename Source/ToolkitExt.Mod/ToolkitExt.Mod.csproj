@@ -5,6 +5,19 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj"/>
+      <PackageReference Include="RestSharp" Version="106.15.0" />
+      <PackageReference Include="WatsonWebsocket" Version="2.3.2.6" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>..\..\..\ToolkitCore\Assemblies\Newtonsoft.Json.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="System.Net.Http">
+        <Private>false</Private>
+      </Reference>
     </ItemGroup>
 </Project>
