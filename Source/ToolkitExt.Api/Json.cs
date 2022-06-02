@@ -30,6 +30,7 @@ namespace ToolkitExt.Api
     {
         private static readonly JsonSerializer Serializer = JsonSerializer.CreateDefault();
 
+        [CanBeNull]
         public static T Load<T>(string filePath)
         {
             if (!File.Exists(filePath))
@@ -70,6 +71,7 @@ namespace ToolkitExt.Api
             }
         }
 
+        [CanBeNull]
         public static T Deserialize<T>([NotNull] Stream stream)
         {
             using (var reader = new StreamReader(stream))
