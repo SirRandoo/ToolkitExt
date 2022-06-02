@@ -30,7 +30,7 @@ namespace ToolkitExt.Api.Events
         [JsonProperty("data")]
         [JsonConverter(typeof(EmbeddedJsonConverter<ConnectionEstablishedData>))]
         public ConnectionEstablishedData Data { get; set; }
-    
+
         public class ConnectionEstablishedData
         {
             [JsonProperty("socket_id")] public string SocketId { get; set; }

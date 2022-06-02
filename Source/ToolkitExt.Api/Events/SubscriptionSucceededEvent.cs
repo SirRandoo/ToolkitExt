@@ -30,13 +30,11 @@ namespace ToolkitExt.Api.Events
         [JsonProperty("data")]
         [JsonConverter(typeof(EmbeddedJsonConverter<SubscriptionSucceededData>))]
         public SubscriptionSucceededData Data { get; set; }
-        
-        [JsonProperty("channel")]
-        public string Channel { get; set; }
-        
+
+        [JsonProperty("channel")] public string Channel { get; set; }
+
         public class SubscriptionSucceededData
         {
-            
         }
     }
 }

@@ -27,7 +27,7 @@ namespace ToolkitExt.Api.Events
 {
     public class PusherEvent : IPusherEvent
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [JsonProperty("event")]
         public string Event { get; set; }
     }

@@ -30,7 +30,7 @@ namespace ToolkitExt.Api.Events
         [JsonProperty("data")]
         [JsonConverter(typeof(EmbeddedJsonConverter<SubscribeData>))]
         public SubscribeData Data { get; set; }
-    
+
         public class SubscribeData
         {
             [JsonProperty("auth")] public string Auth { get; set; }
