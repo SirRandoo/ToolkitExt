@@ -34,12 +34,14 @@ namespace ToolkitExt.Mod
     public class ExtensionSettings : ModSettings
     {
         internal AuthSettings Auth;
+        public PollSettings Polls = new PollSettings();
         internal WindowSettings Window = new WindowSettings();
 
         /// <inheritdoc/>
         public override void ExposeData()
         {
             Scribe_Deep.Look(ref Window, "windowSettings");
+            Scribe_Deep.Look(ref Polls, "PollSettings");
         }
 
         internal void LoadAuthSettings()
@@ -91,6 +93,48 @@ namespace ToolkitExt.Mod
             public void ExposeData()
             {
                 Scribe_Values.Look(ref PollPosition, "PollPosition", new Vector2(Screen.width, Mathf.FloorToInt(Screen.height * 0.333f)));
+            }
+        }
+
+        /// <summary>
+        ///     A class for housing the poll related settings.
+        /// </summary>
+        public class PollSettings : IExposable
+        {
+            /// <summary>
+            ///     Whether the poll will display bars indicating the which choices
+            ///     have a certain percentage of the total number of votes casted.
+            /// </summary>
+            public bool Bars;
+            /// <summary>
+            ///     Whether the poll will use a minimal amount of color, if
+            ///     applicable.
+            /// </summary>
+            public bool Colorless;
+
+            /// <summary>
+            ///     The number of seconds the poll will be active for.
+            /// </summary>
+            /// <remarks>
+            ///     Despite this setting, there will always be a couple of seconds
+            ///     added to the poll's duration to accommodate users with poor
+            ///     connection.
+            /// </remarks>
+            public int Duration;
+
+            /// <summary>
+            ///     Whether the poll will use a larger text size to increase
+            ///     readability.
+            /// </summary>
+            public bool LargeText;
+
+            /// <inheritdoc/>
+            public void ExposeData()
+            {
+                Scribe_Values.Look(ref Colorless, "Colorless");
+                Scribe_Values.Look(ref Bars, "DisplayBars", true);
+                Scribe_Values.Look(ref LargeText, "LargeText");
+                Scribe_Values.Look(ref Duration, "Duration", 300);
             }
         }
     }
