@@ -34,17 +34,12 @@ namespace ToolkitExt.Mod
     public class ExtensionSettings : ModSettings
     {
         internal AuthSettings Auth;
-        internal WindowSettings Window;
+        internal WindowSettings Window = new WindowSettings();
 
         /// <inheritdoc/>
         public override void ExposeData()
         {
             Scribe_Deep.Look(ref Window, "windowSettings");
-
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
-            {
-                Window ??= WindowSettings.CreateDefault();
-            }
         }
 
         public void LoadAuthSettings()
@@ -83,11 +78,8 @@ namespace ToolkitExt.Mod
             /// <inheritdoc/>
             public void ExposeData()
             {
-                Scribe_Values.Look(ref PollPosition, "pollDisplayPosition");
+                Scribe_Values.Look(ref PollPosition, "PollPosition", new Vector2(Screen.width, Mathf.FloorToInt(Screen.height * 0.333f)));
             }
-
-            [NotNull]
-            public static WindowSettings CreateDefault() => new WindowSettings { PollPosition = new Vector2(Screen.width, Mathf.FloorToInt(Screen.height * 0.333f)) };
         }
     }
 }
