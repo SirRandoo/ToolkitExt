@@ -40,7 +40,7 @@ namespace ToolkitExt.Mod
         /// <inheritdoc/>
         public override void ExposeData()
         {
-            Scribe_Deep.Look(ref Window, "windowSettings");
+            Scribe_Deep.Look(ref Window, "WindowSettings");
             Scribe_Deep.Look(ref Polls, "PollSettings");
         }
 
