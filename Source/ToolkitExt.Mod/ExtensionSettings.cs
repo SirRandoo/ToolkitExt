@@ -42,7 +42,7 @@ namespace ToolkitExt.Mod
             Scribe_Deep.Look(ref Window, "windowSettings");
         }
 
-        public void LoadAuthSettings()
+        internal void LoadAuthSettings()
         {
             if (!File.Exists(FilePaths.AuthSettings))
             {
@@ -59,7 +59,7 @@ namespace ToolkitExt.Mod
             }
         }
 
-        public void SaveAuthSettings()
+        internal void SaveAuthSettings()
         {
             try
             {
