@@ -71,8 +71,20 @@ namespace ToolkitExt.Mod
             }
         }
 
+        /// <summary>
+        ///     An internal class for housing window related settings.
+        /// </summary>
+        /// <remarks>
+        ///     This class serves as as a means of persisting window preferences,
+        ///     like the position the user last moved it to. Settings here should
+        ///     not be displayed to the user, nor should they be changed outside
+        ///     their relevant code.
+        /// </remarks>
         internal class WindowSettings : IExposable
         {
+            /// <summary>
+            ///     The last known position of the poll display window.
+            /// </summary>
             internal Vector2 PollPosition;
 
             /// <inheritdoc/>
