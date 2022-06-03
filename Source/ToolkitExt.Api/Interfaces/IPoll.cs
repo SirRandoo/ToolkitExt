@@ -32,7 +32,7 @@ namespace ToolkitExt.Api.Interfaces
         /// <summary>
         ///     The unique identifier of the poll.
         /// </summary>
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         ///     The caption of the poll.
@@ -66,5 +66,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     The choices viewers can vote on.
         /// </summary>
         public IChoice[] Choices { get; set; }
+        
+        public void RegisterVote()
     }
 }
