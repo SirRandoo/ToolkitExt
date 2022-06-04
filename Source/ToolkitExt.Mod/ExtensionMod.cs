@@ -34,8 +34,7 @@ namespace ToolkitExt.Mod
             Settings.LoadAuthSettings();
         }
 
-        public ExtensionSettings Settings { get; }
-
+        public static ExtensionSettings Settings { get; private set; }
         public static ExtensionMod Instance { get; private set; }
 
         /// <inheritdoc/>
