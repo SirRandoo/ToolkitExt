@@ -67,6 +67,9 @@ namespace ToolkitExt.Api.Interfaces
         /// </summary>
         public IChoice[] Choices { get; set; }
         
-        public void RegisterVote()
+        /// <summary>
+        ///     The duration of the poll in minutes.
+        /// </summary>
+        public int Duration { get; }
     }
 }
