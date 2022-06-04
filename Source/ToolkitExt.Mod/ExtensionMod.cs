@@ -40,6 +40,8 @@ namespace ToolkitExt.Mod
         /// <inheritdoc/>
         public override void WriteSettings()
         {
+            Settings.Write();
+            Settings.SaveAuthSettings();
         }
     }
 }
