@@ -52,9 +52,9 @@ namespace ToolkitExt.Api.Interfaces
         ///     The time this poll ended at.
         /// </summary>
         /// <remarks>
-        ///     Implementors should ensure this property isn't set before the
-        ///     poll is started, and that an additional dither is applied to
-        ///     accomodate users with poor connections.
+        ///     This property is automatically set by the poll manager. You
+        ///     should not supply a custom end <c>DateTime</c> or the poll may
+        ///     never be displayed to viewers.
         /// </remarks>
         public DateTime EndedAt { get; set; }
 
@@ -62,14 +62,20 @@ namespace ToolkitExt.Api.Interfaces
         ///     The time this poll started at.
         /// </summary>
         /// <remarks>
-        ///     This property is automatically set when the poll by the relevant
-        ///     manager.
+        ///     This property is automatically set by the poll manager. You
+        ///     should not supply a custom start <c>DateTime</c> or the poll may
+        ///     never be displayed to viewers.
         /// </remarks>
         public DateTime StartedAt { get; set; }
 
         /// <summary>
         ///     The choices viewers can vote on.
         /// </summary>
+        /// <remarks>
+        ///     While you can supply several choices, the extension only supports
+        ///     two choices. Polls exceeding this limit will be truncated down to
+        ///     meet that limit.
+        /// </remarks>
         public IChoice[] Choices { get; set; }
 
         /// <summary>
