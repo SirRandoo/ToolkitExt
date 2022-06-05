@@ -93,5 +93,31 @@ namespace ToolkitExt.Api
                 }
             }
         }
+
+        [CanBeNull]
+        public static T Deserialize<T>([NotNull] string content)
+        {
+            using (var reader = new StringReader(content))
+            {
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return Serializer.Deserialize<T>(jsonReader);
+                }
+            }
+        }
+
+        [NotNull]
+        public static string Serialize<T>(T obj)
+        {
+            using (var writer = new StringWriter())
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    Serializer.Serialize(jsonWriter, obj);
+                }
+
+                return writer.ToString();
+            }
+        }
     }
 }
