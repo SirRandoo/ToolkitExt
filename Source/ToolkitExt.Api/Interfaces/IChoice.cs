@@ -36,6 +36,11 @@ namespace ToolkitExt.Api.Interfaces
         public Guid Id { get; set; }
         
         /// <summary>
+        ///     The number of people who've voted for this choice.
+        /// </summary>
+        public int Votes { get; }
+        
+        /// <summary>
         ///     The label used for displaying the choice to the end user.
         /// </summary>
         public string Label { get; set; }
@@ -49,5 +54,24 @@ namespace ToolkitExt.Api.Interfaces
         [CanBeNull] public string Tooltip { get; set; }
         
         public Action ChosenAction { get; set; }
+
+        /// <summary>
+        ///     Registers a vote from the user.
+        /// </summary>
+        /// <param name="userId">The id of the user who voted</param>
+        public void RegisterVote(string userId);
+        
+        /// <summary>
+        ///     Unregisters a vote from the user.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>Whether the user was removed</returns>
+        /// <remarks>
+        ///     While you can use this method, it's advised not to as the
+        ///     extension doesn't support switching votes. This method purely
+        ///     exists on the off chance that the poll's votes don't align with
+        ///     what the EBS returned.
+        /// </remarks>
+        public bool UnregisterVote(string userId);
     }
 }

@@ -44,6 +44,11 @@ namespace ToolkitExt.Api.Interfaces
         public string Caption { get; set; }
 
         /// <summary>
+        ///     The total number of people that have voted on the poll.
+        /// </summary>
+        public int TotalVotes { get; }
+
+        /// <summary>
         ///     The time this poll ended at.
         /// </summary>
         /// <remarks>
@@ -61,15 +66,35 @@ namespace ToolkitExt.Api.Interfaces
         ///     manager.
         /// </remarks>
         public DateTime StartedAt { get; set; }
-        
+
         /// <summary>
         ///     The choices viewers can vote on.
         /// </summary>
         public IChoice[] Choices { get; set; }
-        
+
         /// <summary>
         ///     The duration of the poll in minutes.
         /// </summary>
         public int Duration { get; }
+
+        /// <summary>
+        ///     Registers a vote for the given choice by the given user.
+        /// </summary>
+        /// <param name="userId">The id of the user who voted</param>
+        /// <param name="choiceId">The id of the choice the user voted for</param>
+        public void RegisterVote(string userId, Guid choiceId);
+
+        /// <summary>
+        ///     Unregisters a vote from the given user.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>Whether the user was removed from the poll's ballots</returns>
+        /// <remarks>
+        ///     While you can use this method, it's advised not to as the
+        ///     extension doesn't support switching votes. This method purely
+        ///     exists on the off chance that the poll's votes don't align with
+        ///     what the EBS returned.
+        /// </remarks>
+        public bool UnregisterVote(string userId);
     }
 }
