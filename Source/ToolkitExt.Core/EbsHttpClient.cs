@@ -21,15 +21,11 @@
 // SOFTWARE.
 
 using System;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using RestSharp;
-using RimWorld;
 using ToolkitExt.Api;
-using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
 
@@ -86,7 +82,7 @@ namespace ToolkitExt.Core
         public async Task<DeletePollResponse> DeletePollAsync()
         {
             var request = new RestRequest("/broadcasting/polls/delete", Method.DELETE);
-            
+
             IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);
 
             return !response.IsSuccessful ? null : response.Data;
