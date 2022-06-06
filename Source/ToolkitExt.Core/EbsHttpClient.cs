@@ -35,16 +35,28 @@ namespace ToolkitExt.Core
     {
         private static readonly Uri APIUrl = new Uri("https://tkx-toolkit.jumpingcrab.com/api/");
         private readonly RestClient _client = new RestClient(APIUrl);
+        private string _token;
 
-        public void SetAuthorization(string token)
+        [NotNull] public static EbsHttpClient Instance { get; } = new EbsHttpClient();
+
+        public void SetToken(string token)
         {
-            _client.AddOrUpdateDefaultParameter(new Parameter("Authorization", $"Bearer {token}", ParameterType.HttpHeader));
+            _token = token;
+        }
+
+        [NotNull]
+        private RestRequest GetRequest([NotNull] string endpoint, Method method)
+        {
+            var request = new RestRequest(endpoint, method, DataFormat.Json);
+            request.AddHeader("Authorization", $"Bearer {_token}");
+
+            return request;
         }
 
         [ItemCanBeNull]
         public async Task<AuthResponse> RetrieveToken(string socketId, string channel)
         {
-            var request = new RestRequest("/broadcasting/auth", Method.POST, DataFormat.Json);
+            RestRequest request = GetRequest("/broadcasting/auth", Method.POST);
             request.AddJsonBody(new BroadcastTokenRequest { ChannelName = channel, SocketId = socketId });
 
             IRestResponse response = await _client.ExecuteAsync(request);
@@ -63,8 +75,7 @@ namespace ToolkitExt.Core
         [ItemCanBeNull]
         public async Task<CreatePollResponse> CreatePollAsync()
         {
-            var request = new RestRequest("/broadcasting/polls/create", Method.POST);
-
+            RestRequest request = GetRequest("/broadcasting/polls/create", Method.POST);
             IRestResponse response = await _client.ExecuteAsync(request);
 
             try
@@ -81,8 +92,7 @@ namespace ToolkitExt.Core
         [ItemCanBeNull]
         public async Task<DeletePollResponse> DeletePollAsync()
         {
-            var request = new RestRequest("/broadcasting/polls/delete", Method.DELETE);
-
+            RestRequest request = GetRequest("/broadcasting/polls/delete", Method.DELETE);
             IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);
 
             return !response.IsSuccessful ? null : response.Data;
