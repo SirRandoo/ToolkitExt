@@ -31,13 +31,12 @@ namespace ToolkitExt.Core
     /// <summary>
     ///     A client for connecting to the extension backend service.
     /// </summary>
-    public class EbsClient
+    public class EbsWsClient
     {
-        private static EbsClient _instance;
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
         private readonly WatsonWsClient _webSocket;
 
-        protected EbsClient()
+        protected EbsWsClient()
         {
             _webSocket = new WatsonWsClient(URL);
             _webSocket.ServerConnected += OnConnected;
@@ -45,15 +44,7 @@ namespace ToolkitExt.Core
         }
 
         [NotNull]
-        public static EbsClient Instance
-        {
-            get
-            {
-                _instance ??= new EbsClient();
-
-                return _instance;
-            }
-        }
+        public static EbsWsClient Instance { get; } = new EbsWsClient();
 
         /// <summary>
         ///     Whether the client is currently connected to the EBS.
