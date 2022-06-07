@@ -73,9 +73,11 @@ namespace ToolkitExt.Core
         }
 
         [ItemCanBeNull]
-        public async Task<CreatePollResponse> CreatePollAsync()
+        public async Task<CreatePollResponse> CreatePollAsync([NotNull] PollRequest poll)
         {
             RestRequest request = GetRequest("/broadcasting/polls/create", Method.POST);
+            request.AddJsonBody(poll);
+            
             IRestResponse response = await _client.ExecuteAsync(request);
 
             try
