@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using UnityEngine;
@@ -35,7 +37,7 @@ namespace ToolkitExt.Mod.Windows
         private static readonly Gradient TimerGradient;
         private readonly IPoll _poll;
         private float _captionHeight;
-        private float _timer;
+        private readonly Dictionary<Guid, float> _choicePercentages = new Dictionary<Guid, float>();
 
         static PollWindow()
         {
@@ -59,7 +61,6 @@ namespace ToolkitExt.Mod.Windows
         public PollWindow([NotNull] IPoll poll)
         {
             _poll = poll;
-            _timer = (float)(poll.EndedAt - poll.StartedAt).TotalMilliseconds;
 
             doCloseX = true;
             draggable = true;
@@ -81,28 +82,38 @@ namespace ToolkitExt.Mod.Windows
             
             if (!string.IsNullOrEmpty(_poll.Caption))
             {
-                var titleRect = new Rect(0f, 0f, inRect.width, _captionHeight);
-
-                GUI.BeginGroup(titleRect);
-                
                 GameFont cache = Text.Font;
                 Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
+
+                if (_captionHeight <= 0)
+                {
+                    _captionHeight = Text.CalcHeight(_poll.Caption, inRect.width);
+                }
+                
+                var titleRect = new Rect(0f, 0f, inRect.width, _captionHeight);
+                GUI.BeginGroup(titleRect);
+
                 Widgets.Label(titleRect, _poll.Caption);
                 Text.Font = cache;
 
                 GUI.EndGroup();
             }
 
-            Rect contentRect = new Rect(0f, _captionHeight, inRect.width, inRect.height - _captionHeight).ContractedBy(4f);
+            Rect contentRect = new Rect(0f, _captionHeight, inRect.width, inRect.height - _captionHeight - Text.LineHeight).ContractedBy(4f);
             
             GUI.BeginGroup(contentRect);
             DrawChoices(contentRect.AtZero());
+            GUI.EndGroup();
+
+            var progressRect = new Rect(0f, inRect.height - Text.LineHeight, inRect.width, Text.LineHeight);
+            GUI.BeginGroup(progressRect);
+            DrawProgressBar(progressRect.AtZero());
             GUI.EndGroup();
             
             GUI.EndGroup();
         }
 
-        public void DrawChoices(Rect region)
+        private void DrawChoices(Rect region)
         {
             GameFont cache = Text.Font;
             Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
@@ -112,8 +123,118 @@ namespace ToolkitExt.Mod.Windows
                 IChoice choice = _poll.Choices[i];
 
                 var lineRect = new Rect(0f, Text.LineHeight * i, region.width, Text.LineHeight);
+
+                if (ExtensionMod.Settings.Polls.Bars)
+                {
+                    DrawRelativeWeight(lineRect, choice);
+                }
                 
+                Widgets.Label(lineRect, choice.Label);
+                TooltipHandler.TipRegion(lineRect, choice.Tooltip);
             }
+
+            Text.Font = cache;
+        }
+
+        private void DrawProgressBar(Rect region)
+        {
+            var progress = (float)((_poll.EndedAt - DateTime.UtcNow).TotalSeconds / (_poll.EndedAt - _poll.StartedAt).TotalSeconds);
+
+            GUI.color = ExtensionMod.Settings.Polls.Colorless ? ColorLibrary.Teal : TimerGradient.Evaluate(1f - progress);
+            Widgets.FillableBar(region, progress, Texture2D.whiteTexture, null, true);
+            GUI.color = Color.white;
+        }
+
+        private void DrawRelativeWeight(Rect region, [NotNull] IChoice choice)
+        {
+            float relative = (float)choice.Votes / _poll.TotalVotes;
+
+            if (!_choicePercentages.TryGetValue(choice.Id, out float lastRelative))
+            {
+                lastRelative = relative;
+                _choicePercentages[choice.Id] = relative;
+            }
+
+            var barRect = new Rect(region.x, region.y + 2f, Mathf.FloorToInt(region.width * lastRelative), region.height - 4f);
+
+            if (ExtensionMod.Settings.Polls.Colorless)
+            {
+                Widgets.DrawLightHighlight(barRect);
+            }
+            else
+            {
+                GUI.color = new Color(0.2f, 0.8f, 0.85f, 0.4f);
+                Widgets.DrawLightHighlight(barRect);
+                GUI.color = Color.white;
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void SetInitialSizeAndPosition()
+        {
+            IPoll currentPoll = ExtensionMod.Instance.PollManager.CurrentPoll;
+
+            if (currentPoll == null)
+            {
+                base.SetInitialSizeAndPosition();
+                return;
+            }
+        
+            GameFont lastFont = Text.Font;
+            Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
+
+            Vector2 initialSize = InitialSize;
+            var desiredWidth = 0f;
+
+            foreach (IChoice t in currentPoll.Choices)
+            {
+                float width = Text.CalcSize(t.Label).x;
+
+                if (width > desiredWidth)
+                {
+                    desiredWidth = width;
+                }
+            }
+
+            float finalWidth = Mathf.Max(initialSize.x, desiredWidth);
+            float finalHeight = initialSize.y + Text.LineHeight * currentPoll.Choices.Length;
+
+            windowRect = new Rect(
+                Mathf.Clamp(ExtensionMod.Settings.Window.PollPosition.x, 0f, UI.screenWidth - finalWidth),
+                Mathf.Clamp(ExtensionMod.Settings.Window.PollPosition.y, 0f, UI.screenWidth - finalHeight),
+                Mathf.Max(initialSize.x, desiredWidth),
+                finalHeight
+            );
+
+            Text.Font = lastFont;
+        }
+
+        /// <inheritdoc />
+        public override void WindowUpdate()
+        {
+            base.WindowUpdate();
+
+            IPoll currentPoll = ExtensionMod.Instance.PollManager.CurrentPoll;
+
+            if (currentPoll == null || DateTime.UtcNow > currentPoll.EndedAt)
+            {
+                Close();
+            }
+        }
+
+        /// <inheritdoc />
+        public override void PreClose()
+        {
+            base.PreClose();
+
+            if (Mathf.Abs(windowRect.x - ExtensionMod.Settings.Window.PollPosition.x) < 0.1f
+                && Mathf.Abs(windowRect.y - ExtensionMod.Settings.Window.PollPosition.y) < 0.1f)
+            {
+                return;
+            }
+
+            ExtensionMod.Settings.Window.PollPosition = windowRect.position;
+            ExtensionMod.Instance.WriteSettings();
         }
     }
 }
