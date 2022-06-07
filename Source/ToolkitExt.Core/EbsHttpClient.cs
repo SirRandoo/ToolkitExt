@@ -31,7 +31,7 @@ using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core
 {
-    internal class EbsHttpClient
+    public class EbsHttpClient
     {
         private static readonly Uri APIUrl = new Uri("https://tkx-toolkit.jumpingcrab.com/api/");
         private readonly RestClient _client = new RestClient(APIUrl);

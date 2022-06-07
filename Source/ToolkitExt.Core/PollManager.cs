@@ -50,9 +50,9 @@ namespace ToolkitExt.Core
             _polls.Enqueue(poll);
         }
 
-        private void NextPoll()
+        public void NextPoll()
         {
-            if (!_polls.TryDequeue(out _current))
+            if (_current != null || !_polls.TryDequeue(out _current))
             {
                 return;
             }
