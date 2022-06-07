@@ -128,12 +128,18 @@ namespace ToolkitExt.Mod
             /// </summary>
             public bool LargeText;
 
+            /// <summary>
+            ///     The number of minutes between polls.
+            /// </summary>
+            public int Interval;
+
             /// <inheritdoc/>
             public void ExposeData()
             {
                 Scribe_Values.Look(ref Colorless, "Colorless");
                 Scribe_Values.Look(ref Bars, "DisplayBars", true);
                 Scribe_Values.Look(ref LargeText, "LargeText");
+                Scribe_Values.Look(ref Interval, "Interval", 5);
                 Scribe_Values.Look(ref Duration, "Duration", 300);
             }
         }

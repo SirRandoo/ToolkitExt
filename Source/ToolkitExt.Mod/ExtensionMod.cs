@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using ToolkitExt.Core;
 using Verse;
 
 namespace ToolkitExt.Mod
@@ -30,12 +31,14 @@ namespace ToolkitExt.Mod
         public ExtensionMod(ModContentPack content) : base(content)
         {
             Instance = this;
+            PollManager = new PollManager();
             Settings = GetSettings<ExtensionSettings>();
             Settings.LoadAuthSettings();
         }
 
         public static ExtensionSettings Settings { get; private set; }
         public static ExtensionMod Instance { get; private set; }
+        public PollManager PollManager { get; }
 
         /// <inheritdoc/>
         public override void WriteSettings()
