@@ -31,17 +31,39 @@ namespace ToolkitExt.Core.Requests
         [JsonProperty("length")] public int Length { get; set; }
         [JsonProperty("options")] public List<Option> Options { get; } = new List<Option>();
 
-        public bool AddOption(string id, string label)
+        private bool HasOption(string id)
         {
             for (var i = 0; i < Options.Count; i++)
             {
                 if (string.Equals(Options[i].Id, id))
                 {
-                    return false;
+                    return true;
                 }
             }
 
+            return false;
+        }
+
+        public bool AddOption(string id, string label)
+        {
+            if (HasOption(id))
+            {
+                return false;
+            }
+
             Options.Add(new Option { Id = id, Label = label });
+
+            return true;
+        }
+
+        public bool AddOption(string id, string label, string tooltip)
+        {
+            if (HasOption(id))
+            {
+                return false;
+            }
+
+            Options.Add(new Option { Id = id, Label = label, Tooltip = tooltip });
 
             return true;
         }
@@ -65,6 +87,7 @@ namespace ToolkitExt.Core.Requests
         {
             [JsonProperty("value")] public string Id { get; set; }
             [JsonProperty("label")] public string Label { get; set; }
+            [JsonProperty("tooltip")] public string Tooltip { get; set; }
         }
     }
 }
