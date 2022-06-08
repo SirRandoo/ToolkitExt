@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -33,6 +35,7 @@ namespace ToolkitExt.Core
 {
     public class EbsHttpClient
     {
+        private static readonly RimLogger Logger = new RimLogger("ToolkitHttp");
         private static readonly Uri APIUrl = new Uri("https://tkx-toolkit.jumpingcrab.com/api/");
         private readonly RestClient _client = new RestClient(APIUrl);
         private string _token;
@@ -48,7 +51,11 @@ namespace ToolkitExt.Core
         private RestRequest GetRequest([NotNull] string endpoint, Method method)
         {
             var request = new RestRequest(endpoint, method, DataFormat.Json);
-            request.AddHeader("Authorization", $"Bearer {_token}");
+            
+            if (!string.IsNullOrEmpty(_token))
+            {
+                request.AddHeader("Authorization", $"Bearer {_token}");
+            }
 
             return request;
         }
@@ -67,7 +74,12 @@ namespace ToolkitExt.Core
             }
             catch (JsonException)
             {
-                // TODO: Log that the token couldn't be retrieved.
+                if (!TryProcessError(response.Content))
+                {
+                    Logger.Warn("Could not decode authentication request! This will not work.");
+                    Logger.Debug($"Authentication response: {response.Content}");
+                }
+                
                 return null;
             }
         }
@@ -86,7 +98,7 @@ namespace ToolkitExt.Core
             }
             catch (JsonException)
             {
-                // TODO: Log that a creation request was rejected.
+                Logger.Warn("Could not");
                 return null;
             }
         }
@@ -97,7 +109,40 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest("/broadcasting/polls/delete", Method.DELETE);
             IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);
 
-            return !response.IsSuccessful ? null : response.Data;
+            if (response.IsSuccessful)
+            {
+                return response.Data;
+            }
+
+            TryProcessError(response.Content);
+
+            return null;
+        }
+
+        private static bool TryProcessError([NotNull] string error)
+        {
+            if (!Json.TryDeserialize(error, out ErrorResponse response))
+            {
+                return false;
+            }
+
+            var builder = new StringBuilder();
+            builder.Append(response.Error).Append("\n");
+                
+            foreach (string data in response.Data)
+            {
+                builder.Append($"  - {data}\n");
+            }
+
+            Logger.Error(builder.ToString());
+
+            return true;
+        }
+
+        private sealed class ErrorResponse
+        {
+            [JsonProperty("error")] public string Error { get; set; }
+            [JsonProperty("data")] public List<string> Data { get; set; }
         }
     }
 }
