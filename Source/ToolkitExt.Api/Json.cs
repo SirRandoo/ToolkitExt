@@ -83,17 +83,6 @@ namespace ToolkitExt.Api
             }
         }
 
-        public static void Serialize<T>([NotNull] Stream stream, T obj)
-        {
-            using (var writer = new StreamWriter(stream))
-            {
-                using (var jsonWriter = new JsonTextWriter(writer))
-                {
-                    Serializer.Serialize(jsonWriter, obj);
-                }
-            }
-        }
-
         [CanBeNull]
         public static T Deserialize<T>([NotNull] string content)
         {
@@ -102,6 +91,17 @@ namespace ToolkitExt.Api
                 using (var jsonReader = new JsonTextReader(reader))
                 {
                     return Serializer.Deserialize<T>(jsonReader);
+                }
+            }
+        }
+        
+        public static void Serialize<T>([NotNull] Stream stream, T obj)
+        {
+            using (var writer = new StreamWriter(stream))
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    Serializer.Serialize(jsonWriter, obj);
                 }
             }
         }
@@ -118,6 +118,22 @@ namespace ToolkitExt.Api
 
                 return writer.ToString();
             }
+        }
+
+        [ContractAnnotation("=> true, result:notnull; => false, result:null")]
+        public static bool TrySerialize<T>(T obj, out string result)
+        {
+            result = Serialize(obj);
+
+            return result != null;
+        }
+        
+        [ContractAnnotation("=> true, result:notnull; => false, result:null")]
+        public static bool TryDeserialize<T>([NotNull] string content, out T result)
+        {
+            result = Deserialize<T>(content);
+
+            return result != null;
         }
     }
 }
