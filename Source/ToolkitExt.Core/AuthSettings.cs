@@ -21,13 +21,17 @@
 // SOFTWARE.
 
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace ToolkitExt.Core
 {
+    [UsedImplicitly]
     public class AuthSettings
     {
         private string _broadcasterId;
 
+        [JsonIgnore]
         public string Token { get; set; }
         public string ChannelId { get; set; }
 
