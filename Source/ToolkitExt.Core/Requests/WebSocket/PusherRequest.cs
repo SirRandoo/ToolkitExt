@@ -14,27 +14,19 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Newtonsoft.Json;
-using ToolkitExt.Api.Converters;
+using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Events
+namespace ToolkitExt.Core.Requests
 {
-    public class ConnectionEstablishedEvent : PusherEvent
+    public abstract class PusherRequest : IPusherMessage
     {
-        [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<ConnectionEstablishedData>))]
-        public ConnectionEstablishedData Data { get; set; }
-
-        public class ConnectionEstablishedData
-        {
-            [JsonProperty("socket_id")] public string SocketId { get; set; }
-            [JsonProperty("activity_timeout")] public int ActivityTimeout { get; set; }
-        }
+        /// <inheritdoc />
+        public string Event { get; set; }
     }
 }

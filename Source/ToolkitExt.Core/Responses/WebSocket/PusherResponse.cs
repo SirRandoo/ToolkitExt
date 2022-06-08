@@ -21,20 +21,14 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
-using ToolkitExt.Api.Converters;
+using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Events
+namespace ToolkitExt.Core.Responses
 {
-    public class SubscribeEvent : PusherEvent
+    public class PusherResponse : IPusherMessage
     {
-        [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<SubscribeData>))]
-        public SubscribeData Data { get; set; }
-
-        public class SubscribeData
-        {
-            [JsonProperty("auth")] public string Auth { get; set; }
-            [JsonProperty("channel")] public string Channel { get; set; }
-        }
+        /// <inheritdoc/>
+        [JsonProperty("event")]
+        public string Event { get; set; }
     }
 }

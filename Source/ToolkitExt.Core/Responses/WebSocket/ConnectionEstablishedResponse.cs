@@ -21,14 +21,20 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
-using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Api.Converters;
 
-namespace ToolkitExt.Api.Events
+namespace ToolkitExt.Core.Responses
 {
-    public class PusherEvent : IPusherEvent
+    public class ConnectionEstablishedResponse : PusherResponse
     {
-        /// <inheritdoc/>
-        [JsonProperty("event")]
-        public string Event { get; set; }
+        [JsonProperty("data")]
+        [JsonConverter(typeof(EmbeddedJsonConverter<ConnectionEstablishedData>))]
+        public ConnectionEstablishedData Data { get; set; }
+
+        public class ConnectionEstablishedData
+        {
+            [JsonProperty("socket_id")] public string SocketId { get; set; }
+            [JsonProperty("activity_timeout")] public int ActivityTimeout { get; set; }
+        }
     }
 }

@@ -20,10 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ToolkitExt.Api.Interfaces
+using Newtonsoft.Json;
+using ToolkitExt.Api.Converters;
+
+namespace ToolkitExt.Core.Responses
 {
-    public interface IPusherEvent
+    public class SubscriptionSucceededResponse : PusherResponse
     {
-        public string Event { get; set; }
+        [JsonProperty("data")]
+        [JsonConverter(typeof(EmbeddedJsonConverter<SubscriptionSucceededData>))]
+        public SubscriptionSucceededData Data { get; set; }
+
+        [JsonProperty("channel")] public string Channel { get; set; }
+
+        public class SubscriptionSucceededData
+        {
+        }
     }
 }

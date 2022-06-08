@@ -23,18 +23,18 @@
 using Newtonsoft.Json;
 using ToolkitExt.Api.Converters;
 
-namespace ToolkitExt.Api.Events
+namespace ToolkitExt.Core.Requests
 {
-    public class SubscriptionSucceededEvent : PusherEvent
+    public class SubscribeRequest : PusherRequest
     {
         [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<SubscriptionSucceededData>))]
-        public SubscriptionSucceededData Data { get; set; }
+        [JsonConverter(typeof(EmbeddedJsonConverter<SubscribeData>))]
+        public SubscribeData Data { get; set; } = new SubscribeData();
 
-        [JsonProperty("channel")] public string Channel { get; set; }
-
-        public class SubscriptionSucceededData
+        public class SubscribeData
         {
+            [JsonProperty("auth")] public string Auth { get; set; }
+            [JsonProperty("channel")] public string Channel { get; set; }
         }
     }
 }

@@ -21,9 +21,15 @@
 // SOFTWARE.
 
 using System;
+using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
+using ToolkitExt.Core.Events;
+using ToolkitExt.Core.Requests;
+using ToolkitExt.Core.Responses;
 using WatsonWebsocket;
 
 namespace ToolkitExt.Core
@@ -33,6 +39,7 @@ namespace ToolkitExt.Core
     /// </summary>
     public class EbsWsClient
     {
+        private static readonly RimLogger Logger = new RimLogger("ToolkitWs");
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
         private readonly WatsonWsClient _webSocket;
 
@@ -41,31 +48,45 @@ namespace ToolkitExt.Core
             _webSocket = new WatsonWsClient(URL);
             _webSocket.ServerConnected += OnConnected;
             _webSocket.ServerDisconnected += OnDisconnected;
+            _webSocket.MessageReceived += OnMessageReceived;
         }
 
-        [NotNull]
-        public static EbsWsClient Instance { get; } = new EbsWsClient();
+        [NotNull] public static EbsWsClient Instance { get; } = new EbsWsClient();
 
         /// <summary>
         ///     Whether the client is currently connected to the EBS.
         /// </summary>
         public bool IsConnected => _webSocket.Connected;
 
-        private void OnDisconnected(object sender, EventArgs e)
-        {
-            // TODO: Log that the client disconnected.
+        /// <summary>
+        ///     Invoked when the client connects to the backend service.
+        /// </summary>
+        public event EventHandler<ConnectionEstablishedEventArgs> ConnectionEstablished;
 
-            Task.Factory.StartNew(
-                async () =>
-                {
-                    await ReconnectAsync();
-                }
-            );
+        /// <summary>
+        ///     Invoked when the client successfully subscribes to a channel on
+        ///     the backend service.
+        /// </summary>
+        public event EventHandler<SubscribedEventArgs> Subscribed;
+
+        /// <summary>
+        ///     Sends a request to the backend service.
+        /// </summary>
+        /// <param name="request">The request to send</param>
+        /// <returns>Whether the message was successfully sent</returns>
+        public async Task<bool> Send(PusherRequest request)
+        {
+            if (_webSocket.Connected && Json.TrySerialize(request, out string result))
+            {
+                return await _webSocket.SendAsync(result);
+            }
+
+            return false;
         }
 
         private async Task ReconnectAsync()
         {
-            // TODO: Log that the client is reconnecting.
+            Logger.Info("Disconnected from backend; reconnecting...");
 
             var tries = 0;
 
@@ -85,16 +106,60 @@ namespace ToolkitExt.Core
                 await Task.Delay(TimeSpan.FromSeconds(finalBackoff));
             }
 
-            // TODO: Log the current state of the client after
+            Logger.Info($"Connection status: {_webSocket.Connected} ({tries} tries)");
         }
 
         private async Task<bool> ReconnectInternalAsync() => await ReconnectInternalAsync(CancellationToken.None);
 
         private async Task<bool> ReconnectInternalAsync(CancellationToken cancellationToken) => await _webSocket.StartWithTimeoutAsync(5, cancellationToken);
 
-        private void OnConnected(object sender, EventArgs e)
+        private static void OnConnected(object sender, EventArgs e)
         {
-            // TODO: Log that the client connected to the EBS.
+            Logger.Info("Connected to the backend service.");
+        }
+
+        private void OnDisconnected(object sender, EventArgs e)
+        {
+            Logger.Warn("Disconnected from the backend service.");
+
+            Task.Factory.StartNew(
+                async () =>
+                {
+                    await ReconnectAsync();
+                }
+            );
+        }
+
+        private void OnMessageReceived(object sender, [NotNull] MessageReceivedEventArgs e)
+        {
+            string content = Encoding.UTF8.GetString(e.Data);
+
+            if (!Json.TryDeserialize(content, out PusherResponse baseEvent))
+            {
+                return;
+            }
+
+            switch (baseEvent.Event)
+            {
+                case "pusher:connection_established" when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
+                    OnConnectionEstablished(new ConnectionEstablishedEventArgs(ev.Data.SocketId, ev.Data.ActivityTimeout));
+
+                    return;
+                case "pusher:subscribe" when Json.TryDeserialize(content, out SubscriptionSucceededResponse ev):
+                    OnSubscribed(new SubscribedEventArgs(ev.Channel));
+
+                    return;
+            }
+        }
+
+        protected virtual void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
+        {
+            ConnectionEstablished?.Invoke(this, e);
+        }
+
+        protected virtual void OnSubscribed(SubscribedEventArgs e)
+        {
+            Subscribed?.Invoke(this, e);
         }
     }
 }
