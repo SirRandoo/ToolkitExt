@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -123,17 +124,35 @@ namespace ToolkitExt.Api
         [ContractAnnotation("=> true, result:notnull; => false, result:null")]
         public static bool TrySerialize<T>(T obj, out string result)
         {
-            result = Serialize(obj);
+            try
+            {
+                result = Serialize(obj);
 
-            return result != null;
+                return true;
+            }
+            catch (JsonException)
+            {
+                result = default;
+            }
+
+            return false;
         }
         
         [ContractAnnotation("=> true, result:notnull; => false, result:null")]
         public static bool TryDeserialize<T>([NotNull] string content, out T result)
         {
-            result = Deserialize<T>(content);
+            try
+            {
+                result = Deserialize<T>(content);
 
-            return result != null;
+                return true;
+            }
+            catch (JsonException)
+            {
+                result = default;
+            }
+
+            return false;
         }
     }
 }
