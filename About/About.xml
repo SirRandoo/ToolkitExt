@@ -4,8 +4,8 @@
     <packageId>com.toolkit.extension</packageId>
     <description>The nExt version of Twitch Toolkit.</description>
 
+    <author>SirRandoo</author>
     <authors>
-        <li>SirRandoo</li>
         <li>Hodlhodl</li>
         <li>Saschahi</li>
     </authors>
