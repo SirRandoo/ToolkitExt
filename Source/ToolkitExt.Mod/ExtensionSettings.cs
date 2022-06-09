@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.IO;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
@@ -58,18 +57,16 @@ namespace ToolkitExt.Mod
 
         internal void LoadAuthSettings()
         {
-            if (!File.Exists(FilePaths.AuthSettings))
-            {
-                return;
-            }
-
             try
             {
-                Json.Load<AuthSettings>(FilePaths.AuthSettings);
+                Auth = Json.Load<AuthSettings>(FilePaths.AuthSettings);
             }
             catch (Exception e)
             {
-                Logger.Error("Could not load authentication settings. Things will not work", e);
+                Logger.Error(
+                    $"Could not load authentication settings from {new Uri(GenFilePaths.SaveDataFolderPath).MakeRelativeUri(new Uri(FilePaths.AuthSettings))}. Things will not work",
+                    e
+                );
             }
         }
 
