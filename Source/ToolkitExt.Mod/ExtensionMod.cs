@@ -42,6 +42,9 @@ namespace ToolkitExt.Mod
         public PollManager PollManager { get; }
 
         /// <inheritdoc />
+        public override string SettingsCategory() => Content.Name;
+
+        /// <inheritdoc/>
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Settings.Draw(inRect);
