@@ -28,7 +28,6 @@ namespace ToolkitExt.Core.Requests
     public class SubscribeRequest : PusherRequest
     {
         [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<SubscribeData>))]
         public SubscribeData Data { get; set; } = new SubscribeData();
 
         public class SubscribeData
