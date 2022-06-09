@@ -40,6 +40,15 @@ namespace ToolkitExt.Mod
         public PollSettings Polls = new PollSettings();
         internal WindowSettings Window = new WindowSettings();
 
+        public void Draw(Rect region)
+        {
+            var labelRect = new Rect(region.x, region.y, Mathf.FloorToInt(region.width * 0.8f), Text.SmallFontHeight);
+            var fieldRect = new Rect(region.width - labelRect.width, region.y, region.width - labelRect.width, Text.SmallFontHeight);
+
+            Widgets.Label(labelRect, "Broadcaster key");
+            Auth.BroadcasterKey = Widgets.TextField(fieldRect, Auth.BroadcasterKey ?? string.Empty);
+        }
+
         /// <inheritdoc/>
         public override void ExposeData()
         {

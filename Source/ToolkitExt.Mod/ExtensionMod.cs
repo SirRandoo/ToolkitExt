@@ -22,6 +22,7 @@
 
 using System.Threading.Tasks;
 using ToolkitExt.Core;
+using UnityEngine;
 using Verse;
 
 namespace ToolkitExt.Mod
@@ -45,6 +46,12 @@ namespace ToolkitExt.Mod
         public static ExtensionSettings Settings { get; private set; }
         public static ExtensionMod Instance { get; private set; }
         public PollManager PollManager { get; }
+
+        /// <inheritdoc />
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            Settings.Draw(inRect);
+        }
 
         /// <inheritdoc/>
         public override void WriteSettings()
