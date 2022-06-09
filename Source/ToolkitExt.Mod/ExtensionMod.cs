@@ -35,12 +35,6 @@ namespace ToolkitExt.Mod
             Instance = this;
             PollManager = new PollManager();
             Settings = GetSettings<ExtensionSettings>();
-            Settings.LoadAuthSettings();
-            
-            if (Settings.Auth != null && !string.IsNullOrEmpty(Settings.Auth.ChannelId))
-            {
-                Task.Run(async () => await BackendClient.Instance.SetCredentials(Settings.Auth.ChannelId, Settings.Auth.Token));
-            }
         }
 
         public static ExtensionSettings Settings { get; private set; }
@@ -58,6 +52,20 @@ namespace ToolkitExt.Mod
         {
             Settings.Write();
             Settings.SaveAuthSettings();
+        }
+    }
+
+    [StaticConstructorOnStartup]
+    internal static class ExtensionStatic
+    {
+        static ExtensionStatic()
+        {
+            ExtensionMod.Settings.LoadAuthSettings();
+            
+            if (ExtensionMod.Settings.Auth != null && !string.IsNullOrEmpty(ExtensionMod.Settings.Auth.ChannelId))
+            {
+                Task.Run(async () => await BackendClient.Instance.SetCredentials(ExtensionMod.Settings.Auth.ChannelId, ExtensionMod.Settings.Auth.Token));
+            }
         }
     }
 }
