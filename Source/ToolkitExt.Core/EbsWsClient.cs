@@ -146,6 +146,10 @@ namespace ToolkitExt.Core
                     OnSubscribed(new SubscribedEventArgs(ev.Channel));
 
                     return;
+                case "pusher_internal:subscription_succeeded":
+                    Logger.Info("Subscription succeeded!");
+
+                    return;
             }
         }
 
