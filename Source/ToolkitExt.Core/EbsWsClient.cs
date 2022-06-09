@@ -150,6 +150,10 @@ namespace ToolkitExt.Core
                     Logger.Info("Subscription succeeded!");
 
                     return;
+                case "pusher:ping":
+                    Task.Run(async () => await Send(new PongRequest { Event = "pusher:pong" }));
+
+                    return;
             }
         }
 
