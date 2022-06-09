@@ -109,7 +109,7 @@ namespace ToolkitExt.Core
         private async Task ProcessAuthResponse([NotNull] AuthResponse response)
         {
             _httpClient.SetToken(response.Auth);
-            await _wsClient.Send(new SubscribeRequest { Data = new SubscribeRequest.SubscribeData { Channel = _channelId, Auth = response.Auth } });
+            await _wsClient.Send(new SubscribeRequest { Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = _channelId, Auth = response.Auth } });
         }
     }
 }
