@@ -33,14 +33,16 @@ using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core
 {
-    public class EbsHttpClient
+    internal class EbsHttpClient
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitHttp");
         private static readonly Uri APIUrl = new Uri("https://tkx-toolkit.jumpingcrab.com/api/");
         private readonly RestClient _client = new RestClient(APIUrl);
-        private string _token;
+        private volatile string _token;
 
-        [NotNull] public static EbsHttpClient Instance { get; } = new EbsHttpClient();
+        protected internal EbsHttpClient()
+        {
+        }
 
         public void SetToken(string token)
         {
@@ -51,7 +53,7 @@ namespace ToolkitExt.Core
         private RestRequest GetRequest([NotNull] string endpoint, Method method)
         {
             var request = new RestRequest(endpoint, method, DataFormat.Json);
-            
+
             if (!string.IsNullOrEmpty(_token))
             {
                 request.AddHeader("Authorization", $"Bearer {_token}");
@@ -79,7 +81,7 @@ namespace ToolkitExt.Core
                     Logger.Warn("Could not decode authentication request! This will not work.");
                     Logger.Debug($"Authentication response: {response.Content}");
                 }
-                
+
                 return null;
             }
         }
@@ -89,7 +91,7 @@ namespace ToolkitExt.Core
         {
             RestRequest request = GetRequest("/broadcasting/polls/create", Method.POST);
             request.AddJsonBody(poll);
-            
+
             IRestResponse response = await _client.ExecuteAsync(request);
 
             try
@@ -99,6 +101,7 @@ namespace ToolkitExt.Core
             catch (JsonException)
             {
                 Logger.Warn("Could not");
+
                 return null;
             }
         }
@@ -128,7 +131,7 @@ namespace ToolkitExt.Core
 
             var builder = new StringBuilder();
             builder.Append(response.Error).Append("\n");
-                
+
             foreach (string data in response.Data)
             {
                 builder.Append($"  - {data}\n");

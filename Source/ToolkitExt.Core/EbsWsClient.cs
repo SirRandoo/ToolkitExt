@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,21 +36,19 @@ namespace ToolkitExt.Core
     /// <summary>
     ///     A client for connecting to the extension backend service.
     /// </summary>
-    public class EbsWsClient
+    internal class EbsWsClient
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitWs");
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
         private readonly WatsonWsClient _webSocket;
 
-        protected EbsWsClient()
+        protected internal EbsWsClient()
         {
             _webSocket = new WatsonWsClient(URL);
             _webSocket.ServerConnected += OnConnected;
             _webSocket.ServerDisconnected += OnDisconnected;
             _webSocket.MessageReceived += OnMessageReceived;
         }
-
-        [NotNull] public static EbsWsClient Instance { get; } = new EbsWsClient();
 
         /// <summary>
         ///     Whether the client is currently connected to the EBS.
@@ -160,6 +157,16 @@ namespace ToolkitExt.Core
         protected virtual void OnSubscribed(SubscribedEventArgs e)
         {
             Subscribed?.Invoke(this, e);
+        }
+
+        public async Task DisconnectAsync()
+        {
+            await _webSocket.StopAsync();
+        }
+
+        public async Task ConnectAsync()
+        {
+            await _webSocket.StartAsync();
         }
     }
 }

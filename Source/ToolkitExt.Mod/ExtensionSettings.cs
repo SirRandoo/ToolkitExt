@@ -33,7 +33,10 @@ namespace ToolkitExt.Mod
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature, ImplicitUseTargetFlags.WithMembers)]
     public class ExtensionSettings : ModSettings
     {
-        internal AuthSettings Auth;
+        private static readonly RimLogger Logger = new RimLogger("ToolkitSettings");
+
+        [UsedImplicitly(ImplicitUseKindFlags.Assign)] internal AuthSettings Auth;
+
         public PollSettings Polls = new PollSettings();
         internal WindowSettings Window = new WindowSettings();
 
@@ -57,7 +60,7 @@ namespace ToolkitExt.Mod
             }
             catch (Exception e)
             {
-                // TODO: Log that the auth settings couldn't be loaded.
+                Logger.Error("Could not load authentication settings. Things will not work", e);
             }
         }
 
@@ -69,7 +72,7 @@ namespace ToolkitExt.Mod
             }
             catch (Exception e)
             {
-                // TODO: Log that the auth settings couldn't be saved.
+                Logger.Error("Could not save authentication settings. This may not work properly next session.");
             }
         }
 
@@ -123,15 +126,15 @@ namespace ToolkitExt.Mod
             public int Duration;
 
             /// <summary>
+            ///     The number of minutes between polls.
+            /// </summary>
+            public int Interval;
+
+            /// <summary>
             ///     Whether the poll will use a larger text size to increase
             ///     readability.
             /// </summary>
             public bool LargeText;
-
-            /// <summary>
-            ///     The number of minutes between polls.
-            /// </summary>
-            public int Interval;
 
             /// <inheritdoc/>
             public void ExposeData()

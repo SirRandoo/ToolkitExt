@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Threading.Tasks;
 using ToolkitExt.Core;
 using Verse;
 
@@ -34,6 +35,11 @@ namespace ToolkitExt.Mod
             PollManager = new PollManager();
             Settings = GetSettings<ExtensionSettings>();
             Settings.LoadAuthSettings();
+            
+            if (Settings.Auth != null && !string.IsNullOrEmpty(Settings.Auth.ChannelId))
+            {
+                Task.Run(async () => await BackendClient.Instance.SetCredentials(Settings.Auth.ChannelId, Settings.Auth.Token));
+            }
         }
 
         public static ExtensionSettings Settings { get; private set; }

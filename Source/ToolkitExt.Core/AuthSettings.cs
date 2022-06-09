@@ -31,9 +31,9 @@ namespace ToolkitExt.Core
     {
         private string _broadcasterId;
 
-        [JsonIgnore]
-        public string Token { get; set; }
-        public string ChannelId { get; set; }
+        [JsonIgnore] public string Token { get; set; }
+
+        [JsonIgnore] public string ChannelId { get; set; }
 
         public string BroadcasterKey
         {
