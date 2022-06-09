@@ -30,19 +30,13 @@ using Verse;
 
 namespace ToolkitExt.Api
 {
-    [StaticConstructorOnStartup]
     public class RimLogger
     {
-        private static readonly SynchronizationContext Context;
+        private static SynchronizationContext Context = SynchronizationContext.Current;
 
         private readonly string _name;
         private bool _debugChecked;
         private bool _debugEnabled;
-
-        static RimLogger()
-        {
-            Context = SynchronizationContext.Current;
-        }
 
         public RimLogger(string name)
         {
@@ -90,11 +84,13 @@ namespace ToolkitExt.Api
         {
             if (UnityData.IsInMainThread)
             {
+                Context ??= SynchronizationContext.Current;
+                
                 Verse.Log.Message(message);
             }
             else
             {
-                Context.Post(_ => Verse.Log.Message(message), null);
+                Context?.Post(_ => Verse.Log.Message(message), null);
             }
         }
 
