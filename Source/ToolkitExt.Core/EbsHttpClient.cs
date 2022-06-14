@@ -42,6 +42,7 @@ namespace ToolkitExt.Core
 
         protected internal EbsHttpClient()
         {
+            _client.UseSerializer<RestJsonSerializer>();
         }
 
         public void SetToken(string token)
