@@ -41,7 +41,7 @@ namespace ToolkitExt.Core
             set
             {
                 _broadcasterId = value;
-                Token = Regex.Match(_broadcasterId, "\\A\\D+.([a-zA-Z]|\\d)+").Value;
+                Token = Regex.Match(_broadcasterId, "\\A\\d+.([a-zA-Z]|\\d)+").Value;
                 ChannelId = Regex.Match(_broadcasterId, "\\d+$").Value;
             }
         }
