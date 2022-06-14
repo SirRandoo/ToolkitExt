@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Newtonsoft.Json;
 using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Core.Requests
@@ -27,6 +28,6 @@ namespace ToolkitExt.Core.Requests
     public abstract class PusherRequest : IPusherMessage
     {
         /// <inheritdoc />
-        public string Event { get; set; }
+        [JsonProperty("event")] public string Event { get; set; }
     }
 }
