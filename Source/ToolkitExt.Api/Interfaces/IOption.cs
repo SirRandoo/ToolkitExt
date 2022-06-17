@@ -28,7 +28,7 @@ namespace ToolkitExt.Api.Interfaces
     /// <summary>
     ///     Represents the rough outline of a poll choice.
     /// </summary>
-    public interface IChoice
+    public interface IOption
     {
         /// <summary>
         ///     The unique identifier of the choice.

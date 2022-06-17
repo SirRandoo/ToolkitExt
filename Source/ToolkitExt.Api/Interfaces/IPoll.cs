@@ -76,7 +76,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     two choices. Polls exceeding this limit will be truncated down to
         ///     meet that limit.
         /// </remarks>
-        public IChoice[] Choices { get; set; }
+        public IOption[] Options { get; set; }
 
         /// <summary>
         ///     The duration of the poll in minutes.

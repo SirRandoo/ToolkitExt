@@ -26,7 +26,7 @@ using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Core.Models
 {
-    public class Choice : IChoice
+    public class Option : IOption
     {
         private readonly HashSet<string> _voters = new HashSet<string>();
 

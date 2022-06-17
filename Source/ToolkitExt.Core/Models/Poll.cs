@@ -40,9 +40,9 @@ namespace ToolkitExt.Core.Models
             {
                 var count = 0;
 
-                for (var i = 0; i < Choices.Length; i++)
+                for (var i = 0; i < Options.Length; i++)
                 {
-                    count += Choices[i].Votes;
+                    count += Options[i].Votes;
                 }
 
                 return count;
@@ -56,20 +56,20 @@ namespace ToolkitExt.Core.Models
         public DateTime StartedAt { get; set; }
 
         /// <inheritdoc />
-        public IChoice[] Choices { get; set; }
+        public IOption[] Options { get; set; }
 
         public int Duration => (int)Math.Ceiling((EndedAt - StartedAt).TotalMinutes);
 
         /// <inheritdoc />
         public void RegisterVote(string userId, Guid choiceId)
         {
-            for (var i = 0; i < Choices.Length; i++)
+            for (var i = 0; i < Options.Length; i++)
             {
-                IChoice choice = Choices[i];
+                IOption option = Options[i];
 
-                if (choice.Id == choiceId)
+                if (option.Id == choiceId)
                 {
-                    choice.RegisterVote(userId);
+                    option.RegisterVote(userId);
                 }
             }
         }
@@ -79,9 +79,9 @@ namespace ToolkitExt.Core.Models
         {
             var hits = 0;
 
-            for (var i = 0; i < Choices.Length; i++)
+            for (var i = 0; i < Options.Length; i++)
             {
-                if (Choices[i].UnregisterVote(userId))
+                if (Options[i].UnregisterVote(userId))
                 {
                     hits++;
                 }

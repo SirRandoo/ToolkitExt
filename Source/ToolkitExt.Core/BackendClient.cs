@@ -65,7 +65,7 @@ namespace ToolkitExt.Core
         {
             var request = new PollRequest { Length = (int)(poll.EndedAt - poll.StartedAt).TotalMinutes, Title = poll.Caption };
 
-            foreach (IChoice choice in poll.Choices)
+            foreach (IOption choice in poll.Options)
             {
                 request.AddOption(choice.Id.ToString(), choice.Label, choice.Tooltip);
             }
