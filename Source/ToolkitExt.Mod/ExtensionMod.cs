@@ -34,13 +34,11 @@ namespace ToolkitExt.Mod
         public ExtensionMod(ModContentPack content) : base(content)
         {
             Instance = this;
-            PollManager = new PollManager();
             Settings = GetSettings<ExtensionSettings>();
         }
 
         public static ExtensionSettings Settings { get; private set; }
         public static ExtensionMod Instance { get; private set; }
-        public PollManager PollManager { get; }
 
         /// <inheritdoc />
         public override string SettingsCategory() => Content.Name;

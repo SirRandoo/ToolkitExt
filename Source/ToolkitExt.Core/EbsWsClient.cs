@@ -67,6 +67,11 @@ namespace ToolkitExt.Core
         public event EventHandler<SubscribedEventArgs> Subscribed;
 
         /// <summary>
+        ///     Invoked when a viewer votes on the extension.
+        /// </summary>
+        public event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
+
+        /// <summary>
         ///     Sends a request to the backend service.
         /// </summary>
         /// <param name="request">The request to send</param>
@@ -154,6 +159,10 @@ namespace ToolkitExt.Core
                     Task.Run(async () => await Send(new PongRequest { Event = "pusher:pong" }));
 
                     return;
+                case "viewer-voted" when Json.TryDeserialize(content, out ViewerVotedResponse ev):
+                    OnViewerVoted(new ViewerVotedEventArgs(ev.Data.VoterId, ev.Data.PollId, ev.Data.OptionId));
+
+                    return;
             }
         }
 
@@ -165,6 +174,11 @@ namespace ToolkitExt.Core
         protected virtual void OnSubscribed(SubscribedEventArgs e)
         {
             Subscribed?.Invoke(this, e);
+        }
+        
+        protected virtual void OnViewerVoted(ViewerVotedEventArgs e)
+        {
+            ViewerVoted?.Invoke(this, e);
         }
 
         public async Task DisconnectAsync()

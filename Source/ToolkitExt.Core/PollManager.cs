@@ -20,16 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Core.Events;
+using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core
 {
     public class PollManager
     {
+        private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly Queue<IPoll> _polls = new Queue<IPoll>();
         private IPoll _current;
+
+        private PollManager()
+        {
+            BackendClient.Instance.ViewerVoted += OnViewerVoted;
+        }
+
+        public int PollDuration { get; set; } = 300;
+
+        public static PollManager Instance { get; } = new PollManager();
 
         [CanBeNull]
         public IPoll CurrentPoll
@@ -45,6 +60,26 @@ namespace ToolkitExt.Core
             }
         }
 
+        private void OnViewerVoted(object sender, [NotNull] ViewerVotedEventArgs e)
+        {
+            if (_current == null)
+            {
+                Logger.Warn("Received a vote, but the mod has no active poll.");
+
+                return;
+            }
+
+            if (e.PollId != _current?.Id)
+            {
+                Logger.Warn("Received a vote for a poll that isn't the currently active poll.");
+
+                return;
+            }
+
+            _current.UnregisterVote(e.VoterId);
+            _current.RegisterVote(e.VoterId, e.OptionId);
+        }
+
         public void Queue(IPoll poll)
         {
             _polls.Enqueue(poll);
@@ -56,8 +91,24 @@ namespace ToolkitExt.Core
             {
                 return;
             }
-            
-            // TODO: Send the poll to the EBS
+
+            _current.StartedAt = DateTime.UtcNow;
+            _current.EndedAt = _current.StartedAt.AddSeconds(PollDuration);
+            Task.Run(async () => await SendPollAsync()).ConfigureAwait(false);
+        }
+
+        private async Task SendPollAsync()
+        {
+            CreatePollResponse response = await BackendClient.Instance.SendPoll(_current);
+
+            if (response == null)
+            {
+                _current = null;
+
+                return;
+            }
+
+            _current.Id = response.Id;
         }
     }
 }

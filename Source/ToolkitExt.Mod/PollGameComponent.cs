@@ -20,10 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using RimWorld;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
 using ToolkitExt.Mod.Windows;
@@ -37,13 +35,13 @@ namespace ToolkitExt.Mod
     {
         private int _lastMinute;
         private int _pollTracker;
-        
+
         [SuppressMessage("ReSharper", "EmptyConstructor")]
         public PollGameComponent()
         {
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void GameComponentUpdate()
         {
             int currentMinute = GetCurrentMinute();
@@ -60,24 +58,18 @@ namespace ToolkitExt.Mod
             {
                 return;
             }
-            
+
             // TODO: Create a poll and queue it.
         }
 
         /// <inheritdoc/>
         public override void GameComponentOnGUI()
         {
-            IPoll currentPoll = ExtensionMod.Instance.PollManager.CurrentPoll;
+            IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
             if (currentPoll == null)
             {
                 return;
-            }
-
-            if (currentPoll.StartedAt == DateTime.MinValue)
-            {
-                currentPoll.StartedAt = DateTime.UtcNow;
-                currentPoll.EndedAt = currentPoll.StartedAt.AddSeconds(ExtensionMod.Settings.Polls.Duration);
             }
 
             if (!Find.WindowStack.IsOpen(typeof(PollWindow)))

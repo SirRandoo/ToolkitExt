@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
@@ -38,10 +39,18 @@ namespace ToolkitExt.Core
         private readonly EbsWsClient _wsClient = new EbsWsClient();
         private volatile string _channelId;
 
+        public event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
+
         private BackendClient()
         {
             _wsClient.Subscribed += OnSubscribed;
+            _wsClient.ViewerVoted += OnViewerVoted;
             _wsClient.ConnectionEstablished += OnConnectionEstablished;
+        }
+        
+        private void OnViewerVoted(object sender, ViewerVotedEventArgs e)
+        {
+            ViewerVoted?.Invoke(this, e);
         }
 
         public static BackendClient Instance { get; } = new BackendClient();
@@ -61,7 +70,8 @@ namespace ToolkitExt.Core
             await _wsClient.ConnectAsync();
         }
         
-        public async Task SendPoll([NotNull] IPoll poll)
+        [ItemCanBeNull]
+        public async Task<CreatePollResponse> SendPoll([NotNull] IPoll poll)
         {
             var request = new PollRequest { Length = (int)(poll.EndedAt - poll.StartedAt).TotalMinutes, Title = poll.Caption };
 
@@ -70,7 +80,7 @@ namespace ToolkitExt.Core
                 request.AddOption(choice.Id.ToString(), choice.Label, choice.Tooltip);
             }
 
-            await _httpClient.CreatePollAsync(request);
+            return await _httpClient.CreatePollAsync(request);
         }
 
         public async Task DeletePoll()

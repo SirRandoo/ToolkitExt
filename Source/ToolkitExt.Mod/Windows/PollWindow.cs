@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
 
@@ -35,9 +36,9 @@ namespace ToolkitExt.Mod.Windows
         internal const float Width = 310f;
         internal const float BaseHeight = 150f;
         private static readonly Gradient TimerGradient;
+        private readonly Dictionary<Guid, float> _choicePercentages = new Dictionary<Guid, float>();
         private readonly IPoll _poll;
         private float _captionHeight;
-        private readonly Dictionary<Guid, float> _choicePercentages = new Dictionary<Guid, float>();
 
         static PollWindow()
         {
@@ -79,7 +80,7 @@ namespace ToolkitExt.Mod.Windows
         public override void DoWindowContents(Rect inRect)
         {
             GUI.BeginGroup(inRect);
-            
+
             if (!string.IsNullOrEmpty(_poll.Caption))
             {
                 GameFont cache = Text.Font;
@@ -89,7 +90,7 @@ namespace ToolkitExt.Mod.Windows
                 {
                     _captionHeight = Text.CalcHeight(_poll.Caption, inRect.width);
                 }
-                
+
                 var titleRect = new Rect(0f, 0f, inRect.width, _captionHeight);
                 GUI.BeginGroup(titleRect);
 
@@ -100,7 +101,7 @@ namespace ToolkitExt.Mod.Windows
             }
 
             Rect contentRect = new Rect(0f, _captionHeight, inRect.width, inRect.height - _captionHeight - Text.LineHeight).ContractedBy(4f);
-            
+
             GUI.BeginGroup(contentRect);
             DrawChoices(contentRect.AtZero());
             GUI.EndGroup();
@@ -109,7 +110,7 @@ namespace ToolkitExt.Mod.Windows
             GUI.BeginGroup(progressRect);
             DrawProgressBar(progressRect.AtZero());
             GUI.EndGroup();
-            
+
             GUI.EndGroup();
         }
 
@@ -117,20 +118,20 @@ namespace ToolkitExt.Mod.Windows
         {
             GameFont cache = Text.Font;
             Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
-            
-            for (var i = 0; i < _poll.Choices.Length; i++)
+
+            for (var i = 0; i < _poll.Options.Length; i++)
             {
-                IChoice choice = _poll.Choices[i];
+                IOption option = _poll.Options[i];
 
                 var lineRect = new Rect(0f, Text.LineHeight * i, region.width, Text.LineHeight);
 
                 if (ExtensionMod.Settings.Polls.Bars)
                 {
-                    DrawRelativeWeight(lineRect, choice);
+                    DrawRelativeWeight(lineRect, option);
                 }
-                
-                Widgets.Label(lineRect, choice.Label);
-                TooltipHandler.TipRegion(lineRect, choice.Tooltip);
+
+                Widgets.Label(lineRect, option.Label);
+                TooltipHandler.TipRegion(lineRect, option.Tooltip);
             }
 
             Text.Font = cache;
@@ -145,14 +146,14 @@ namespace ToolkitExt.Mod.Windows
             GUI.color = Color.white;
         }
 
-        private void DrawRelativeWeight(Rect region, [NotNull] IChoice choice)
+        private void DrawRelativeWeight(Rect region, [NotNull] IOption option)
         {
-            float relative = (float)choice.Votes / _poll.TotalVotes;
+            float relative = (float)option.Votes / _poll.TotalVotes;
 
-            if (!_choicePercentages.TryGetValue(choice.Id, out float lastRelative))
+            if (!_choicePercentages.TryGetValue(option.Id, out float lastRelative))
             {
                 lastRelative = relative;
-                _choicePercentages[choice.Id] = relative;
+                _choicePercentages[option.Id] = relative;
             }
 
             var barRect = new Rect(region.x, region.y + 2f, Mathf.FloorToInt(region.width * lastRelative), region.height - 4f);
@@ -169,24 +170,25 @@ namespace ToolkitExt.Mod.Windows
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void SetInitialSizeAndPosition()
         {
-            IPoll currentPoll = ExtensionMod.Instance.PollManager.CurrentPoll;
+            IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
             if (currentPoll == null)
             {
                 base.SetInitialSizeAndPosition();
+
                 return;
             }
-        
+
             GameFont lastFont = Text.Font;
             Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
 
             Vector2 initialSize = InitialSize;
             var desiredWidth = 0f;
 
-            foreach (IChoice t in currentPoll.Choices)
+            foreach (IOption t in currentPoll.Options)
             {
                 float width = Text.CalcSize(t.Label).x;
 
@@ -197,7 +199,7 @@ namespace ToolkitExt.Mod.Windows
             }
 
             float finalWidth = Mathf.Max(initialSize.x, desiredWidth);
-            float finalHeight = initialSize.y + Text.LineHeight * currentPoll.Choices.Length;
+            float finalHeight = initialSize.y + Text.LineHeight * currentPoll.Options.Length;
 
             windowRect = new Rect(
                 Mathf.Clamp(ExtensionMod.Settings.Window.PollPosition.x, 0f, UI.screenWidth - finalWidth),
@@ -209,12 +211,12 @@ namespace ToolkitExt.Mod.Windows
             Text.Font = lastFont;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void WindowUpdate()
         {
             base.WindowUpdate();
 
-            IPoll currentPoll = ExtensionMod.Instance.PollManager.CurrentPoll;
+            IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
             if (currentPoll == null || DateTime.UtcNow > currentPoll.EndedAt)
             {
@@ -222,7 +224,7 @@ namespace ToolkitExt.Mod.Windows
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void PreClose()
         {
             base.PreClose();
