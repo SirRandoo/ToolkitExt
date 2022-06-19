@@ -66,5 +66,12 @@ namespace ToolkitExt.Core.Models
             
             return false;
         }
+        
+        /// <inheritdoc />
+        public void ClearVotes()
+        {
+            _voters.Clear();
+            Votes = 0;
+        }
     }
 }

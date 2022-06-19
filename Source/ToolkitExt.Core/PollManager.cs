@@ -24,10 +24,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RimWorld.QuestGen;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Responses;
+using UnityEngine;
+using Verse;
 
 namespace ToolkitExt.Core
 {
@@ -36,6 +39,8 @@ namespace ToolkitExt.Core
         private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly Queue<IPoll> _polls = new Queue<IPoll>();
         private IPoll _current;
+        private volatile bool _deletingPoll;
+        private volatile bool _deleteRequested;
 
         private PollManager()
         {
@@ -109,6 +114,98 @@ namespace ToolkitExt.Core
             }
 
             _current.Id = response.Id;
+        }
+
+        public void ConcludePoll()
+        {
+            if (_current == null || DateTime.UtcNow < _current.EndedAt)
+            {
+                return;
+            }
+
+            if (!_deleteRequested)
+            {
+                _deleteRequested = true;
+                _deletingPoll = true;
+                Task.Run(async () => await DeletePoll());
+            }
+            else if (!_deletingPoll)
+            {
+                CompletePoll();
+
+                _deletingPoll = false;
+                _deleteRequested = false;
+            }
+        }
+
+        private void CompletePoll()
+        {
+            if (CurrentPoll == null)
+            {
+                return;
+            }
+
+            lock (CurrentPoll.Options)
+            {
+                var highest = 0;
+
+                foreach (IOption option in CurrentPoll.Options)
+                {
+                    if (option.Votes > highest)
+                    {
+                        highest = option.Votes;
+                    }
+                }
+
+                var winners = new List<IOption>();
+                
+                foreach (IOption option in CurrentPoll.Options)
+                {
+                    if (option.Votes == highest)
+                    {
+                        winners.Add(option);
+                    }
+                }
+
+                if (winners.TryRandomElement(out IOption result))
+                {
+                    result.ChosenAction();
+                }
+            }
+        }
+
+        private async Task DeletePoll()
+        {
+            _deleteRequested = true;
+            DeletePollResponse response = await BackendClient.Instance.DeletePoll();
+
+            if (response == null)
+            {
+                Logger.Warn("Could not delete current running poll, but there's an active poll. Was it not sent?");
+                _deletingPoll = false;
+
+                return;
+            }
+
+            if (CurrentPoll == null)
+            {
+                Logger.Warn("A poll was deleted from the api, but there was no active poll within the manager. Discarding results...");
+                _deletingPoll = false;
+
+                return;
+            }
+
+            lock (CurrentPoll.Options)
+            {
+                CurrentPoll.ClearVotes();
+
+                foreach (DeletePollResponse.Vote vote in response.Votes)
+                {
+                    CurrentPoll.RegisterVote(vote.UserId, vote.ChoiceId);
+                }
+            }
+
+            _deletingPoll = false;
         }
     }
 }

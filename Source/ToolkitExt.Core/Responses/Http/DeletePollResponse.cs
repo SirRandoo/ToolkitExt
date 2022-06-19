@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -31,7 +32,7 @@ namespace ToolkitExt.Core.Responses
 
         public class Vote
         {
-            [JsonProperty("value")] public string ChoiceId { get; set; }
+            [JsonProperty("value")] public Guid ChoiceId { get; set; }
             [JsonProperty("provider_id")] public string UserId { get; set; }
         }
     }

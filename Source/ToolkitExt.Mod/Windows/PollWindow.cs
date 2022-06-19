@@ -119,19 +119,22 @@ namespace ToolkitExt.Mod.Windows
             GameFont cache = Text.Font;
             Text.Font = ExtensionMod.Settings.Polls.LargeText ? GameFont.Medium : GameFont.Small;
 
-            for (var i = 0; i < _poll.Options.Length; i++)
+            lock (_poll.Options)
             {
-                IOption option = _poll.Options[i];
-
-                var lineRect = new Rect(0f, Text.LineHeight * i, region.width, Text.LineHeight);
-
-                if (ExtensionMod.Settings.Polls.Bars)
+                for (var i = 0; i < _poll.Options.Length; i++)
                 {
-                    DrawRelativeWeight(lineRect, option);
-                }
+                    IOption option = _poll.Options[i];
 
-                Widgets.Label(lineRect, option.Label);
-                TooltipHandler.TipRegion(lineRect, option.Tooltip);
+                    var lineRect = new Rect(0f, Text.LineHeight * i, region.width, Text.LineHeight);
+
+                    if (ExtensionMod.Settings.Polls.Bars)
+                    {
+                        DrawRelativeWeight(lineRect, option);
+                    }
+
+                    Widgets.Label(lineRect, option.Label);
+                    TooltipHandler.TipRegion(lineRect, option.Tooltip);
+                }
             }
 
             Text.Font = cache;

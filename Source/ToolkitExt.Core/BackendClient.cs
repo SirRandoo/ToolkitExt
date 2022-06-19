@@ -83,13 +83,9 @@ namespace ToolkitExt.Core
             return await _httpClient.CreatePollAsync(request);
         }
 
-        public async Task DeletePoll()
+        public async Task<DeletePollResponse> DeletePoll()
         {
-            DeletePollResponse response = await _httpClient.DeletePollAsync();
-
-            if (response == null)
-            {
-            }
+            return await _httpClient.DeletePollAsync();
         }
 
         private static void OnSubscribed(object sender, [NotNull] SubscribedEventArgs e)

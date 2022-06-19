@@ -89,5 +89,14 @@ namespace ToolkitExt.Core.Models
 
             return hits > 0;
         }
+        
+        /// <inheritdoc />
+        public void ClearVotes()
+        {
+            for (var i = 0; i < Options.Length; i++)
+            {
+                Options[i].ClearVotes();
+            }
+        }
     }
 }

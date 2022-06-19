@@ -44,6 +44,17 @@ namespace ToolkitExt.Mod
         {
         }
 
+        /// <inheritdoc />
+        public override void GameComponentTick()
+        {
+            if (PollManager.Instance.CurrentPoll == null || DateTime.UtcNow < PollManager.Instance.CurrentPoll.EndedAt)
+            {
+                return;
+            }
+            
+            PollManager.Instance.ConcludePoll();
+        }
+
         /// <inheritdoc/>
         public override void GameComponentUpdate()
         {

@@ -102,5 +102,10 @@ namespace ToolkitExt.Api.Interfaces
         ///     what the EBS returned.
         /// </remarks>
         public bool UnregisterVote(string userId);
+
+        /// <summary>
+        ///     Clears all votes for this poll.
+        /// </summary>
+        public void ClearVotes();
     }
 }
