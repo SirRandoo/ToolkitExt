@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Mod.Windows;
 using UnityEngine;
 using Verse;
@@ -59,7 +62,36 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            // TODO: Create a poll and queue it.
+            foreach (IPollFactory factory in PollFactoryRegistry.AllFactoriesRandom)
+            {
+                IOptionContext[] options = factory.CreateOptions();
+
+                if (options.Length < 2)
+                {
+                    continue;
+                }
+
+                var container = new List<IOption>();
+                    
+                foreach (IOptionContext context in options)
+                {
+                    container.Add(
+                        new Option
+                        {
+                            ChosenAction = () => context.Incident.Worker.TryExecute(context.Params),
+                            Label = context.Incident.LabelCap,
+                            Tooltip = context.Incident.description,
+                            Id = Guid.NewGuid()
+                        }
+                    );
+                }
+
+                var poll = new Poll { Caption = factory.Caption, Options = container.ToArray() };
+                    
+                PollManager.Instance.Queue(poll);
+
+                break;
+            }
         }
 
         /// <inheritdoc/>
