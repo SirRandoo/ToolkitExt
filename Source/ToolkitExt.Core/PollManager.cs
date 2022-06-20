@@ -172,6 +172,8 @@ namespace ToolkitExt.Core
                     result.ChosenAction();
                 }
             }
+
+            _current = null;
         }
 
         private async Task DeletePoll()
