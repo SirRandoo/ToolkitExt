@@ -26,15 +26,28 @@ using Newtonsoft.Json;
 
 namespace ToolkitExt.Core
 {
+    /// <summary>
+    ///     A class representing the authentication settings required for the
+    ///     mod to communicate with the extension.
+    /// </summary>
     [UsedImplicitly]
     public class AuthSettings
     {
         private string _broadcasterId;
 
-        [JsonIgnore] public string Token { get; set; }
+        /// <summary>
+        ///     The token for the given broadcaster.
+        /// </summary>
+        [JsonIgnore] public string Token { get; private set; }
 
-        [JsonIgnore] public string ChannelId { get; set; }
+        /// <summary>
+        ///     The channel id of the given broadcaster.
+        /// </summary>
+        [JsonIgnore] public string ChannelId { get; private set; }
 
+        /// <summary>
+        ///     The broadcaster's unique key given by the extension.
+        /// </summary>
         public string BroadcasterKey
         {
             get => _broadcasterId;
