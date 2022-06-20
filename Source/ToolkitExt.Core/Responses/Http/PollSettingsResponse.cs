@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using Newtonsoft.Json;
 
 namespace ToolkitExt.Core.Responses
@@ -28,5 +29,8 @@ namespace ToolkitExt.Core.Responses
     {
         [JsonProperty("provider_id")] public string ChannelId { get; set; }
         [JsonProperty("poll_duration")] public int Duration { get; set; } = 5;
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("created_at")] public DateTime CreatedAt { get; set; }
+        [JsonProperty("updated_at")] public DateTime UpdatedAt { get; set; }
     }
 }
