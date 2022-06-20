@@ -69,9 +69,9 @@ namespace ToolkitExt.Core
 
             await _wsClient.ConnectAsync();
         }
-        
+
         [ItemCanBeNull]
-        public async Task<CreatePollResponse> SendPoll([NotNull] IPoll poll)
+        internal async Task<CreatePollResponse> SendPoll([NotNull] IPoll poll)
         {
             var request = new PollRequest { Length = (int)(poll.EndedAt - poll.StartedAt).TotalMinutes, Title = poll.Caption };
 
@@ -83,10 +83,8 @@ namespace ToolkitExt.Core
             return await _httpClient.CreatePollAsync(request);
         }
 
-        public async Task<DeletePollResponse> DeletePoll()
-        {
-            return await _httpClient.DeletePollAsync();
-        }
+
+        [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
 
         private static void OnSubscribed(object sender, [NotNull] SubscribedEventArgs e)
         {
