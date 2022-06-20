@@ -94,6 +94,15 @@ namespace ToolkitExt.Core
             return ResolveContent(response.Content, out DeletePollResponse data) ? data : null;
         }
 
+        [ItemCanBeNull]
+        internal async Task<PollSettingsResponse> GetPollSettingsAsync(string id)
+        {
+            RestRequest request = GetRequest($"/settings/polls/{id}", Method.GET);
+            IRestResponse response = await _client.ExecuteAsync(request);
+
+            return ResolveContent(response.Content, out PollSettingsResponse data) ? data : null;
+        }
+
         [ContractAnnotation("=> true, response: notnull; => false, response: null")]
         private static bool ResolveContent<T>([NotNull] string content, out T response)
         {

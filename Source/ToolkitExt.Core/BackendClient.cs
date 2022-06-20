@@ -83,6 +83,10 @@ namespace ToolkitExt.Core
             return await _httpClient.CreatePollAsync(request);
         }
 
+        /// <summary>
+        ///     Retrieves the channel's poll settings from the backend service.
+        /// </summary>
+        [ItemCanBeNull] public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(_channelId);
 
         [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
 
