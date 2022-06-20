@@ -71,20 +71,7 @@ namespace ToolkitExt.Core
 
             IRestResponse response = await _client.ExecuteAsync(request);
 
-            try
-            {
-                return Json.Deserialize<AuthResponse>(response.Content);
-            }
-            catch (JsonException)
-            {
-                if (!TryProcessError(response.Content))
-                {
-                    Logger.Warn("Could not decode authentication request! This will not work.");
-                    Logger.Debug($"Authentication response: {response.Content}");
-                }
-
-                return null;
-            }
+            return ResolveContent(response.Content, out AuthResponse data) ? data : null;
         }
 
         [ItemCanBeNull]
@@ -95,16 +82,7 @@ namespace ToolkitExt.Core
 
             IRestResponse response = await _client.ExecuteAsync(request);
 
-            try
-            {
-                return Json.Deserialize<CreatePollResponse>(response.Content);
-            }
-            catch (JsonException)
-            {
-                Logger.Warn("Could not");
-
-                return null;
-            }
+            return ResolveContent(response.Content, out CreatePollResponse data) ? data : null;
         }
 
         [ItemCanBeNull]
@@ -113,14 +91,29 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest("/broadcasting/polls/delete", Method.DELETE);
             IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);
 
-            if (response.IsSuccessful)
+            return ResolveContent(response.Content, out DeletePollResponse data) ? data : null;
+        }
+
+        [ContractAnnotation("=> true, response: notnull; => false, response: null")]
+        private static bool ResolveContent<T>([NotNull] string content, out T response)
+        {
+            try
             {
-                return response.Data;
+                response = Json.Deserialize<T>(content);
+
+                return true;
+            }
+            catch (JsonException)
+            {
+                if (!TryProcessError(content))
+                {
+                    Logger.Warn($"Could not deserialize response into {typeof(T)}; Raw response: {content}");
+                }
             }
 
-            TryProcessError(response.Content);
+            response = default;
 
-            return null;
+            return false;
         }
 
         private static bool TryProcessError([NotNull] string error)
