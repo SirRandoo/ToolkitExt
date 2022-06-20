@@ -31,6 +31,9 @@ using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core
 {
+    /// <summary>
+    ///     A class for interacting with the extension backend service.
+    /// </summary>
     public class BackendClient
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitClient");
@@ -39,24 +42,40 @@ namespace ToolkitExt.Core
         private readonly EbsWsClient _wsClient = new EbsWsClient();
         private volatile string _channelId;
 
-        public event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
-
         private BackendClient()
         {
             _wsClient.Subscribed += OnSubscribed;
             _wsClient.ViewerVoted += OnViewerVoted;
             _wsClient.ConnectionEstablished += OnConnectionEstablished;
         }
-        
+
+        /// <summary>
+        ///     The current instance of the backend client.
+        /// </summary>
+        /// <remarks>
+        ///     Only one instance should be active at any given time
+        /// </remarks>
+        public static BackendClient Instance { get; } = new BackendClient();
+
+        public event EventHandler<ViewerVotedEventArgs> ViewerVoted;
+
         private void OnViewerVoted(object sender, ViewerVotedEventArgs e)
         {
             ViewerVoted?.Invoke(this, e);
         }
 
-        public static BackendClient Instance { get; } = new BackendClient();
-
+        /// <summary>
+        ///     Sends a raw <see cref="PusherRequest"/> to the websocket backend.
+        /// </summary>
+        /// <param name="request">The request to send</param>
+        /// <returns>Whether the request was sent</returns>
         public async Task<bool> PushRaw(PusherRequest request) => await _wsClient.Send(request);
 
+        /// <summary>
+        ///     Sets the credentials for the client.
+        /// </summary>
+        /// <param name="channelId">The channel id to use for certain requests</param>
+        /// <param name="token">A token representing the broadcaster's channel</param>
         public async Task SetCredentials(string channelId, string token)
         {
             _httpClient.SetToken(token);
@@ -116,7 +135,12 @@ namespace ToolkitExt.Core
 
         private async Task ProcessAuthResponse([NotNull] AuthResponse response)
         {
-            await _wsClient.Send(new SubscribeRequest { Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-private.{_channelId}", Auth = response.Auth } });
+            await _wsClient.Send(
+                new SubscribeRequest
+                {
+                    Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-private.{_channelId}", Auth = response.Auth }
+                }
+            );
         }
     }
 }
