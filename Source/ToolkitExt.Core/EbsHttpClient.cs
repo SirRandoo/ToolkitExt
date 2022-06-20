@@ -45,7 +45,7 @@ namespace ToolkitExt.Core
             _client.UseSerializer<RestJsonSerializer>();
         }
 
-        public void SetToken(string token)
+        internal void SetToken(string token)
         {
             _token = token;
         }
@@ -64,7 +64,7 @@ namespace ToolkitExt.Core
         }
 
         [ItemCanBeNull]
-        public async Task<AuthResponse> RetrieveToken(string socketId, string channel)
+        internal async Task<AuthResponse> RetrieveToken(string socketId, string channel)
         {
             RestRequest request = GetRequest("/broadcasting/auth", Method.POST);
             request.AddJsonBody(new BroadcastTokenRequest { ChannelName = $"private-private.{channel}", SocketId = socketId });
@@ -88,7 +88,7 @@ namespace ToolkitExt.Core
         }
 
         [ItemCanBeNull]
-        public async Task<CreatePollResponse> CreatePollAsync([NotNull] PollRequest poll)
+        internal async Task<CreatePollResponse> CreatePollAsync([NotNull] PollRequest poll)
         {
             RestRequest request = GetRequest("/broadcasting/polls/create", Method.POST);
             request.AddJsonBody(poll);
@@ -108,7 +108,7 @@ namespace ToolkitExt.Core
         }
 
         [ItemCanBeNull]
-        public async Task<DeletePollResponse> DeletePollAsync()
+        internal async Task<DeletePollResponse> DeletePollAsync()
         {
             RestRequest request = GetRequest("/broadcasting/polls/delete", Method.DELETE);
             IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);

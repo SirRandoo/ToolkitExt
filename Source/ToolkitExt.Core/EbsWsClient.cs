@@ -36,13 +36,13 @@ namespace ToolkitExt.Core
     /// <summary>
     ///     A client for connecting to the extension backend service.
     /// </summary>
-    internal class EbsWsClient
+    internal sealed class EbsWsClient
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitWs");
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
         private readonly WatsonWsClient _webSocket;
 
-        protected internal EbsWsClient()
+        internal EbsWsClient()
         {
             _webSocket = new WatsonWsClient(URL);
             _webSocket.ServerConnected += OnConnected;
@@ -53,30 +53,30 @@ namespace ToolkitExt.Core
         /// <summary>
         ///     Whether the client is currently connected to the EBS.
         /// </summary>
-        public bool IsConnected => _webSocket.Connected;
+        internal bool IsConnected => _webSocket.Connected;
 
         /// <summary>
         ///     Invoked when the client connects to the backend service.
         /// </summary>
-        public event EventHandler<ConnectionEstablishedEventArgs> ConnectionEstablished;
+        internal event EventHandler<ConnectionEstablishedEventArgs> ConnectionEstablished;
 
         /// <summary>
         ///     Invoked when the client successfully subscribes to a channel on
         ///     the backend service.
         /// </summary>
-        public event EventHandler<SubscribedEventArgs> Subscribed;
+        internal event EventHandler<SubscribedEventArgs> Subscribed;
 
         /// <summary>
         ///     Invoked when a viewer votes on the extension.
         /// </summary>
-        public event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
+        internal event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
 
         /// <summary>
         ///     Sends a request to the backend service.
         /// </summary>
         /// <param name="request">The request to send</param>
         /// <returns>Whether the message was successfully sent</returns>
-        public async Task<bool> Send(PusherRequest request)
+        internal async Task<bool> Send(PusherRequest request)
         {
             if (_webSocket.Connected && Json.TrySerialize(request, out string result))
             {
@@ -166,27 +166,27 @@ namespace ToolkitExt.Core
             }
         }
 
-        protected virtual void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
+        private void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
         {
             ConnectionEstablished?.Invoke(this, e);
         }
 
-        protected virtual void OnSubscribed(SubscribedEventArgs e)
+        private void OnSubscribed(SubscribedEventArgs e)
         {
             Subscribed?.Invoke(this, e);
         }
-        
-        protected virtual void OnViewerVoted(ViewerVotedEventArgs e)
+
+        private void OnViewerVoted(ViewerVotedEventArgs e)
         {
             ViewerVoted?.Invoke(this, e);
         }
 
-        public async Task DisconnectAsync()
+        internal async Task DisconnectAsync()
         {
             await _webSocket.StopAsync();
         }
 
-        public async Task ConnectAsync()
+        internal async Task ConnectAsync()
         {
             await _webSocket.StartAsync();
         }
