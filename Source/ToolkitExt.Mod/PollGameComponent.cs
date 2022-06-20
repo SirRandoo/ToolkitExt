@@ -40,7 +40,7 @@ namespace ToolkitExt.Mod
         private int _pollTracker;
 
         [SuppressMessage("ReSharper", "EmptyConstructor")]
-        public PollGameComponent()
+        public PollGameComponent(Game game)
         {
         }
 
