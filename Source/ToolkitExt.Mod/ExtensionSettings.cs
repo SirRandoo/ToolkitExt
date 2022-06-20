@@ -130,7 +130,7 @@ namespace ToolkitExt.Mod
             ///     added to the poll's duration to accommodate users with poor
             ///     connection.
             /// </remarks>
-            public int Duration;
+            public int Duration = 300;
 
             /// <summary>
             ///     The number of minutes between polls.
