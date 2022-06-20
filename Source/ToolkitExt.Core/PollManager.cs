@@ -24,23 +24,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RimWorld.QuestGen;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Responses;
-using UnityEngine;
 using Verse;
 
 namespace ToolkitExt.Core
 {
     public class PollManager
     {
+        public const int BufferTimer = 10;
         private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly Queue<IPoll> _polls = new Queue<IPoll>();
         private IPoll _current;
-        private volatile bool _deletingPoll;
         private volatile bool _deleteRequested;
+        private volatile bool _deletingPoll;
 
         private PollManager()
         {
@@ -158,7 +157,7 @@ namespace ToolkitExt.Core
                 }
 
                 var winners = new List<IOption>();
-                
+
                 foreach (IOption option in CurrentPoll.Options)
                 {
                     if (option.Votes == highest)
@@ -179,10 +178,10 @@ namespace ToolkitExt.Core
         private async Task DeletePoll()
         {
             _deleteRequested = true;
-            
+
             // We'll wait 10 seconds to ensure the backend received all the votes.
-            await Task.Delay(10000);
-            
+            await Task.Delay(BufferTimer * 1000);
+
             DeletePollResponse response = await BackendClient.Instance.DeletePoll();
 
             if (response == null)

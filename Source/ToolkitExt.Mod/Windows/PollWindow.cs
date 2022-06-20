@@ -37,6 +37,7 @@ namespace ToolkitExt.Mod.Windows
         internal const float BaseHeight = 150f;
         private static readonly Gradient TimerGradient;
         private readonly Dictionary<Guid, float> _choicePercentages = new Dictionary<Guid, float>();
+        private readonly DateTime _endTime;
         private readonly IPoll _poll;
         private float _captionHeight;
 
@@ -62,6 +63,7 @@ namespace ToolkitExt.Mod.Windows
         public PollWindow([NotNull] IPoll poll)
         {
             _poll = poll;
+            _endTime = poll.EndedAt.AddSeconds(PollManager.BufferTimer);
 
             doCloseX = true;
             draggable = true;
@@ -142,7 +144,7 @@ namespace ToolkitExt.Mod.Windows
 
         private void DrawProgressBar(Rect region)
         {
-            var progress = (float)((_poll.EndedAt - DateTime.UtcNow).TotalSeconds / (_poll.EndedAt - _poll.StartedAt).TotalSeconds);
+            var progress = (float)((_endTime - DateTime.UtcNow).TotalSeconds / (_endTime - _poll.StartedAt).TotalSeconds);
 
             GUI.color = ExtensionMod.Settings.Polls.Colorless ? ColorLibrary.Teal : TimerGradient.Evaluate(1f - progress);
             Widgets.FillableBar(region, progress, Texture2D.whiteTexture, null, true);
