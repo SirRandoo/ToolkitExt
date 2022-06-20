@@ -46,7 +46,7 @@ namespace ToolkitExt.Mod
             Task.Run(async () =>
                 {
                     Logger.Info("Fetching poll settings from backend...");
-                    await GetPollSettingsAsync();
+                    await LoadPollSettingsAsync();
                     
                     Logger.Info("");
                     await ConnectToEbsAsync();
@@ -54,7 +54,7 @@ namespace ToolkitExt.Mod
             );
         }
         
-        private static async Task GetPollSettingsAsync()
+        private static async Task LoadPollSettingsAsync()
         {
             PollSettingsResponse response = await BackendClient.Instance.GetPollSettings();
 
