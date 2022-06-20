@@ -47,7 +47,7 @@ namespace ToolkitExt.Core
             BackendClient.Instance.ViewerVoted += OnViewerVoted;
         }
 
-        public int PollDuration { get; set; } = 300;
+        public int PollDuration { get; set; } = 5;
 
         public static PollManager Instance { get; } = new PollManager();
 
@@ -98,7 +98,7 @@ namespace ToolkitExt.Core
             }
 
             _current.StartedAt = DateTime.UtcNow;
-            _current.EndedAt = _current.StartedAt.AddSeconds(PollDuration);
+            _current.EndedAt = _current.StartedAt.AddMinutes(PollDuration);
             Task.Run(async () => await SendPollAsync()).ConfigureAwait(false);
         }
 

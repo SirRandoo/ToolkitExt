@@ -123,14 +123,9 @@ namespace ToolkitExt.Mod
             public bool Colorless;
 
             /// <summary>
-            ///     The number of seconds the poll will be active for.
+            ///     The number of minutes the poll will be active for.
             /// </summary>
-            /// <remarks>
-            ///     Despite this setting, there will always be a couple of seconds
-            ///     added to the poll's duration to accommodate users with poor
-            ///     connection.
-            /// </remarks>
-            public int Duration = 300;
+            public int Duration = 5;
 
             /// <summary>
             ///     The number of minutes between polls.
