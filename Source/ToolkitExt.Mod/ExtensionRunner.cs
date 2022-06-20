@@ -45,11 +45,11 @@ namespace ToolkitExt.Mod
 
             Task.Run(async () =>
                 {
+                    Logger.Info("Connecting to the ebs...");
+                    await ConnectToEbsAsync();
+                    
                     Logger.Info("Fetching poll settings from backend...");
                     await LoadPollSettingsAsync();
-                    
-                    Logger.Info("");
-                    await ConnectToEbsAsync();
                 }
             );
         }
