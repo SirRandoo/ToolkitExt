@@ -115,6 +115,7 @@ namespace ToolkitExt.Mod
             ///     have a certain percentage of the total number of votes casted.
             /// </summary>
             public bool Bars;
+            
             /// <summary>
             ///     Whether the poll will use a minimal amount of color, if
             ///     applicable.
@@ -149,7 +150,6 @@ namespace ToolkitExt.Mod
                 Scribe_Values.Look(ref Bars, "DisplayBars", true);
                 Scribe_Values.Look(ref LargeText, "LargeText");
                 Scribe_Values.Look(ref Interval, "Interval", 5);
-                Scribe_Values.Look(ref Duration, "Duration", 300);
             }
         }
     }

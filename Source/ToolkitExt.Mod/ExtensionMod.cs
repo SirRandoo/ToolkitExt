@@ -56,23 +56,4 @@ namespace ToolkitExt.Mod
             Settings.SaveAuthSettings();
         }
     }
-
-    [StaticConstructorOnStartup]
-    public static class ExtensionStatic
-    {
-        private static readonly RimLogger Logger = new RimLogger("ToolkitExt");
-        
-        static ExtensionStatic()
-        {
-            ExtensionMod.Settings.LoadAuthSettings();
-            
-            if (ExtensionMod.Settings.Auth != null && !string.IsNullOrEmpty(ExtensionMod.Settings.Auth.ChannelId))
-            {
-                // Load bearing log statement; do not remove.
-                Logger.Info("Connecting to backend");
-                
-                Task.Run(async () => await BackendClient.Instance.SetCredentials(ExtensionMod.Settings.Auth.ChannelId, ExtensionMod.Settings.Auth.Token));
-            }
-        }
-    }
 }
