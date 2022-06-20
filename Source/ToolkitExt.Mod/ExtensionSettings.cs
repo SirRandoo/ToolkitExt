@@ -110,22 +110,19 @@ namespace ToolkitExt.Mod
         /// </summary>
         public class PollSettings : IExposable
         {
+            private int _duration;
+            
             /// <summary>
             ///     Whether the poll will display bars indicating the which choices
             ///     have a certain percentage of the total number of votes casted.
             /// </summary>
             public bool Bars;
-            
+
             /// <summary>
             ///     Whether the poll will use a minimal amount of color, if
             ///     applicable.
             /// </summary>
             public bool Colorless;
-
-            /// <summary>
-            ///     The number of minutes the poll will be active for.
-            /// </summary>
-            public int Duration = 5;
 
             /// <summary>
             ///     The number of minutes between polls.
@@ -137,6 +134,19 @@ namespace ToolkitExt.Mod
             ///     readability.
             /// </summary>
             public bool LargeText;
+
+            /// <summary>
+            ///     The number of minutes the poll will be active for.
+            /// </summary>
+            public int Duration
+            {
+                get => _duration;
+                set
+                {
+                    _duration = value;
+                    PollManager.Instance.PollDuration = value;
+                }
+            }
 
             /// <inheritdoc/>
             public void ExposeData()
