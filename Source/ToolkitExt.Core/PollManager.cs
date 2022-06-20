@@ -177,6 +177,10 @@ namespace ToolkitExt.Core
         private async Task DeletePoll()
         {
             _deleteRequested = true;
+            
+            // We'll wait 10 seconds to ensure the backend received all the votes.
+            await Task.Delay(10000);
+            
             DeletePollResponse response = await BackendClient.Instance.DeletePoll();
 
             if (response == null)
