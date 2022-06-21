@@ -35,14 +35,16 @@ namespace ToolkitExt.Mod
     [UsedImplicitly]
     public class PollGameComponent : GameComponent
     {
-        private int _lastMinute;
-        private int _pollTracker;
         private readonly PollDisplayDrawer _drawer = new PollDisplayDrawer();
+        private int _lastMinute;
+        private bool _pollStarted;
+        private int _pollTracker;
 
         [SuppressMessage("ReSharper", "EmptyConstructor")]
         public PollGameComponent(Game game)
         {
             BackendClient.Instance.ViewerVoted += (_, __) => _drawer.Invalidate();
+            PollManager.Instance.PollStarted += (_, __) => _pollStarted = true;
         }
 
         /// <inheritdoc/>
@@ -111,12 +113,18 @@ namespace ToolkitExt.Mod
         {
             IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
-            if (currentPoll == null)
+            if (currentPoll == null && !_pollStarted)
             {
                 return;
             }
 
-            _drawer.Invalidate();
+            if (_pollStarted)
+            {
+                _drawer.Invalidate();
+                _pollStarted = false;
+            }
+
+            _drawer.Draw();
         }
 
         private static int GetCurrentMinute() => Mathf.FloorToInt(Time.unscaledTime / 60.0f);

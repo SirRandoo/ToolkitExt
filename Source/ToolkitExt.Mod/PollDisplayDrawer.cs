@@ -30,31 +30,22 @@ namespace ToolkitExt.Mod
 {
     public class PollDisplayDrawer
     {
-        private Rect _region = Rect.zero;
-        private Rect _leftRegion = Rect.zero;
+        private const float Width = 512f;
+        private const float Height = 72f;
+        private float _captionHeight;
+        private int _lastId = -1;
         private Rect _leftInnerRegion = Rect.zero;
-        private Rect _rightRegion = Rect.zero;
-        private Rect _rightInnerRegion = Rect.zero;
-        private Rect _middleRegion = Rect.zero;
+        private Rect _leftRegion = Rect.zero;
         private Rect _middleInnerRect = Rect.zero;
+        private Rect _middleRegion = Rect.zero;
+        private Rect _captionRegion = Rect.zero;
+        private Rect _region = Rect.zero;
+        private Rect _rightInnerRegion = Rect.zero;
+        private Rect _rightRegion = Rect.zero;
 
         public void Invalidate()
         {
-            var y = 0f;
-
-            foreach (Vector2 loc in Find.ColonistBar.DrawLocs)
-            {
-                if (loc.y > y)
-                {
-                    y = loc.y;
-                }
-            }
-
-            float width = Mathf.FloorToInt(UI.screenWidth * 0.25f);
-            float x = Mathf.FloorToInt(UI.screenWidth * 0.5f) - Mathf.FloorToInt(width * 0.5f);
-            float height = Mathf.FloorToInt(Find.ColonistBar.Size.y * 0.25f);
-
-            _region = new Rect(x, y + Find.ColonistBar.Size.y + 5f, width, height);
+            _region = new Rect(Mathf.FloorToInt(UI.screenWidth * 0.5f) - Mathf.FloorToInt(Width * 0.5f), Mathf.FloorToInt(UI.screenHeight * 0.2f), Width, Height);
 
             IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
@@ -63,20 +54,87 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            IOption left = currentPoll.Options[0];
-            
-            int totalVotes = currentPoll.TotalVotes;
-            float leftWidth = Mathf.FloorToInt(_region.width * Mathf.FloorToInt(left.Votes / (float) totalVotes));
-            float rightWidth = _region.width - leftWidth;
+            if (currentPoll.Id != _lastId)
+            {
+                _lastId = currentPoll.Id;
 
-            _leftRegion = new Rect(_region.x, _region.y, leftWidth, _region.height);
-            _leftInnerRegion = _leftRegion.ContractedBy(1f);
+                GameFont font = Text.Font;
+
+                Text.Font = GameFont.Small;
+                _captionHeight = Text.CalcSize(currentPoll.Caption).y;
+                Text.Font = font;
+            }
+
+            (int index, float percentage) = GetLeadingOption(currentPoll);
+
+            CalculateRegion();
+
+            if (index == -1)
+            {
+                CalculateDefault();
+            }
+            else
+            {
+                CalculateLeading(index, percentage);
+            }
             
-            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width + _region.height, _region.y, rightWidth, _region.height);
-            _rightInnerRegion = _rightRegion.ContractedBy(1f);
-            
-            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width, _region.y, _region.height, _region.height).ContractedBy(1f);
-            _middleInnerRect = _middleRegion.ContractedBy(2f);
+            CalculateInnerRegions();
+        }
+
+        private void CalculateRegion()
+        {
+            float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
+            float width = Mathf.FloorToInt(UI.screenWidth * 0.33f);
+            float height = Mathf.FloorToInt(width * 0.33f);
+            float y = Mathf.FloorToInt(UI.screenHeight - 40f - height);
+
+            _region = new Rect(center - Mathf.FloorToInt(width * 0.5f), y, width, height);
+            _captionRegion = new Rect(_region.x, _region.y - _captionHeight - 2f, _region.width, _captionHeight);
+        }
+
+        private void CalculateDefault()
+        {
+            _leftRegion = new Rect(_region.x, _region.y, Mathf.FloorToInt(_region.width * 0.5f), _region.height);
+            _middleRegion = new Rect(_region.center.x - Mathf.FloorToInt(_region.height * 0.5f), _region.y, _region.height, _region.height);
+            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _region.y, _leftRegion.width, _leftRegion.height);
+        }
+
+        private void CalculateLeading(int index, float percentage)
+        {
+            switch (index)
+            {
+                case 0:
+                    _leftRegion = new Rect(_region.x, _region.y, _region.width - Mathf.FloorToInt(_region.width * percentage), _region.height);
+
+                    break;
+                case 1:
+                    _leftRegion = new Rect(_region.x, _region.y, Mathf.FloorToInt(_region.width * percentage), _region.height);
+
+                    break;
+            }
+
+            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y, _region.height, _region.height);
+            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _region.y, _region.width - _leftRegion.width, _region.height);
+        }
+
+        private void CalculateInnerRegions()
+        {
+            _middleInnerRect = _middleRegion.ContractedBy(3f);
+            _leftInnerRegion = _leftRegion.ContractedBy(4f);
+            _rightInnerRegion = _rightRegion.ContractedBy(4f);
+        }
+
+        private static (int, float) GetLeadingOption([NotNull] IPoll poll)
+        {
+            IOption left = poll.Options[0];
+            IOption right = poll.Options[1];
+
+            if (left.Votes > right.Votes)
+            {
+                return (0, Mathf.Max(left.Votes / (float)poll.TotalVotes));
+            }
+
+            return right.Votes > left.Votes ? (1, Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
         }
 
         public void Draw()
@@ -89,10 +147,21 @@ namespace ToolkitExt.Mod
             }
 
             GUI.DrawTexture(_region, Textures.WindowAtlas);
-            
+
             DrawLeftOption(currentPoll.Options[0]);
             DrawRightOption(currentPoll.Options[1]);
             DrawEmblem();
+
+            if (string.IsNullOrEmpty(currentPoll.Caption))
+            {
+                return;
+            }
+
+            TextAnchor anchor = Text.Anchor;
+
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(_captionRegion, currentPoll.Caption);
+            Text.Anchor = anchor;
         }
 
         private void DrawLeftOption([NotNull] IOption option)

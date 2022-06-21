@@ -41,6 +41,8 @@ namespace ToolkitExt.Core
         private volatile bool _deleteRequested;
         private volatile bool _deletingPoll;
 
+        public event EventHandler<PollStartedEventArgs> PollStarted; 
+
         private PollManager()
         {
             BackendClient.Instance.ViewerVoted += OnViewerVoted;
@@ -89,7 +91,7 @@ namespace ToolkitExt.Core
             _polls.Enqueue(poll);
         }
 
-        public void NextPoll()
+        private void NextPoll()
         {
             if (_current != null || !_polls.TryDequeue(out _current))
             {
@@ -98,6 +100,7 @@ namespace ToolkitExt.Core
 
             _current.StartedAt = DateTime.UtcNow;
             _current.EndedAt = _current.StartedAt.AddMinutes(PollDuration);
+            OnPollStarted(new PollStartedEventArgs { Poll = _current });
             Task.Run(async () => await SendPollAsync()).ConfigureAwait(false);
         }
 
@@ -211,6 +214,11 @@ namespace ToolkitExt.Core
             }
 
             _deletingPoll = false;
+        }
+        
+        protected virtual void OnPollStarted(PollStartedEventArgs e)
+        {
+            PollStarted?.Invoke(this, e);
         }
     }
 }
