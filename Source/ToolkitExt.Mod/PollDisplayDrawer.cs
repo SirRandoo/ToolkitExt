@@ -84,7 +84,7 @@ namespace ToolkitExt.Mod
         private void CalculateRegion()
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
-            float width = Mathf.Min(Mathf.FloorToInt(UI.screenWidth * 0.33f), 500f);
+            float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 500f);
             float height = Mathf.FloorToInt(35f * Prefs.UIScale);
             float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
@@ -167,7 +167,7 @@ namespace ToolkitExt.Mod
 
         private void DrawLeftOption([NotNull] IOption option)
         {
-            var leftTextRect = new Rect(_leftRegion.x, _leftRegion.y + _leftRegion.height + 2f, _leftRegion.width, Mathf.FloorToInt(_leftRegion.height * 0.33f));
+            var leftTextRect = new Rect(_leftInnerRegion.x, _leftInnerRegion.y + _leftInnerRegion.height + 2f, _leftInnerRegion.width, Mathf.FloorToInt(_leftInnerRegion.height * 0.33f));
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Rose;
@@ -184,7 +184,7 @@ namespace ToolkitExt.Mod
 
         private void DrawRightOption([NotNull] IOption option)
         {
-            var rightTextRect = new Rect(_rightRegion.x, _rightRegion.y + _rightRegion.height + 2f, _rightRegion.width, Mathf.FloorToInt(_rightRegion.height * 0.33f));
+            var rightTextRect = new Rect(_rightInnerRegion.x, _rightInnerRegion.y + _rightInnerRegion.height + 2f, _rightInnerRegion.width, Mathf.FloorToInt(_rightInnerRegion.height * 0.33f));
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Magenta;
