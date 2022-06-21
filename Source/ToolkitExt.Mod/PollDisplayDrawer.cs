@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Globalization;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
