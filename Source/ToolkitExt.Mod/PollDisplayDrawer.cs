@@ -120,8 +120,8 @@ namespace ToolkitExt.Mod
         private void CalculateInnerRegions()
         {
             _middleInnerRect = _middleRegion.ContractedBy(3f);
-            _leftInnerRegion = _leftRegion.ContractedBy(4f);
-            _rightInnerRegion = _rightRegion.ContractedBy(4f);
+            _leftInnerRegion = _leftRegion.ContractedBy(6f);
+            _rightInnerRegion = _rightRegion.ContractedBy(6f);
         }
 
         private static (int, float) GetLeadingOption([NotNull] IPoll poll)
