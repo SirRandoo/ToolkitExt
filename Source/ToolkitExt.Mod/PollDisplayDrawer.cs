@@ -84,7 +84,7 @@ namespace ToolkitExt.Mod
         private void CalculateRegion()
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
-            float width = Mathf.FloorToInt(UI.screenWidth * 0.33f);
+            float width = Mathf.Min(Mathf.FloorToInt(UI.screenWidth * 0.33f), 500f);
             float height = Mathf.FloorToInt(35f * Prefs.UIScale);
             float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
