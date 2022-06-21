@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Globalization;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
@@ -86,7 +87,7 @@ namespace ToolkitExt.Mod
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
             float width = Mathf.FloorToInt(UI.screenWidth * 0.33f);
             float height = Mathf.FloorToInt(width * 0.33f);
-            float y = Mathf.FloorToInt(UI.screenHeight - 40f - height);
+            float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
             _region = new Rect(center - Mathf.FloorToInt(width * 0.5f), y, width, height);
             _captionRegion = new Rect(_region.x, _region.y - _captionHeight - 2f, _region.width, _captionHeight);
@@ -151,6 +152,7 @@ namespace ToolkitExt.Mod
             DrawLeftOption(currentPoll.Options[0]);
             DrawRightOption(currentPoll.Options[1]);
             DrawEmblem();
+            DrawTimer();
 
             if (string.IsNullOrEmpty(currentPoll.Caption))
             {
@@ -166,7 +168,7 @@ namespace ToolkitExt.Mod
 
         private void DrawLeftOption([NotNull] IOption option)
         {
-            var leftTextRect = new Rect(_leftRegion.x, _leftRegion.y + _leftRegion.height, _leftRegion.width, Mathf.FloorToInt(_leftRegion.height * 0.33f));
+            var leftTextRect = new Rect(_leftRegion.x, _leftRegion.y + _leftRegion.height + 2f, _leftRegion.width, Mathf.FloorToInt(_leftRegion.height * 0.33f));
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Rose;
@@ -183,7 +185,7 @@ namespace ToolkitExt.Mod
 
         private void DrawRightOption([NotNull] IOption option)
         {
-            var rightTextRect = new Rect(_rightRegion.x, _rightRegion.y + _rightRegion.height, _rightRegion.width, Mathf.FloorToInt(_rightRegion.height * 0.33f));
+            var rightTextRect = new Rect(_rightRegion.x, _rightRegion.y + _rightRegion.height + 2f, _rightRegion.width, Mathf.FloorToInt(_rightRegion.height * 0.33f));
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Magenta;
@@ -202,6 +204,24 @@ namespace ToolkitExt.Mod
         {
             GUI.DrawTexture(_middleRegion, Widgets.ButtonBGAtlas);
             GUI.DrawTexture(_middleInnerRect, Textures.Toolbox);
+        }
+
+        private void DrawTimer()
+        {
+            IPoll currentPoll = PollManager.Instance.CurrentPoll!;
+
+            double seconds = (currentPoll.EndedAt - currentPoll.StartedAt).TotalSeconds + PollManager.BufferTimer;
+
+            var timerRect = new Rect(_middleRegion.x, _middleRegion.y + _middleRegion.height + 2f, _middleRegion.width, Mathf.FloorToInt(_rightRegion.height * 0.66f));
+
+            GameFont font = Text.Font;
+            TextAnchor anchor = Text.Anchor;
+
+            Text.Font = GameFont.Medium;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(timerRect, seconds.ToString("N0"));
+            Text.Anchor = anchor;
+            Text.Font = font;
         }
     }
 }
