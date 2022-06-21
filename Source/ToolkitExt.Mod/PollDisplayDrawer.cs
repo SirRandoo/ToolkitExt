@@ -86,7 +86,7 @@ namespace ToolkitExt.Mod
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
             float width = Mathf.FloorToInt(UI.screenWidth * 0.33f);
-            float height = Mathf.FloorToInt(width * 0.33f);
+            float height = Mathf.FloorToInt(35f * Prefs.UIScale);
             float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
             _region = new Rect(center - Mathf.FloorToInt(width * 0.5f), y, width, height);
