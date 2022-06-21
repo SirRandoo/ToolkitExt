@@ -27,7 +27,6 @@ using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Models;
-using ToolkitExt.Mod.Windows;
 using UnityEngine;
 using Verse;
 
@@ -38,20 +37,22 @@ namespace ToolkitExt.Mod
     {
         private int _lastMinute;
         private int _pollTracker;
+        private readonly PollDisplayDrawer _drawer = new PollDisplayDrawer();
 
         [SuppressMessage("ReSharper", "EmptyConstructor")]
         public PollGameComponent(Game game)
         {
+            BackendClient.Instance.ViewerVoted += (_, __) => _drawer.Invalidate();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void GameComponentTick()
         {
             if (PollManager.Instance.CurrentPoll == null || DateTime.UtcNow < PollManager.Instance.CurrentPoll.EndedAt)
             {
                 return;
             }
-            
+
             PollManager.Instance.ConcludePoll();
         }
 
@@ -83,7 +84,7 @@ namespace ToolkitExt.Mod
                 }
 
                 var container = new List<IOption>();
-                    
+
                 foreach (IOptionContext context in options)
                 {
                     container.Add(
@@ -98,7 +99,7 @@ namespace ToolkitExt.Mod
                 }
 
                 var poll = new Poll { Caption = factory.Caption, Options = container.ToArray() };
-                    
+
                 PollManager.Instance.Queue(poll);
 
                 break;
@@ -115,10 +116,7 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            if (!Find.WindowStack.IsOpen(typeof(PollWindow)))
-            {
-                Find.WindowStack.Add(new PollWindow(currentPoll));
-            }
+            _drawer.Invalidate();
         }
 
         private static int GetCurrentMinute() => Mathf.FloorToInt(Time.unscaledTime / 60.0f);
