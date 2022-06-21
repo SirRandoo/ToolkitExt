@@ -28,9 +28,7 @@ namespace ToolkitExt.Core.Responses
     public class PollSettingsResponse
     {
         [JsonProperty("provider_id")] public string ChannelId { get; set; }
-        [JsonProperty("poll_duration")] public int Duration { get; set; } = 5;
-        [JsonProperty("id")] public int Id { get; set; }
-        [JsonProperty("created_at")] public DateTime CreatedAt { get; set; }
-        [JsonProperty("updated_at")] public DateTime UpdatedAt { get; set; }
+        [JsonProperty("duration")] public int Duration { get; set; } = 3;
+        [JsonProperty("interval")] public int Interval { get; set; } = 10;
     }
 }
