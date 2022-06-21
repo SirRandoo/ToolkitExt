@@ -101,7 +101,7 @@ namespace ToolkitExt.Mod
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Rose;
-            GUI.DrawTexture(_leftInnerRegion, Textures.ProgressAtlas);
+            GUI.DrawTexture(_leftInnerRegion, Textures.ProgressLeftAtlas);
             GUI.color = old;
 
             TextAnchor cache = Text.Anchor;
@@ -118,7 +118,7 @@ namespace ToolkitExt.Mod
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Magenta;
-            GUI.DrawTexture(_rightInnerRegion, Textures.ProgressAtlas);
+            GUI.DrawTexture(_rightInnerRegion, Textures.ProgressRightAtlas);
             GUI.color = old;
 
             TextAnchor cache = Text.Anchor;
