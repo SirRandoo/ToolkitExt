@@ -101,7 +101,7 @@ namespace ToolkitExt.Mod
             _regionInner = _region.ContractedBy(6f);
             _regionOuter = _regionInner.ExpandedBy(1f);
             _captionRegion = new Rect(_region.x, _region.y - _captionHeight - 2f, _region.width, _captionHeight);
-            _timerRegion = new Rect(center - Mathf.FloorToInt(_region.height), _region.y + _region.height, _region.height * 2f, _region.height);
+            _timerRegion = new Rect(center - Mathf.FloorToInt(_region.height), _region.y + _regionInner.height, _region.height * 2f, _region.height);
 
             _leftTextRegion = new Rect(_region.x, _region.y + _region.height, _region.center.x - _region.x - _region.height - 8f, _captionHeight);
             _rightTextRegion = new Rect(_region.center.x + _region.height + 8f, _region.y + _region.height, _leftTextRegion.width, _captionHeight);
