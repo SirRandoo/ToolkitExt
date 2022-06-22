@@ -113,12 +113,12 @@ namespace ToolkitExt.Mod
         {
             IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
-            if (currentPoll == null && !_pollStarted)
+            if (currentPoll == null)
             {
                 return;
             }
 
-            if (_pollStarted)
+            if (_pollStarted || _drawer.IsTransitioning)
             {
                 _drawer.Invalidate();
                 _pollStarted = false;

@@ -33,6 +33,7 @@ namespace ToolkitExt.Mod
     {
         private const float Width = 512f;
         private const float Height = 72f;
+        private float _lastPercentage = 0.5f;
         private float _captionHeight;
         private int _lastId = -1;
         private Rect _leftInnerRegion = Rect.zero;
@@ -41,10 +42,15 @@ namespace ToolkitExt.Mod
         private Rect _middleRegion = Rect.zero;
         private Rect _captionRegion = Rect.zero;
         private Rect _region = Rect.zero;
+        private Rect _timerRegion = Rect.zero;
         private Rect _regionInner = Rect.zero;
         private Rect _regionOuter = Rect.zero;
         private Rect _rightInnerRegion = Rect.zero;
         private Rect _rightRegion = Rect.zero;
+        private Rect _rightTextRegion = Rect.zero;
+        private Rect _leftTextRegion = Rect.zero;
+
+        public bool IsTransitioning { get; set; }
 
         public void Invalidate()
         {
@@ -87,7 +93,7 @@ namespace ToolkitExt.Mod
         private void CalculateRegion()
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
-            float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 500f);
+            float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 375f);
             float height = Mathf.FloorToInt(16f * Prefs.UIScale);
             float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
@@ -95,6 +101,10 @@ namespace ToolkitExt.Mod
             _regionInner = _region.ContractedBy(6f);
             _regionOuter = _regionInner.ExpandedBy(1f);
             _captionRegion = new Rect(_region.x, _region.y - _captionHeight - 2f, _region.width, _captionHeight);
+            _timerRegion = new Rect(center - Mathf.FloorToInt(_region.height), _region.y + _region.height, _region.height * 2f, _region.height);
+
+            _leftTextRegion = new Rect(_region.x, _region.y + _region.height, _region.center.x - _region.x - _region.height - 8f, _captionHeight);
+            _rightTextRegion = new Rect(_region.center.x + _region.height + 8f, _region.y + _region.height, _leftTextRegion.width, _captionHeight);
         }
 
         private void CalculateDefault()
@@ -106,20 +116,30 @@ namespace ToolkitExt.Mod
 
         private void CalculateLeading(int index, float percentage)
         {
+            if (Mathf.Abs(_lastPercentage - percentage) > 0.01f)
+            {
+                _lastPercentage = Mathf.SmoothStep(_lastPercentage, percentage, 0.1f);
+                IsTransitioning = true;
+            }
+            else
+            {
+                IsTransitioning = false;
+            }
+            
             switch (index)
             {
                 case 0:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * percentage), _regionInner.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
 
                     break;
                 case 1:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * percentage), _regionInner.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
 
                     break;
             }
 
-            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y + 4f, _region.height, _region.height - 8f);
-            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _regionInner.y + 4f, _regionInner.width - _leftRegion.width, _regionInner.height - 8f);
+            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y, _region.height, _region.height);
+            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _regionInner.y, _regionInner.width - _leftRegion.width, _regionInner.height);
         }
 
         private void CalculateInnerRegions()
@@ -139,7 +159,7 @@ namespace ToolkitExt.Mod
                 return (0, Mathf.Max(left.Votes / (float)poll.TotalVotes));
             }
 
-            return right.Votes > left.Votes ? (1, Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
+            return right.Votes > left.Votes ? (1, 1f - Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
         }
 
         public void Draw()
@@ -172,8 +192,6 @@ namespace ToolkitExt.Mod
 
         private void DrawLeftOption([NotNull] IOption option)
         {
-            var leftTextRect = new Rect(_leftRegion.x, _leftRegion.y + _leftRegion.height + 2f, _leftRegion.width, _captionHeight);
-
             Color old = GUI.color;
             GUI.color = ColorLibrary.Rose;
             GUI.DrawTexture(_leftInnerRegion, Textures.ProgressLeftAtlas);
@@ -182,15 +200,13 @@ namespace ToolkitExt.Mod
             TextAnchor cache = Text.Anchor;
 
             Text.Anchor = TextAnchor.MiddleLeft;
-            Widgets.Label(leftTextRect, option.Label);
+            Widgets.Label(_leftTextRegion, option.Label);
 
             Text.Anchor = cache;
         }
 
         private void DrawRightOption([NotNull] IOption option)
         {
-            var rightTextRect = new Rect(_rightRegion.x, _rightRegion.y + _rightRegion.height + 2f, _rightRegion.width, _captionHeight);
-
             Color old = GUI.color;
             GUI.color = ColorLibrary.Magenta;
             GUI.DrawTexture(_rightInnerRegion, Textures.ProgressRightAtlas);
@@ -199,7 +215,7 @@ namespace ToolkitExt.Mod
             TextAnchor cache = Text.Anchor;
 
             Text.Anchor = TextAnchor.MiddleRight;
-            Widgets.Label(rightTextRect, option.Label);
+            Widgets.Label(_rightTextRegion, option.Label);
 
             Text.Anchor = cache;
         }
@@ -216,19 +232,12 @@ namespace ToolkitExt.Mod
 
             double seconds = (currentPoll.EndedAt - DateTime.UtcNow).TotalSeconds + PollManager.BufferTimer;
 
-            var timerRect = new Rect(
-                _middleRegion.x - Mathf.FloorToInt(_middleRegion.width * 0.5f),
-                _middleRegion.y + _middleRegion.height,
-                _middleRegion.width * 2f,
-                Mathf.FloorToInt(_captionHeight * 1.5f)
-            );
-
             GameFont font = Text.Font;
             TextAnchor anchor = Text.Anchor;
 
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(timerRect, seconds.ToString("N0"));
+            Widgets.Label(_timerRegion, seconds.ToString("N0"));
             Text.Anchor = anchor;
             Text.Font = font;
         }
