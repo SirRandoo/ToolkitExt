@@ -93,9 +93,9 @@ namespace ToolkitExt.Mod
         private void CalculateRegion()
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
-            float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 375f);
-            float height = Mathf.FloorToInt(16f * Prefs.UIScale);
-            float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
+            float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 400f);
+            float height = Mathf.Max(Mathf.FloorToInt(16f * Prefs.UIScale), 50f);
+            float y = Mathf.FloorToInt(UI.screenHeight - 45f - height - _captionHeight);
 
             _region = new Rect(center - Mathf.FloorToInt(width * 0.5f), y, width, height);
             _regionInner = _region.ContractedBy(6f);
