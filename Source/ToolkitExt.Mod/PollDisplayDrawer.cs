@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
@@ -40,6 +41,8 @@ namespace ToolkitExt.Mod
         private Rect _middleRegion = Rect.zero;
         private Rect _captionRegion = Rect.zero;
         private Rect _region = Rect.zero;
+        private Rect _regionInner = Rect.zero;
+        private Rect _regionOuter = Rect.zero;
         private Rect _rightInnerRegion = Rect.zero;
         private Rect _rightRegion = Rect.zero;
 
@@ -85,18 +88,20 @@ namespace ToolkitExt.Mod
         {
             float center = Mathf.FloorToInt(UI.screenWidth * 0.5f);
             float width = Mathf.Max(Mathf.FloorToInt(UI.screenWidth * 0.33f), 500f);
-            float height = Mathf.FloorToInt(35f * Prefs.UIScale);
+            float height = Mathf.FloorToInt(16f * Prefs.UIScale);
             float y = Mathf.FloorToInt(UI.screenHeight - 40f - height - _captionHeight);
 
             _region = new Rect(center - Mathf.FloorToInt(width * 0.5f), y, width, height);
+            _regionInner = _region.ContractedBy(6f);
+            _regionOuter = _regionInner.ExpandedBy(1f);
             _captionRegion = new Rect(_region.x, _region.y - _captionHeight - 2f, _region.width, _captionHeight);
         }
 
         private void CalculateDefault()
         {
-            _leftRegion = new Rect(_region.x, _region.y, Mathf.FloorToInt(_region.width * 0.5f), _region.height);
+            _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * 0.5f), _regionInner.height);
             _middleRegion = new Rect(_region.center.x - Mathf.FloorToInt(_region.height * 0.5f), _region.y, _region.height, _region.height);
-            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _region.y, _leftRegion.width, _leftRegion.height);
+            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _leftRegion.y, _leftRegion.width, _leftRegion.height);
         }
 
         private void CalculateLeading(int index, float percentage)
@@ -104,24 +109,24 @@ namespace ToolkitExt.Mod
             switch (index)
             {
                 case 0:
-                    _leftRegion = new Rect(_region.x, _region.y, _region.width - Mathf.FloorToInt(_region.width * percentage), _region.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * percentage), _regionInner.height);
 
                     break;
                 case 1:
-                    _leftRegion = new Rect(_region.x, _region.y, Mathf.FloorToInt(_region.width * percentage), _region.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * percentage), _regionInner.height);
 
                     break;
             }
 
-            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y, _region.height, _region.height);
-            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _region.y, _region.width - _leftRegion.width, _region.height);
+            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y + 4f, _region.height, _region.height - 8f);
+            _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _regionInner.y + 4f, _regionInner.width - _leftRegion.width, _regionInner.height - 8f);
         }
 
         private void CalculateInnerRegions()
         {
             _middleInnerRect = _middleRegion.ContractedBy(3f);
-            _leftInnerRegion = _leftRegion.ContractedBy(6f);
-            _rightInnerRegion = _rightRegion.ContractedBy(6f);
+            _leftInnerRegion = _leftRegion.ContractedBy(2f);
+            _rightInnerRegion = _rightRegion.ContractedBy(2f);
         }
 
         private static (int, float) GetLeadingOption([NotNull] IPoll poll)
@@ -146,7 +151,7 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            GUI.DrawTexture(_region, Textures.WindowAtlas);
+            Widgets.DrawAtlas(_regionOuter, Textures.WindowAtlas);
 
             DrawLeftOption(currentPoll.Options[0]);
             DrawRightOption(currentPoll.Options[1]);
@@ -167,7 +172,7 @@ namespace ToolkitExt.Mod
 
         private void DrawLeftOption([NotNull] IOption option)
         {
-            var leftTextRect = new Rect(_leftInnerRegion.x, _leftInnerRegion.y + _leftInnerRegion.height + 2f, _leftInnerRegion.width, Mathf.FloorToInt(_leftInnerRegion.height * 0.33f));
+            var leftTextRect = new Rect(_leftRegion.x, _leftRegion.y + _leftRegion.height + 2f, _leftRegion.width, _captionHeight);
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Rose;
@@ -184,7 +189,7 @@ namespace ToolkitExt.Mod
 
         private void DrawRightOption([NotNull] IOption option)
         {
-            var rightTextRect = new Rect(_rightInnerRegion.x, _rightInnerRegion.y + _rightInnerRegion.height + 2f, _rightInnerRegion.width, Mathf.FloorToInt(_rightInnerRegion.height * 0.33f));
+            var rightTextRect = new Rect(_rightRegion.x, _rightRegion.y + _rightRegion.height + 2f, _rightRegion.width, _captionHeight);
 
             Color old = GUI.color;
             GUI.color = ColorLibrary.Magenta;
@@ -209,9 +214,14 @@ namespace ToolkitExt.Mod
         {
             IPoll currentPoll = PollManager.Instance.CurrentPoll!;
 
-            double seconds = (currentPoll.EndedAt - currentPoll.StartedAt).TotalSeconds + PollManager.BufferTimer;
+            double seconds = (currentPoll.EndedAt - DateTime.UtcNow).TotalSeconds + PollManager.BufferTimer;
 
-            var timerRect = new Rect(_middleRegion.x, _middleRegion.y + _middleRegion.height + 2f, _middleRegion.width, Mathf.FloorToInt(_rightRegion.height * 0.66f));
+            var timerRect = new Rect(
+                _middleRegion.x - Mathf.FloorToInt(_middleRegion.width * 0.5f),
+                _middleRegion.y + _middleRegion.height,
+                _middleRegion.width * 2f,
+                Mathf.FloorToInt(_captionHeight * 1.5f)
+            );
 
             GameFont font = Text.Font;
             TextAnchor anchor = Text.Anchor;
