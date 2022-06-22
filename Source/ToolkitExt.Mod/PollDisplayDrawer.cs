@@ -156,10 +156,10 @@ namespace ToolkitExt.Mod
 
             if (left.Votes > right.Votes)
             {
-                return (0, Mathf.Max(left.Votes / (float)poll.TotalVotes));
+                return (0, 1f - Mathf.Max(left.Votes / (float)poll.TotalVotes));
             }
 
-            return right.Votes > left.Votes ? (1, 1f - Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
+            return right.Votes > left.Votes ? (1, Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
         }
 
         public void Draw()
