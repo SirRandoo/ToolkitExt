@@ -116,7 +116,7 @@ namespace ToolkitExt.Mod
 
         private void CalculateLeading(int index, float percentage)
         {
-            if (Mathf.Abs(_lastPercentage - percentage) > 0.01f)
+            if ((percentage == 0 && _lastPercentage > 0) || Mathf.Abs(_lastPercentage - percentage) > 0.01f)
             {
                 _lastPercentage = Mathf.SmoothStep(_lastPercentage, percentage, 0.1f);
                 IsTransitioning = true;
