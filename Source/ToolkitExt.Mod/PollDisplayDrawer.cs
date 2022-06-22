@@ -193,7 +193,7 @@ namespace ToolkitExt.Mod
         private void DrawLeftOption([NotNull] IOption option)
         {
             Color old = GUI.color;
-            GUI.color = ColorLibrary.Rose;
+            GUI.color = ColorLibrary.Red;
             GUI.DrawTexture(_leftInnerRegion, Textures.ProgressLeftAtlas);
             GUI.color = old;
 
@@ -208,7 +208,7 @@ namespace ToolkitExt.Mod
         private void DrawRightOption([NotNull] IOption option)
         {
             Color old = GUI.color;
-            GUI.color = ColorLibrary.Magenta;
+            GUI.color = ColorLibrary.Blue;
             GUI.DrawTexture(_rightInnerRegion, Textures.ProgressRightAtlas);
             GUI.color = old;
 
