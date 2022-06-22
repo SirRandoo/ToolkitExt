@@ -118,7 +118,7 @@ namespace ToolkitExt.Mod
         {
             if ((percentage == 0 && _lastPercentage > 0) || Mathf.Abs(_lastPercentage - percentage) > 0.01f)
             {
-                _lastPercentage = Mathf.SmoothStep(_lastPercentage, percentage, 0.1f);
+                _lastPercentage = Mathf.SmoothStep(_lastPercentage, percentage, 0.05f);
                 IsTransitioning = true;
             }
             else
