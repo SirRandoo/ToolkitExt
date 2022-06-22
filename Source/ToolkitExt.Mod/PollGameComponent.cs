@@ -39,6 +39,9 @@ namespace ToolkitExt.Mod
         private int _lastMinute;
         private bool _pollStarted;
         private int _pollTracker;
+        private float _lastWidth = UI.screenWidth;
+        private float _lastHeight = UI.screenHeight;
+        private float _lastScale = Prefs.UIScale;
 
         [SuppressMessage("ReSharper", "EmptyConstructor")]
         public PollGameComponent(Game game)
@@ -124,7 +127,36 @@ namespace ToolkitExt.Mod
                 _pollStarted = false;
             }
 
+            ValidateGameSettings();
             _drawer.Draw();
+        }
+
+        private void ValidateGameSettings()
+        {
+            var shouldRecalculate = false;
+            
+            if (Mathf.Abs(_lastHeight - UI.screenHeight) > 0.01f)
+            {
+                _lastHeight = UI.screenHeight;
+                shouldRecalculate = true;
+            }
+
+            if (Mathf.Abs(_lastWidth - UI.screenWidth) > 0.01f)
+            {
+                _lastWidth = UI.screenWidth;
+                shouldRecalculate = true;
+            }
+
+            if (Mathf.Abs(_lastScale - Prefs.UIScale) > 0.01f)
+            {
+                _lastScale = Prefs.UIScale;
+                shouldRecalculate = true;
+            }
+
+            if (shouldRecalculate)
+            {
+                _drawer.Invalidate();
+            }
         }
 
         private static int GetCurrentMinute() => Mathf.FloorToInt(Time.unscaledTime / 60.0f);
