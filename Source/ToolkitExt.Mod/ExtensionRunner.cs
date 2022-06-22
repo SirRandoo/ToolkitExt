@@ -69,6 +69,7 @@ namespace ToolkitExt.Mod
             }
 
             ExtensionMod.Settings.Polls.Duration = response.Duration;
+            ExtensionMod.Settings.Polls.Interval = response.Interval;
         }
 
         private static async Task ConnectToEbsAsync()
