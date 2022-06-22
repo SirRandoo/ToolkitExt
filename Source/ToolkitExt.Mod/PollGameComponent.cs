@@ -116,7 +116,7 @@ namespace ToolkitExt.Mod
         {
             IPoll currentPoll = PollManager.Instance.CurrentPoll;
 
-            if (currentPoll == null)
+            if (currentPoll == null || DateTime.UtcNow > currentPoll.EndedAt)
             {
                 return;
             }
