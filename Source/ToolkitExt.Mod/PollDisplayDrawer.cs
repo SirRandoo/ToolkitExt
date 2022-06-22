@@ -138,7 +138,12 @@ namespace ToolkitExt.Mod
 
                     break;
                 case 1:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
+                    _leftRegion = new Rect(
+                        _regionInner.x, 
+                        _regionInner.y, 
+                        Mathf.FloorToInt(_regionInner.width * Mathf.Clamp(_lastPercentage, 0, 1f)), 
+                        _regionInner.height
+                        );
 
                     break;
             }
