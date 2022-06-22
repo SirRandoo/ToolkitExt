@@ -129,11 +129,11 @@ namespace ToolkitExt.Mod
             switch (index)
             {
                 case 0:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
 
                     break;
                 case 1:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
 
                     break;
             }
