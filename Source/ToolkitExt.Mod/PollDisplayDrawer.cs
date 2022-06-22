@@ -33,7 +33,7 @@ namespace ToolkitExt.Mod
     {
         private const float Width = 512f;
         private const float Height = 72f;
-        private float _lastPercentage = 0.5f;
+        private float _lastPercentage = 0;
         private float _captionHeight;
         private int _lastId = -1;
         private Rect _leftInnerRegion = Rect.zero;
@@ -129,7 +129,12 @@ namespace ToolkitExt.Mod
             switch (index)
             {
                 case 0:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, 1f  + Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
+                    _leftRegion = new Rect(
+                        _regionInner.x,
+                        _regionInner.y,
+                        _regionInner.width - Mathf.FloorToInt(_regionInner.width * Mathf.Abs(_lastPercentage)),
+                        _regionInner.height
+                    );
 
                     break;
                 case 1:
