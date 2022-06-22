@@ -156,7 +156,7 @@ namespace ToolkitExt.Mod
 
             if (left.Votes > right.Votes)
             {
-                return (0, 1f - left.Votes / (float)poll.TotalVotes);
+                return (0, left.Votes / (float)poll.TotalVotes);
             }
 
             return right.Votes > left.Votes ? (1, right.Votes / (float)poll.TotalVotes) : (-1, 0);
