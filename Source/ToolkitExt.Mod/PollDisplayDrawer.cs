@@ -129,7 +129,7 @@ namespace ToolkitExt.Mod
             switch (index)
             {
                 case 0:
-                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, _regionInner.width - Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, 1f - Mathf.FloorToInt(_regionInner.width * _lastPercentage), _regionInner.height);
 
                     break;
                 case 1:
@@ -156,10 +156,10 @@ namespace ToolkitExt.Mod
 
             if (left.Votes > right.Votes)
             {
-                return (0, 1f - Mathf.Max(left.Votes / (float)poll.TotalVotes));
+                return (0, 1f - left.Votes / (float)poll.TotalVotes);
             }
 
-            return right.Votes > left.Votes ? (1, Mathf.Max(right.Votes / (float)poll.TotalVotes)) : (-1, 0);
+            return right.Votes > left.Votes ? (1, right.Votes / (float)poll.TotalVotes) : (-1, 0);
         }
 
         public void Draw()
