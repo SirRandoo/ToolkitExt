@@ -86,7 +86,7 @@ namespace ToolkitExt.Mod
             {
                 CalculateLeading(index, percentage);
             }
-            
+
             CalculateInnerRegions();
         }
 
@@ -125,7 +125,7 @@ namespace ToolkitExt.Mod
             {
                 IsTransitioning = false;
             }
-            
+
             switch (index)
             {
                 case 0:
@@ -143,7 +143,13 @@ namespace ToolkitExt.Mod
                     break;
             }
 
-            _middleRegion = new Rect(_leftRegion.x + _leftRegion.width - _region.height, _region.y, _region.height, _region.height);
+            _middleRegion = new Rect(
+                _leftRegion.width <= 1f ? _leftRegion.x : _leftRegion.x + _leftRegion.width - _region.height,
+                _region.y,
+                _region.height,
+                _region.height
+            );
+
             _rightRegion = new Rect(_leftRegion.x + _leftRegion.width, _regionInner.y, _regionInner.width - _leftRegion.width, _regionInner.height);
         }
 
