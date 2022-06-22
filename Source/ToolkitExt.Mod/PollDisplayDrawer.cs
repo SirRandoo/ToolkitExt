@@ -235,7 +235,7 @@ namespace ToolkitExt.Mod
         {
             IPoll currentPoll = PollManager.Instance.CurrentPoll!;
 
-            double seconds = (currentPoll.EndedAt - DateTime.UtcNow).TotalSeconds + PollManager.BufferTimer;
+            double seconds = (currentPoll.EndedAt - DateTime.UtcNow).TotalSeconds;
 
             GameFont font = Text.Font;
             TextAnchor anchor = Text.Anchor;
