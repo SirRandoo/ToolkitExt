@@ -43,6 +43,9 @@ namespace ToolkitExt.Mod
             Logger.Info("Loading authentication settings...");
             ExtensionMod.Settings.LoadAuthSettings();
 
+            Logger.Info("Loading client poll settings...");
+            ExtensionMod.Settings.LoadClientPollSettings();
+
             Task.Run(async () =>
                 {
                     Logger.Info("Connecting to the ebs...");

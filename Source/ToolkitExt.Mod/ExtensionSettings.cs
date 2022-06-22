@@ -22,6 +22,7 @@
 
 using System;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
 using UnityEngine;
@@ -35,9 +36,9 @@ namespace ToolkitExt.Mod
         private static readonly RimLogger Logger = new RimLogger("ToolkitSettings");
 
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] internal AuthSettings Auth;
+        [UsedImplicitly(ImplicitUseKindFlags.Assign)] public PollSettings Polls;
 
-        public PollSettings Polls = new PollSettings();
-        internal WindowSettings Window = new WindowSettings();
+        private bool _displayingKey;
 
         public void Draw(Rect region)
         {
@@ -45,14 +46,10 @@ namespace ToolkitExt.Mod
             var fieldRect = new Rect(region.width - labelRect.width, region.y, region.width - labelRect.width, Text.SmallFontHeight);
 
             Widgets.Label(labelRect, "Broadcaster key");
-            Auth.BroadcasterKey = Widgets.TextField(fieldRect, Auth.BroadcasterKey ?? string.Empty);
-        }
 
-        /// <inheritdoc/>
-        public override void ExposeData()
-        {
-            Scribe_Deep.Look(ref Window, "WindowSettings");
-            Scribe_Deep.Look(ref Polls, "PollSettings");
+            Auth.BroadcasterKey = _displayingKey
+                ? Widgets.TextField(fieldRect, Auth.BroadcasterKey ?? string.Empty)
+                : GUI.PasswordField(fieldRect, Auth.BroadcasterKey ?? string.Empty, '*');
         }
 
         internal void LoadAuthSettings()
@@ -78,66 +75,61 @@ namespace ToolkitExt.Mod
             }
             catch (Exception e)
             {
-                Logger.Error("Could not save authentication settings. This may not work properly next session.");
+                Logger.Error("Could not save authentication settings. This may not work properly next session.", e);
             }
         }
 
-        /// <summary>
-        ///     An internal class for housing window related settings.
-        /// </summary>
-        /// <remarks>
-        ///     This class serves as as a means of persisting window preferences,
-        ///     like the position the user last moved it to. Settings here should
-        ///     not be displayed to the user, nor should they be changed outside
-        ///     their relevant code.
-        /// </remarks>
-        internal class WindowSettings : IExposable
+        internal void LoadClientPollSettings()
         {
-            /// <summary>
-            ///     The last known position of the poll display window.
-            /// </summary>
-            internal Vector2 PollPosition;
-
-            /// <inheritdoc/>
-            public void ExposeData()
+            try
             {
-                Scribe_Values.Look(ref PollPosition, "PollPosition", new Vector2(Screen.width, Mathf.FloorToInt(Screen.height * 0.333f)));
+                Polls = Json.Load<PollSettings>(FilePaths.PollSettings);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(
+                    $"Could not load poll settings from {new Uri(GenFilePaths.SaveDataFolderPath).MakeRelativeUri(new Uri(FilePaths.PollSettings))}. Preferences will be lost.",
+                    e
+                );
+            }
+        }
+
+        internal void SaveClientPollSettings()
+        {
+            try
+            {
+                Json.Save(FilePaths.PollSettings, Polls);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Could not save poll settings. Poll preferences will be lost next session.", e);
             }
         }
 
         /// <summary>
         ///     A class for housing the poll related settings.
         /// </summary>
-        public class PollSettings : IExposable
+        public class PollSettings
         {
             private int _duration;
-            
-            /// <summary>
-            ///     Whether the poll will display bars indicating the which choices
-            ///     have a certain percentage of the total number of votes casted.
-            /// </summary>
-            public bool Bars;
-
-            /// <summary>
-            ///     Whether the poll will use a minimal amount of color, if
-            ///     applicable.
-            /// </summary>
-            public bool Colorless;
 
             /// <summary>
             ///     The number of minutes between polls.
             /// </summary>
+            [JsonIgnore]
             public int Interval;
 
             /// <summary>
             ///     Whether the poll will use a larger text size to increase
             ///     readability.
             /// </summary>
+            [JsonProperty("large_text")]
             public bool LargeText;
 
             /// <summary>
             ///     The number of minutes the poll will be active for.
             /// </summary>
+            [JsonIgnore]
             public int Duration
             {
                 get => _duration;
@@ -146,15 +138,6 @@ namespace ToolkitExt.Mod
                     _duration = value;
                     PollManager.Instance.PollDuration = value;
                 }
-            }
-
-            /// <inheritdoc/>
-            public void ExposeData()
-            {
-                Scribe_Values.Look(ref Colorless, "Colorless");
-                Scribe_Values.Look(ref Bars, "DisplayBars", true);
-                Scribe_Values.Look(ref LargeText, "LargeText");
-                Scribe_Values.Look(ref Interval, "Interval", 5);
             }
         }
     }

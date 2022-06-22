@@ -30,5 +30,6 @@ namespace ToolkitExt.Mod
         public static readonly string DataRoot = Path.Combine(GenFilePaths.SaveDataFolderPath, "ToolkitExt");
         public static readonly string ConfigRoot = Path.Combine(DataRoot, "configs");
         public static readonly string AuthSettings = Path.Combine(ConfigRoot, "auth.json");
+        public static readonly string PollSettings = Path.Combine(ConfigRoot, "polls.json");
     }
 }

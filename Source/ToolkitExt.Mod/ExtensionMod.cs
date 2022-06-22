@@ -54,6 +54,7 @@ namespace ToolkitExt.Mod
         {
             Settings.Write();
             Settings.SaveAuthSettings();
+            Settings.SaveClientPollSettings();
         }
     }
 }
