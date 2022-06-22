@@ -119,18 +119,19 @@ namespace ToolkitExt.Core
             string socketId = e.SocketId;
 
             Task.Run(
-                async () =>
-                {
-                    AuthResponse response = await _httpClient.RetrieveToken(socketId, _channelId);
-
-                    if (response == null)
+                    async () =>
                     {
-                        return;
-                    }
+                        AuthResponse response = await _httpClient.RetrieveToken(socketId, _channelId);
 
-                    await ProcessAuthResponse(response);
-                }
-            );
+                        if (response == null)
+                        {
+                            return;
+                        }
+
+                        await ProcessAuthResponse(response);
+                    }
+                )
+               .ConfigureAwait(true);
         }
 
         private async Task ProcessAuthResponse([NotNull] AuthResponse response)
