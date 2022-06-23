@@ -32,7 +32,7 @@ namespace ToolkitExt.Core
     [StaticConstructorOnStartup]
     public static class PollFactoryRegistry
     {
-        private static readonly List<IPollFactory> Factories = new List<IPollFactory> { new MapPollFactory() };
+        private static readonly List<IPollFactory> Factories = new List<IPollFactory> { new MapPollFactory(), new WorldPollFactory() };
 
         public static IEnumerable<IPollFactory> AllFactories => Factories;
         public static IEnumerable<IPollFactory> AllFactoriesRandom => Factories.InRandomOrder();
