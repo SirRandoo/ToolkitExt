@@ -33,7 +33,7 @@ namespace ToolkitExt.Mod
     {
         private const float Width = 512f;
         private const float Height = 72f;
-        private float _lastPercentage = 0;
+        private float _lastPercentage = 0.5f;
         private float _captionHeight;
         private int _lastId = -1;
         private Rect _leftInnerRegion = Rect.zero;
