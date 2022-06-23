@@ -79,6 +79,8 @@ namespace ToolkitExt.Mod
                 return;
             }
 
+            _pollTracker = 0;
+            
             foreach (IPollFactory factory in PollFactoryRegistry.AllFactoriesRandom)
             {
                 IOptionContext[] options = factory.CreateOptions();
