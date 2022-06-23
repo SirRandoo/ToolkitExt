@@ -171,7 +171,14 @@ namespace ToolkitExt.Core
 
                 if (winners.TryRandomElement(out IOption result))
                 {
-                    result.ChosenAction();
+                    try
+                    {
+                        result.ChosenAction();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error($"Encountered an error executing {result.Label}", e);
+                    }
                 }
             }
 
