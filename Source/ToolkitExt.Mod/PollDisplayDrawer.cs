@@ -66,6 +66,7 @@ namespace ToolkitExt.Mod
             if (currentPoll.Id != _lastId)
             {
                 _lastId = currentPoll.Id;
+                _lastPercentage = 0.5f;
 
                 GameFont font = Text.Font;
 
