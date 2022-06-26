@@ -20,21 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace ToolkitExt.Api.Interfaces
+using System;
+using JetBrains.Annotations;
+using Multiplayer.API;
+using RimWorld;
+using ToolkitExt.Core.Models;
+
+namespace ToolkitExt.Core.Extensions
 {
-    /// <summary>
-    ///     An interface for outlining the requirements for a poll factory.
-    ///     <br/>
-    ///     <br/>
-    ///     A poll factory is a class that's responsible for creating polls,
-    ///     and is a way of breaking the creation process into smaller
-    ///     chunks.
-    /// </summary>
-    public interface IPollFactory
+    public static class OptionExtension
     {
-        /// <summary>
-        ///     Creates the poll from the factory's internal methods.
-        /// </summary>
-        IPoll Create();
+        [NotNull]
+        public static Option ToOption([NotNull] this IncidentDef incident, IncidentParms parms)
+        {
+            return new Option
+            {
+                Id = Guid.NewGuid(),
+                Label = incident.label,
+                Tooltip = incident.description,
+                ChosenAction = () => InvokeIncident(incident, parms)
+            };
+        }
+        
+        [SyncMethod]
+        private static void InvokeIncident([NotNull] IncidentDef incident, IncidentParms parms)
+        {
+            incident.Worker.TryExecute(parms);
+        }
     }
 }

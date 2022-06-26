@@ -83,29 +83,12 @@ namespace ToolkitExt.Mod
             
             foreach (IPollFactory factory in PollFactoryRegistry.AllFactoriesRandom)
             {
-                IOptionContext[] options = factory.CreateOptions();
+                IPoll poll = factory.Create();
 
-                if (options.Length < 2)
+                if (poll == null)
                 {
                     continue;
                 }
-
-                var container = new List<IOption>();
-
-                foreach (IOptionContext context in options)
-                {
-                    container.Add(
-                        new Option
-                        {
-                            ChosenAction = () => context.Incident.Worker.TryExecute(context.Params),
-                            Label = context.Incident.LabelCap,
-                            Tooltip = context.Incident.description,
-                            Id = Guid.NewGuid()
-                        }
-                    );
-                }
-
-                var poll = new Poll { Caption = factory.Caption, Options = container.ToArray() };
 
                 PollManager.Instance.Queue(poll);
 
