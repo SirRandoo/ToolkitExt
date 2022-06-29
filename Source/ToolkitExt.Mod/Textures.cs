@@ -32,6 +32,7 @@ namespace ToolkitExt.Mod
     {
         public static readonly Texture2D Toolbox = ContentFinder<Texture2D>.Get("UI/Polls/Toolbox");
         public static readonly Texture2D WindowAtlas = ContentFinder<Texture2D>.Get("UI/Polls/Atlas");
+        public static readonly Texture2D GradientScreen = ContentFinder<Texture2D>.Get("UI/Polls/Gradient");
         public static readonly Texture2D ProgressLeftAtlas = ContentFinder<Texture2D>.Get("UI/Polls/ProgressLeft");
         public static readonly Texture2D ProgressRightAtlas = ContentFinder<Texture2D>.Get("UI/Polls/ProgressRight");
     }
