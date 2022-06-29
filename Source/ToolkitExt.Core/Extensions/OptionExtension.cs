@@ -36,7 +36,7 @@ namespace ToolkitExt.Core.Extensions
             return new Option
             {
                 Id = Guid.NewGuid(),
-                Label = incident.label,
+                Label = incident.LabelCap,
                 Tooltip = incident.description,
                 ChosenAction = () => InvokeIncident(incident, parms)
             };
