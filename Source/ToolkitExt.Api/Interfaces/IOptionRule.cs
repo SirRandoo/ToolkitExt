@@ -20,23 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using RimWorld;
+using ToolkitExt.Core.Enums;
 
 namespace ToolkitExt.Api.Interfaces
 {
     /// <summary>
-    ///     An interface for 
+    ///     Represents a rule on a given pawn option.
     /// </summary>
-    public interface IOptionContext
+    public interface IOptionRule
     {
         /// <summary>
-        ///     The storyteller parameters for the given incident.
+        ///     The type of rule this object describes.
         /// </summary>
-        public IncidentParms Params { get; set; }
-        
-        /// <summary>
-        ///     The incident the given option will run when chosen.
-        /// </summary>
-        public IncidentDef Incident { get; set; }
+        public RuleType Type { get; }
     }
 }
