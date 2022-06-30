@@ -30,9 +30,9 @@ using Verse;
 
 namespace ToolkitExt.Api
 {
-    public class RimLogger
+    public sealed class RimLogger
     {
-        private static SynchronizationContext Context = SynchronizationContext.Current;
+        private static SynchronizationContext _context = SynchronizationContext.Current;
 
         private readonly string _name;
         private bool _debugChecked;
@@ -75,22 +75,22 @@ namespace ToolkitExt.Api
         ///     Logs a message to RimWorld's log window.
         /// </summary>
         /// <param name="message">The message to log.</param>
-        public virtual void Log(string message)
+        public void Log(string message)
         {
             LogInternal(FormatMessage(message));
         }
 
-        protected virtual void LogInternal(string message)
+        private static void LogInternal(string message)
         {
             if (UnityData.IsInMainThread)
             {
-                Context ??= SynchronizationContext.Current;
+                _context ??= SynchronizationContext.Current;
                 
                 Verse.Log.Message(message);
             }
             else
             {
-                Context?.Post(_ => Verse.Log.Message(message), null);
+                _context?.Post(_ => Verse.Log.Message(message), null);
             }
         }
 
@@ -98,7 +98,7 @@ namespace ToolkitExt.Api
         ///     Logs an INFO level message to RimWorld's log window.
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void Info(string message)
+        public void Info(string message)
         {
             LogInternal(FormatMessage("INFO", message));
         }
@@ -107,7 +107,7 @@ namespace ToolkitExt.Api
         ///     Logs a WARN level message to RimWorld's log window.
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void Warn(string message)
+        public void Warn(string message)
         {
             LogInternal(FormatMessage("WARN", message, "#FF6B00"));
         }
@@ -116,7 +116,7 @@ namespace ToolkitExt.Api
         ///     Logs an ERROR level message to RimWorld's log window.
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void Error(string message)
+        public void Error(string message)
         {
             LogInternal(FormatMessage("ERR", message, "#FF768CE"));
             Verse.Log.TryOpenLogWindow();
@@ -127,7 +127,7 @@ namespace ToolkitExt.Api
         /// </summary>
         /// <param name="message">The message to log</param>
         /// <param name="exception">The exception to log</param>
-        public virtual void Error(string message, [NotNull] Exception exception)
+        public void Error(string message, [NotNull] Exception exception)
         {
             Error($"{message} :: {exception.GetType().Name}({exception.Message})\n\n{exception.ToStringSafe()}");
         }
@@ -136,7 +136,7 @@ namespace ToolkitExt.Api
         ///     Logs a DEBUG level message to RimWorld's log window.
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void Debug(string message)
+        public void Debug(string message)
         {
             if (!_debugChecked)
             {
