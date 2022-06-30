@@ -69,7 +69,9 @@ namespace ToolkitExt.Core
         /// <summary>
         ///     Invoked when a viewer votes on the extension.
         /// </summary>
-        internal event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
+        internal event EventHandler<ViewerVotedEventArgs> ViewerVoted;
+
+        internal event EventHandler<PollSettingsUpdatedEventArgs> PollSettingsUpdated; 
 
         /// <summary>
         ///     Sends a request to the backend service.
@@ -163,6 +165,12 @@ namespace ToolkitExt.Core
                     OnViewerVoted(new ViewerVotedEventArgs(ev.Data.VoterId, ev.Data.PollId, ev.Data.OptionId));
 
                     return;
+                case "pollsettings-update" when Json.TryDeserialize(content, out PollSettingsUpdatedResponse ev):
+                {
+                    OnPollSettingsUpdated(new PollSettingsUpdatedEventArgs(ev.Duration, ev.Interval));
+                    
+                    return;
+                }
             }
         }
 
@@ -189,6 +197,11 @@ namespace ToolkitExt.Core
         internal async Task ConnectAsync()
         {
             await _webSocket.StartAsync();
+        }
+        
+        private void OnPollSettingsUpdated(PollSettingsUpdatedEventArgs e)
+        {
+            PollSettingsUpdated?.Invoke(this, e);
         }
     }
 }

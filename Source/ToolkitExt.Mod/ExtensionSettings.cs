@@ -25,6 +25,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
+using ToolkitExt.Core.Events;
 using UnityEngine;
 using Verse;
 
@@ -139,6 +140,12 @@ namespace ToolkitExt.Mod
                     PollManager.Instance.PollDuration = value;
                 }
             }
+        }
+
+        internal void OnPollSettingsUpdated(object sender, [NotNull] PollSettingsUpdatedEventArgs e)
+        {
+            Polls.Interval = e.Interval;
+            Polls.Duration = e.Duration;
         }
     }
 }

@@ -46,6 +46,7 @@ namespace ToolkitExt.Core
         {
             _wsClient.Subscribed += OnSubscribed;
             _wsClient.ViewerVoted += OnViewerVoted;
+            _wsClient.PollSettingsUpdated += OnPollSettingsUpdated;
             _wsClient.ConnectionEstablished += OnConnectionEstablished;
         }
 
@@ -58,6 +59,11 @@ namespace ToolkitExt.Core
         public static BackendClient Instance { get; } = new BackendClient();
 
         public event EventHandler<ViewerVotedEventArgs> ViewerVoted;
+        
+        /// <summary>
+        ///     Raised when the streamer updates their poll settings.
+        /// </summary>
+        public event EventHandler<PollSettingsUpdatedEventArgs> PollSettingsUpdated;
 
         private void OnViewerVoted(object sender, ViewerVotedEventArgs e)
         {
@@ -142,6 +148,11 @@ namespace ToolkitExt.Core
                     Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-private.{_channelId}", Auth = response.Auth }
                 }
             );
+        }
+        
+        protected virtual void OnPollSettingsUpdated(object sender, PollSettingsUpdatedEventArgs e)
+        {
+            PollSettingsUpdated?.Invoke(this, e);
         }
     }
 }

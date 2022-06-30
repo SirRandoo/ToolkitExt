@@ -46,6 +46,8 @@ namespace ToolkitExt.Mod
             Logger.Info("Loading client poll settings...");
             ExtensionMod.Settings.LoadClientPollSettings();
 
+            BackendClient.Instance.PollSettingsUpdated += ExtensionMod.Settings.OnPollSettingsUpdated;
+
             Task.Run(async () =>
                 {
                     Logger.Info("Connecting to the ebs...");
