@@ -47,6 +47,27 @@ namespace ToolkitExt.Mod
             ExtensionMod.Settings.LoadClientPollSettings();
 
             BackendClient.Instance.PollSettingsUpdated += ExtensionMod.Settings.OnPollSettingsUpdated;
+            
+            if (ExtensionMod.Settings.Auth == null)
+            {
+                Logger.Warn("Authentication settings was null; connection aborted.");
+
+                return;
+            }
+
+            if (string.IsNullOrEmpty(ExtensionMod.Settings.Auth.ChannelId))
+            {
+                Logger.Warn("Channel id is invalid; reenter a broadcaster key, or make sure you copied it right.");
+
+                return;
+            }
+
+            if (string.IsNullOrEmpty(ExtensionMod.Settings.Auth.Token))
+            {
+                Logger.Warn("Channel token is invalid; reenter a broadcaster key, or make sure you copied it right.");
+
+                return;
+            }
 
             Task.Run(async () =>
                 {
@@ -79,27 +100,6 @@ namespace ToolkitExt.Mod
 
         private static async Task ConnectToEbsAsync()
         {
-            if (ExtensionMod.Settings.Auth == null)
-            {
-                Logger.Warn("Authentication settings was null; connection aborted.");
-
-                return;
-            }
-
-            if (string.IsNullOrEmpty(ExtensionMod.Settings.Auth.ChannelId))
-            {
-                Logger.Warn("Channel id is invalid; reenter a broadcaster key, or make sure you copied it right.");
-
-                return;
-            }
-
-            if (string.IsNullOrEmpty(ExtensionMod.Settings.Auth.Token))
-            {
-                Logger.Warn("Channel token is invalid; reenter a broadcaster key, or make sure you copied it right.");
-
-                return;
-            }
-            
             await BackendClient.Instance.SetCredentials(ExtensionMod.Settings.Auth.ChannelId, ExtensionMod.Settings.Auth.Token);
         }
     }
