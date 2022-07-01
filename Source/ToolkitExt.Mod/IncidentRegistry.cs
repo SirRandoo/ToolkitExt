@@ -62,8 +62,6 @@ namespace ToolkitExt.Mod
                 builder.Append($"  - {name}:{incident.defName}\n");
             }
 
-            Sync();
-
             if (builder.Length <= 0)
             {
                 return;

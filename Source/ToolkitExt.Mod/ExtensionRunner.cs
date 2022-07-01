@@ -55,6 +55,9 @@ namespace ToolkitExt.Mod
                     
                     Logger.Info("Fetching poll settings from backend...");
                     await LoadPollSettingsAsync();
+
+                    Logger.Info("Syncing incidents...");
+                    IncidentRegistry.Sync();
                 }
             );
         }
