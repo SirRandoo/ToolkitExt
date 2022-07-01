@@ -32,11 +32,11 @@ namespace ToolkitExt.Api
         private static readonly JsonSerializer Serializer = JsonSerializer.CreateDefault();
 
         [CanBeNull]
-        public static T Load<T>(string filePath)
+        public static T Load<T>(string filePath) where T : new()
         {
             if (!File.Exists(filePath))
             {
-                return default;
+                return new T();
             }
 
             using (FileStream file = File.Open(filePath, FileMode.Open, FileAccess.Read))

@@ -57,7 +57,7 @@ namespace ToolkitExt.Mod
         {
             try
             {
-                Auth = Json.Load<AuthSettings>(FilePaths.AuthSettings) ?? new AuthSettings();
+                Auth = Json.Load<AuthSettings>(FilePaths.AuthSettings);
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ namespace ToolkitExt.Mod
         {
             try
             {
-                Polls = Json.Load<PollSettings>(FilePaths.PollSettings) ?? new PollSettings();
+                Polls = Json.Load<PollSettings>(FilePaths.PollSettings);
             }
             catch (Exception e)
             {
