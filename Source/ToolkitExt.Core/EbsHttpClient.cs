@@ -28,6 +28,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using RestSharp;
 using ToolkitExt.Api;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
 
@@ -103,6 +104,17 @@ namespace ToolkitExt.Core
             return ResolveContent(response.Content, out PollSettingsResponse data) ? data : null;
         }
 
+        [ItemCanBeNull]
+        internal async Task<UpdateIncidentsResponse> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
+        {
+            RestRequest request = GetRequest("/initialize/incident-defs/update", Method.POST);
+            request.AddJsonBody(items);
+
+            IRestResponse response = await _client.ExecuteAsync(request);
+
+            return ResolveContent(response.Content, out UpdateIncidentsResponse data) ? data : null;
+        }
+
         [ContractAnnotation("=> true, response: notnull; => false, response: null")]
         private static bool ResolveContent<T>([NotNull] string content, out T response)
         {
@@ -135,9 +147,12 @@ namespace ToolkitExt.Core
             var builder = new StringBuilder();
             builder.Append(response.Error).Append("\n");
 
-            foreach (string data in response.Data)
+            if (response.Data.Count > 0)
             {
-                builder.Append($"  - {data}\n");
+                foreach (string data in response.Data)
+                {
+                    builder.Append($"  - {data}\n");
+                }
             }
 
             Logger.Error(builder.ToString());

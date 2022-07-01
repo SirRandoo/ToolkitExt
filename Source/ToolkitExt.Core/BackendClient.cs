@@ -21,11 +21,13 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
 
@@ -114,6 +116,13 @@ namespace ToolkitExt.Core
         [ItemCanBeNull] public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(_channelId);
 
         [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
+
+        public async Task<bool> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
+        {
+            UpdateIncidentsResponse response = await _httpClient.UpdateIncidentsAsync(items);
+
+            return response != null;
+        }
 
         private static void OnSubscribed(object sender, [NotNull] SubscribedEventArgs e)
         {
