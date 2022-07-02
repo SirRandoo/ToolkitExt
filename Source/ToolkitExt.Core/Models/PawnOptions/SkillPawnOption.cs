@@ -20,27 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Core.Enums;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Core.Models
 {
-    /// <summary>
-    ///     The various types of rules a pawn option can have.
-    /// </summary>
-    public enum RuleType
+    public class SkillPawnOption : IPawnOption
     {
-        /// <summary>
-        ///     Represents a length restriction on a
-        ///     <see cref="FieldType.String"/> rule.
-        /// </summary>
-        [EnumMember(Value = "length")]
-        Length,
+        [JsonProperty("skill_id")] public string Id { get; set; }
+        [JsonProperty("skill_name")] public string Name { get; set; }
 
-        /// <summary>
-        ///     Represents an range the value of the
-        ///     <see cref="FieldType.Integer"/> field can be within.
-        /// </summary>
-        [EnumMember(Value = "range")]
-        Range
+        /// <inheritdoc/>
+        [JsonProperty("type")]
+        public OptionType Type => OptionType.Skill;
+
+        /// <inheritdoc/>
+        [JsonProperty("requires_mods")]
+        public IModRequirement[] RequiresMods { get; set; }
     }
 }

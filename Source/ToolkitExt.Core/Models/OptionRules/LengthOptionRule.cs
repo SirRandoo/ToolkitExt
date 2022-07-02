@@ -20,27 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Core.Models
 {
-    /// <summary>
-    ///     The various types of rules a pawn option can have.
-    /// </summary>
-    public enum RuleType
+    public class LengthOptionRule : IOptionRule
     {
-        /// <summary>
-        ///     Represents a length restriction on a
-        ///     <see cref="FieldType.String"/> rule.
-        /// </summary>
-        [EnumMember(Value = "length")]
-        Length,
+        /// <inheritdoc />
+        [JsonProperty("type")] public RuleType Type => RuleType.Length;
 
         /// <summary>
-        ///     Represents an range the value of the
-        ///     <see cref="FieldType.Integer"/> field can be within.
+        ///     The maximum length of a given <see cref="FieldType.String"/> field.
         /// </summary>
-        [EnumMember(Value = "range")]
-        Range
+        [JsonProperty("length")] public int Length { get; set; }
     }
 }

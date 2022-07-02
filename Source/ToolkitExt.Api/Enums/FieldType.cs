@@ -25,22 +25,47 @@ using System.Runtime.Serialization;
 namespace ToolkitExt.Api.Enums
 {
     /// <summary>
-    ///     The various types of rules a pawn option can have.
+    ///     The various types of fields a pawn option can be.
     /// </summary>
-    public enum RuleType
+    public enum FieldType
     {
         /// <summary>
-        ///     Represents a length restriction on a
-        ///     <see cref="FieldType.String"/> rule.
+        ///     Represents a <see cref="string"/>.
         /// </summary>
-        [EnumMember(Value = "length")]
-        Length,
-
+        [EnumMember(Value = "string")]
+        String,
+        
         /// <summary>
-        ///     Represents an range the value of the
-        ///     <see cref="FieldType.Integer"/> field can be within.
+        ///     Represents a <see cref="int"/>.
         /// </summary>
-        [EnumMember(Value = "range")]
-        Range
+        [EnumMember(Value = "integer")]
+        Integer,
+        
+        /// <summary>
+        ///     Represents a <see cref="float"/>.
+        /// </summary>
+        [EnumMember(Value = "float")]
+        Float,
+        
+        /// <summary>
+        ///     Represents a percentage.
+        /// </summary>
+        /// <remarks>
+        ///     A percentage is a <see cref="float"/> between <c>0f</c> and <c>1f</c>
+        /// </remarks>
+        [EnumMember(Value = "percentage")]
+        Percentage,
+        
+        /// <summary>
+        ///     Represents a <see cref="bool"/>.
+        /// </summary>
+        [EnumMember(Value = "boolean")]
+        Boolean,
+        
+        /// <summary>
+        ///     Represents an <see cref="Enum"/>.
+        /// </summary>
+        [EnumMember(Value = "enum")]
+        Enum
     }
 }

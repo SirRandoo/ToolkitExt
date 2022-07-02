@@ -21,26 +21,28 @@
 // SOFTWARE.
 
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Core.Models
 {
-    /// <summary>
-    ///     The various types of rules a pawn option can have.
-    /// </summary>
-    public enum RuleType
+    public class FloatRangeOptionRule : IOptionRule
     {
-        /// <summary>
-        ///     Represents a length restriction on a
-        ///     <see cref="FieldType.String"/> rule.
-        /// </summary>
-        [EnumMember(Value = "length")]
-        Length,
+        [JsonProperty("minimum")] public float Minimum { get; set; }
+        [JsonProperty("maximum")] public float Maximum { get; set; }
 
-        /// <summary>
-        ///     Represents an range the value of the
-        ///     <see cref="FieldType.Integer"/> field can be within.
-        /// </summary>
-        [EnumMember(Value = "range")]
-        Range
+        /// <inheritdoc/>
+        [JsonProperty("type")] public RuleType Type => RuleType.Range;
+
+
+        [OnSerializing]
+        internal void OnSerializing(StreamingContext context)
+        {
+            if (Maximum <= Minimum)
+            {
+                Maximum = Minimum * 2;
+            }
+        }
     }
 }
