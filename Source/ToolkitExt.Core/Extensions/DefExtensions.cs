@@ -47,7 +47,9 @@ namespace ToolkitExt.Core.Extensions
 
             return new IncidentItem(incident.defName)
             {
-                ModId = name, Label = incident.LabelCap, LetterLabel = incident.letterLabel ?? incident.LabelCap, LetterText = incident.letterText ?? ""
+                ModId = name,
+                Label = incident.LabelCap,
+                Description = incident.letterLabel ?? null,
             };
         }
     }
