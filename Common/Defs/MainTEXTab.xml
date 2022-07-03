@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <MainButtonDef>
+        <defName>TEX_Hub</defName>
+        <label>ToolkitExt</label>
+        <description>The in-game hub for all ToolkitExt related information.</description>
+        <tabWindowClass>ToolkitExt.Mod.ExtensionHub</tabWindowClass>
+        <order>499</order>
+        <validWithoutMap>true</validWithoutMap>
+        <minimized>true</minimized>
+        <iconPath>UI/Polls/Toolbox</iconPath>
+        <canBeTutorDenied>false</canBeTutorDenied>
+    </MainButtonDef>
+</Defs>
