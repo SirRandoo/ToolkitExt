@@ -27,7 +27,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace ToolkitExt.Api.Converters
+namespace ToolkitExt.Core.Serialization
 {
     /// <summary>
     ///     A converter for deserializing JSON responses with embedded JSON.

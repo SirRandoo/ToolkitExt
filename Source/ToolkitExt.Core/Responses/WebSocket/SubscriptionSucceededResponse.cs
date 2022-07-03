@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
-using ToolkitExt.Api.Converters;
+using ToolkitExt.Core.Serialization;
 
 namespace ToolkitExt.Core.Responses
 {

@@ -25,7 +25,7 @@ using RestSharp;
 using RestSharp.Serialization;
 using ToolkitExt.Api;
 
-namespace ToolkitExt.Core
+namespace ToolkitExt.Core.Serialization
 {
     public class RestJsonSerializer : IRestSerializer
     {

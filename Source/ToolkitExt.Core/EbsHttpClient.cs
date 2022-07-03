@@ -31,6 +31,7 @@ using ToolkitExt.Api;
 using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
+using ToolkitExt.Core.Serialization;
 
 namespace ToolkitExt.Core
 {
