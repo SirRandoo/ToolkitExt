@@ -23,6 +23,7 @@
 using JetBrains.Annotations;
 using RimWorld;
 using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Factories;
 using Verse;
 
 namespace ToolkitExt.Core.Factories

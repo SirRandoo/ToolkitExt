@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitExt.Core", "Source\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitExt.Mod", "Source\ToolkitExt.Mod\ToolkitExt.Mod.csproj", "{DEC9AEEF-DE40-4D4A-82FA-2A33D97BB328}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitExt.Factories", "Source\ToolkitExt.Factories\ToolkitExt.Factories.csproj", "{748FB910-0B5E-4039-BAF2-FCBAD7282508}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{DEC9AEEF-DE40-4D4A-82FA-2A33D97BB328}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEC9AEEF-DE40-4D4A-82FA-2A33D97BB328}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEC9AEEF-DE40-4D4A-82FA-2A33D97BB328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{748FB910-0B5E-4039-BAF2-FCBAD7282508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{748FB910-0B5E-4039-BAF2-FCBAD7282508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{748FB910-0B5E-4039-BAF2-FCBAD7282508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{748FB910-0B5E-4039-BAF2-FCBAD7282508}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4013A32F-63B8-4A71-AA5D-ECC7FBFA7E86} = {568390C0-4F1C-46D8-820C-FF6AA91F31E7}

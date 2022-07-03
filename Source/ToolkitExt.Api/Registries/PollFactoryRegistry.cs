@@ -24,15 +24,22 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
-using ToolkitExt.Core.Factories;
 using Verse;
 
-namespace ToolkitExt.Core
+namespace ToolkitExt.Api.Registries
 {
     [StaticConstructorOnStartup]
     public static class PollFactoryRegistry
     {
-        private static readonly List<IPollFactory> Factories = new List<IPollFactory> { new MapPollFactory(), new WorldPollFactory() };
+        private static readonly List<IPollFactory> Factories = new List<IPollFactory>();
+
+        static PollFactoryRegistry()
+        {
+            foreach (Type type in typeof(IPollFactory).AllSubclassesNonAbstract())
+            {
+                Register(type);
+            }
+        }
 
         public static IEnumerable<IPollFactory> AllFactories => Factories;
         public static IEnumerable<IPollFactory> AllFactoriesRandom => Factories.InRandomOrder();

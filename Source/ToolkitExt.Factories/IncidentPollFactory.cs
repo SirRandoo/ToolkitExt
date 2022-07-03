@@ -28,7 +28,7 @@ using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Models;
 using Verse;
 
-namespace ToolkitExt.Core.Factories
+namespace ToolkitExt.Factories
 {
     /// <summary>
     ///     An abstract class for making incident polls.
