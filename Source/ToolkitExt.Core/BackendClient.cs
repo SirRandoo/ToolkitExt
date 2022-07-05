@@ -154,7 +154,7 @@ namespace ToolkitExt.Core
             await _wsClient.Send(
                 new SubscribeRequest
                 {
-                    Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-private.{_channelId}", Auth = response.Auth }
+                    Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-gameclient.{_channelId}", Auth = response.Auth }
                 }
             );
         }
