@@ -69,7 +69,7 @@ namespace ToolkitExt.Core
         internal async Task<AuthResponse> RetrieveToken(string socketId, string channel)
         {
             RestRequest request = GetRequest("/broadcasting/auth", Method.POST);
-            request.AddJsonBody(new BroadcastTokenRequest { ChannelName = $"private-private.{channel}", SocketId = socketId });
+            request.AddJsonBody(new BroadcastTokenRequest { ChannelName = $"private-gameclient.{channel}", SocketId = socketId });
 
             IRestResponse response = await _client.ExecuteAsync(request);
 
