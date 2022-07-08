@@ -27,28 +27,28 @@ using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Mod.UX
 {
     public class PollDisplayDrawer
     {
         private const float Width = 512f;
         private const float Height = 72f;
-        private float _lastPercentage = 0.5f;
         private float _captionHeight;
+        private Rect _captionRegion = Rect.zero;
         private int _lastId = -1;
+        private float _lastPercentage = 0.5f;
         private Rect _leftInnerRegion = Rect.zero;
         private Rect _leftRegion = Rect.zero;
+        private Rect _leftTextRegion = Rect.zero;
         private Rect _middleInnerRect = Rect.zero;
         private Rect _middleRegion = Rect.zero;
-        private Rect _captionRegion = Rect.zero;
         private Rect _region = Rect.zero;
-        private Rect _timerRegion = Rect.zero;
         private Rect _regionInner = Rect.zero;
         private Rect _regionOuter = Rect.zero;
         private Rect _rightInnerRegion = Rect.zero;
         private Rect _rightRegion = Rect.zero;
         private Rect _rightTextRegion = Rect.zero;
-        private Rect _leftTextRegion = Rect.zero;
+        private Rect _timerRegion = Rect.zero;
 
         public bool IsTransitioning { get; set; }
 
@@ -139,12 +139,7 @@ namespace ToolkitExt.Mod
 
                     break;
                 case 1:
-                    _leftRegion = new Rect(
-                        _regionInner.x, 
-                        _regionInner.y, 
-                        Mathf.FloorToInt(_regionInner.width * Mathf.Clamp(_lastPercentage, 0, 1f)), 
-                        _regionInner.height
-                        );
+                    _leftRegion = new Rect(_regionInner.x, _regionInner.y, Mathf.FloorToInt(_regionInner.width * Mathf.Clamp(_lastPercentage, 0, 1f)), _regionInner.height);
 
                     break;
             }

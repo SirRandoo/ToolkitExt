@@ -20,18 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Mod.UX
 {
     [UsedImplicitly]
-    internal class ExtensionHub : MainTabWindow
+    internal class ExtensionHubTab : MainTabWindow
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void DoWindowContents(Rect inRect)
         {
             GUI.BeginGroup(inRect);
