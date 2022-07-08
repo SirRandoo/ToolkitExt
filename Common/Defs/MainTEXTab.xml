@@ -4,7 +4,8 @@
         <defName>TEX_Hub</defName>
         <label>ToolkitExt</label>
         <description>The in-game hub for all ToolkitExt related information.</description>
-        <tabWindowClass>ToolkitExt.Mod.ExtensionHub</tabWindowClass>
+        <tabWindowClass>ToolkitExt.Mod.UX.ExtensionHub</tabWindowClass>
+        <tabWorker>ToolkitExt.Mod.UX.ExtensionHubWorker</tabWorker>
         <order>499</order>
         <validWithoutMap>true</validWithoutMap>
         <minimized>true</minimized>

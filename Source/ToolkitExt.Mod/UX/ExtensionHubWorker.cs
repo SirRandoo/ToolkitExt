@@ -20,9 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using RimWorld;
+
 namespace ToolkitExt.Mod.UX
 {
-    public class ExtensionHubWorker
+    public class ExtensionHubWorker : MainButtonWorker_ToggleTab
     {
     }
 }
