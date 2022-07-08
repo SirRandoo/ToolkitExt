@@ -5,7 +5,7 @@
         <label>ToolkitExt</label>
         <description>The in-game hub for all ToolkitExt related information.</description>
         <tabWindowClass>ToolkitExt.Mod.UX.ExtensionHubTab</tabWindowClass>
-        <tabWorker>ToolkitExt.Mod.UX.ExtensionHubWorker</tabWorker>
+        <workerclass>ToolkitExt.Mod.UX.ExtensionHubWorker</workerclass>
         <order>499</order>
         <validWithoutMap>true</validWithoutMap>
         <minimized>true</minimized>
