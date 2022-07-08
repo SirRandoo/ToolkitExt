@@ -22,6 +22,7 @@
 
 using JetBrains.Annotations;
 using RimWorld;
+using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
 
@@ -34,7 +35,7 @@ namespace ToolkitExt.Mod.UX
         public override void DoWindowContents(Rect inRect)
         {
             GUI.BeginGroup(inRect);
-            Widgets.Label(inRect.AtZero(), "Hello world!");
+            Widgets.Label(inRect.AtZero(),  BackendClient.Instance.Connected ? "Connected!" : "Disconnected");
             GUI.EndGroup();
         }
     }

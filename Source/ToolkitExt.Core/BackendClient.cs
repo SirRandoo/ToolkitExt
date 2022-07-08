@@ -59,6 +59,8 @@ namespace ToolkitExt.Core
         /// </remarks>
         public static BackendClient Instance { get; } = new BackendClient();
 
+        public bool Connected => _wsClient.IsConnected;
+
         public void RegisterHandler(IWsMessageHandler handler) => _wsClient.RegisterHandler(handler);
 
         public void UnregisterHandler(Type handlerType)
