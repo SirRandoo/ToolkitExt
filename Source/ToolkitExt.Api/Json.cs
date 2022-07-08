@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.IO;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 
@@ -51,7 +51,7 @@ namespace ToolkitExt.Api
             }
         }
 
-        public static void Save<T>([NotNull] string filePath, T obj)
+        public static void Save<T>([NotNull] string filePath, [NotNull] T obj)
         {
             DirectoryInfo directory = Directory.GetParent(filePath);
 
@@ -67,6 +67,47 @@ namespace ToolkitExt.Api
                     using (var jsonWriter = new JsonTextWriter(writer))
                     {
                         Serializer.Serialize(jsonWriter, obj);
+                    }
+                }
+            }
+        }
+
+        [CanBeNull]
+        public static async Task<T> LoadAsync<T>(string filePath) where T : new()
+        {
+            if (!File.Exists(filePath))
+            {
+                return new T();
+            }
+
+            using (FileStream file = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(file))
+                {
+                    using (var jsonReader = new JsonTextReader(reader))
+                    {
+                        return await Serializer.DeserializeAsync<T>(jsonReader);
+                    }
+                }
+            }
+        }
+
+        public static async Task SaveAsync<T>([NotNull] string filePath, [NotNull] T obj)
+        {
+            DirectoryInfo directory = Directory.GetParent(filePath);
+
+            if (directory is { Exists: false })
+            {
+                directory.Create();
+            }
+
+            using (FileStream file = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                using (var writer = new StreamWriter(file))
+                {
+                    using (var jsonWriter = new JsonTextWriter(writer))
+                    {
+                        await Serializer.SerializeAsync(jsonWriter, obj);
                     }
                 }
             }
@@ -95,8 +136,8 @@ namespace ToolkitExt.Api
                 }
             }
         }
-        
-        public static void Serialize<T>([NotNull] Stream stream, T obj)
+
+        public static void Serialize<T>([NotNull] Stream stream, [NotNull] T obj)
         {
             using (var writer = new StreamWriter(stream))
             {
@@ -108,13 +149,62 @@ namespace ToolkitExt.Api
         }
 
         [NotNull]
-        public static string Serialize<T>(T obj)
+        public static string Serialize<T>([NotNull] T obj)
         {
             using (var writer = new StringWriter())
             {
                 using (var jsonWriter = new JsonTextWriter(writer))
                 {
                     Serializer.Serialize(jsonWriter, obj);
+                }
+
+                return writer.ToString();
+            }
+        }
+
+        [CanBeNull]
+        public static async Task<T> DeserializeAsync<T>([NotNull] Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return await Serializer.DeserializeAsync<T>(jsonReader);
+                }
+            }
+        }
+
+        [ItemCanBeNull]
+        public static async Task<T> DeserializeAsync<T>([NotNull] string content)
+        {
+            using (var reader = new StringReader(content))
+            {
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return await Serializer.DeserializeAsync<T>(jsonReader);
+                }
+            }
+        }
+
+        public static async Task SerializeAsync<T>([NotNull] Stream stream, [NotNull] T obj)
+        {
+            using (var writer = new StreamWriter(stream))
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    await Serializer.SerializeAsync(jsonWriter, obj);
+                }
+            }
+        }
+
+        [ItemNotNull]
+        public static async Task<string> SerializeAsync<T>([NotNull] T obj)
+        {
+            using (var writer = new StringWriter())
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    await Serializer.SerializeAsync(jsonWriter, obj);
                 }
 
                 return writer.ToString();
@@ -137,7 +227,7 @@ namespace ToolkitExt.Api
 
             return false;
         }
-        
+
         [ContractAnnotation("=> true, result:notnull; => false, result:null")]
         public static bool TryDeserialize<T>([NotNull] string content, out T result)
         {
