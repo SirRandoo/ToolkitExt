@@ -21,11 +21,15 @@
 // SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using ToolkitExt.Api;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Events;
+using ToolkitExt.Core.Responses;
 using UnityEngine;
 using Verse;
 
@@ -145,6 +149,28 @@ namespace ToolkitExt.Mod
                     _duration = value;
                     PollManager.Instance.PollDuration = value;
                 }
+            }
+        }
+        
+        internal sealed class PollSettingsHandler : IWsMessageHandler
+        {
+            /// <inheritdoc />
+            public PusherEvent Event => PusherEvent.PollSettingsUpdated;
+
+            /// <inheritdoc />
+            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            {
+                var response = await args.AsEventAsync<PollSettingsUpdatedResponse>();
+
+                if (response == null)
+                {
+                    return false;
+                }
+
+                ExtensionMod.Settings.Polls.Duration = response.Duration;
+                ExtensionMod.Settings.Polls.Interval = response.Interval;
+                
+                return true;
             }
         }
     }

@@ -46,7 +46,8 @@ namespace ToolkitExt.Mod
             Logger.Info("Loading client poll settings...");
             ExtensionMod.Settings.LoadClientPollSettings();
 
-            BackendClient.Instance.PollSettingsUpdated += ExtensionMod.Settings.OnPollSettingsUpdated;
+            Logger.Info("Registering settings handler...");
+            BackendClient.Instance.RegisterHandler(new ExtensionSettings.PollSettingsHandler());
 
             if (ExtensionMod.Settings.Auth == null)
             {

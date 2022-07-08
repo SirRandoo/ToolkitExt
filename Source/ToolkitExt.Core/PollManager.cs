@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Responses;
@@ -32,7 +33,7 @@ using Verse;
 
 namespace ToolkitExt.Core
 {
-    public class PollManager
+    public sealed class PollManager
     {
         public const int BufferTimer = 10;
         private static readonly RimLogger Logger = new RimLogger("PollManager");
@@ -43,7 +44,7 @@ namespace ToolkitExt.Core
 
         private PollManager()
         {
-            BackendClient.Instance.ViewerVoted += OnViewerVoted;
+            BackendClient.Instance.RegisterHandler(new VoteEventHandler());
         }
 
         public int PollDuration { get; set; } = 5;
@@ -223,9 +224,35 @@ namespace ToolkitExt.Core
             _deletingPoll = false;
         }
 
-        protected virtual void OnPollStarted(PollStartedEventArgs e)
+        private void OnPollStarted(PollStartedEventArgs e)
         {
             PollStarted?.Invoke(this, e);
+        }
+        
+        private sealed class VoteEventHandler : IWsMessageHandler
+        {
+            /// <inheritdoc />
+            public PusherEvent Event => PusherEvent.ViewerVoted;
+
+            /// <inheritdoc />
+            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            {
+                var response = await args.AsEventAsync<ViewerVotedResponse>();
+
+                if (response == null)
+                {
+                    return false;
+                }
+
+                if (Instance.CurrentPoll == null || Instance.CurrentPoll.Id != response.Data.PollId)
+                {
+                    return false;
+                }
+
+                Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
+
+                return true;
+            }
         }
     }
 }
