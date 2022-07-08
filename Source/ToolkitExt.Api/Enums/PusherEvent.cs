@@ -14,18 +14,26 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using ToolkitExt.Api.Enums;
+using System.Runtime.Serialization;
 
-namespace ToolkitExt.Api.Interfaces
+namespace ToolkitExt.Api.Enums
 {
-    public interface IPusherMessage
+    public enum PusherEvent
     {
-        public PusherEvent Event { get; set; }
+        [EnumMember(Value = "pusher:pong")] Pong,
+        [EnumMember(Value = "pusher:ping")] Ping,
+        [EnumMember(Value = "viewer-voted")] ViewerVoted,
+        [EnumMember(Value = "pusher:subscribe")] Subscribe,
+        [EnumMember(Value = "queuedpoll-created")] QueuedPollCreated,
+        [EnumMember(Value = "pollsettings-update")] PollSettingsUpdated,
+        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
+        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
+        SubscriptionSucceeded
     }
 }

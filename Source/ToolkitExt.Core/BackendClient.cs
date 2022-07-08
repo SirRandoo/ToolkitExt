@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Models;
@@ -47,9 +48,10 @@ namespace ToolkitExt.Core
         private BackendClient()
         {
             _wsClient.Subscribed += OnSubscribed;
-            _wsClient.ViewerVoted += OnViewerVoted;
-            _wsClient.PollSettingsUpdated += OnPollSettingsUpdated;
             _wsClient.ConnectionEstablished += OnConnectionEstablished;
+
+            _wsClient.RegisterHandler(new UserVotedHandler());
+            _wsClient.RegisterHandler(new PollSettingsUpdatedHandler());
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace ToolkitExt.Core
         public static BackendClient Instance { get; } = new BackendClient();
 
         public event EventHandler<ViewerVotedEventArgs> ViewerVoted;
-        
+
         /// <summary>
         ///     Raised when the streamer updates their poll settings.
         /// </summary>
@@ -113,7 +115,8 @@ namespace ToolkitExt.Core
         /// <summary>
         ///     Retrieves the channel's poll settings from the backend service.
         /// </summary>
-        [ItemCanBeNull] public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(_channelId);
+        [ItemCanBeNull]
+        public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(_channelId);
 
         [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
 
@@ -154,14 +157,56 @@ namespace ToolkitExt.Core
             await _wsClient.Send(
                 new SubscribeRequest
                 {
-                    Event = "pusher:subscribe", Data = new SubscribeRequest.SubscribeData { Channel = $"private-gameclient.{_channelId}", Auth = response.Auth }
+                    Event = PusherEvent.Subscribe, Data = new SubscribeRequest.SubscribeData { Channel = $"private-gameclient.{_channelId}", Auth = response.Auth }
                 }
             );
         }
-        
+
         protected virtual void OnPollSettingsUpdated(object sender, PollSettingsUpdatedEventArgs e)
         {
             PollSettingsUpdated?.Invoke(this, e);
+        }
+
+        private sealed class UserVotedHandler : IWsMessageHandler
+        {
+            /// <inheritdoc/>
+            public PusherEvent Event => PusherEvent.ViewerVoted;
+
+            /// <inheritdoc/>
+            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            {
+                var response = await args.AsEventAsync<ViewerVotedResponse>();
+
+                if (response == null)
+                {
+                    return false;
+                }
+
+                Instance.OnViewerVoted(this, new ViewerVotedEventArgs(response.Data.VoterId, response.Data.PollId, response.Data.OptionId));
+
+                return true;
+            }
+        }
+
+        private sealed class PollSettingsUpdatedHandler : IWsMessageHandler
+        {
+            /// <inheritdoc/>
+            public PusherEvent Event => PusherEvent.PollSettingsUpdated;
+
+            /// <inheritdoc/>
+            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            {
+                var response = await args.AsEventAsync<PollSettingsUpdatedResponse>();
+
+                if (response == null)
+                {
+                    return false;
+                }
+
+                Instance.OnPollSettingsUpdated(this, new PollSettingsUpdatedEventArgs(response.Duration, response.Interval));
+
+                return true;
+            }
         }
     }
 }

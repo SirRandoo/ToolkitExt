@@ -21,14 +21,18 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
+using Verse;
 using WatsonWebsocket;
 
 namespace ToolkitExt.Core
@@ -40,6 +44,7 @@ namespace ToolkitExt.Core
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitWs");
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
+        private readonly List<IWsMessageHandler> _handlers = new List<IWsMessageHandler>();
         private readonly WatsonWsClient _webSocket;
 
         internal EbsWsClient()
@@ -50,10 +55,39 @@ namespace ToolkitExt.Core
             _webSocket.MessageReceived += OnMessageReceived;
         }
 
+
+        [NotNull]
+        public IEnumerable<IWsMessageHandler> Handlers
+        {
+            get
+            {
+                lock (_handlers)
+                {
+                    return _handlers.ListFullCopy();
+                }
+            }
+        }
+
         /// <summary>
-        ///     Whether the client is currently connected to the EBS.
+        ///     Invoked when a viewer votes on the extension.
         /// </summary>
-        internal bool IsConnected => _webSocket.Connected;
+        public bool IsConnected => _webSocket.Connected;
+
+        public void RegisterHandler(IWsMessageHandler handler)
+        {
+            lock (_handlers)
+            {
+                _handlers.Add(handler);
+            }
+        }
+
+        public void UnregisterHandler(IWsMessageHandler handler)
+        {
+            lock (_handlers)
+            {
+                _handlers.Remove(handler);
+            }
+        }
 
         /// <summary>
         ///     Invoked when the client connects to the backend service.
@@ -65,13 +99,6 @@ namespace ToolkitExt.Core
         ///     the backend service.
         /// </summary>
         internal event EventHandler<SubscribedEventArgs> Subscribed;
-
-        /// <summary>
-        ///     Invoked when a viewer votes on the extension.
-        /// </summary>
-        internal event EventHandler<ViewerVotedEventArgs> ViewerVoted;
-
-        internal event EventHandler<PollSettingsUpdatedEventArgs> PollSettingsUpdated; 
 
         /// <summary>
         ///     Sends a request to the backend service.
@@ -143,50 +170,47 @@ namespace ToolkitExt.Core
                 return;
             }
 
+            List<IWsMessageHandler> handlers;
+
+            lock (_handlers)
+            {
+                handlers = _handlers.FindAll(h => h.Event == baseEvent.Event);
+            }
+
             switch (baseEvent.Event)
             {
-                case "pusher:connection_established" when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
+                case PusherEvent.ConnectionEstablished when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
                     OnConnectionEstablished(new ConnectionEstablishedEventArgs(ev.Data.SocketId, ev.Data.ActivityTimeout));
 
                     return;
-                case "pusher:subscribe" when Json.TryDeserialize(content, out SubscriptionSucceededResponse ev):
+                case PusherEvent.Subscribe when Json.TryDeserialize(content, out SubscriptionSucceededResponse ev):
                     OnSubscribed(new SubscribedEventArgs(ev.Channel));
 
                     return;
-                case "pusher_internal:subscription_succeeded":
+                case PusherEvent.SubscriptionSucceeded:
                     Logger.Info("Subscription succeeded!");
 
                     return;
-                case "pusher:ping":
-                    Task.Run(async () => await Send(new PongRequest { Event = "pusher:pong" }));
+                case PusherEvent.Ping:
+                    Task.Run(async () => await Send(new PongRequest()));
 
                     return;
-                case "viewer-voted" when Json.TryDeserialize(content, out ViewerVotedResponse ev):
-                    OnViewerVoted(new ViewerVotedEventArgs(ev.Data.VoterId, ev.Data.PollId, ev.Data.OptionId));
+                default:
+                    Task.Run(async () => await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content), handlers));
 
                     return;
-                case "pollsettings-update" when Json.TryDeserialize(content, out PollSettingsUpdatedResponse ev):
-                {
-                    OnPollSettingsUpdated(new PollSettingsUpdatedEventArgs(ev.Duration, ev.Interval));
-                    
-                    return;
-                }
             }
         }
 
-        private void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
+        private static async Task ProcessMessage(WsMessageEventArgs args, [NotNull] List<IWsMessageHandler> handlers)
         {
-            ConnectionEstablished?.Invoke(this, e);
-        }
-
-        private void OnSubscribed(SubscribedEventArgs e)
-        {
-            Subscribed?.Invoke(this, e);
-        }
-
-        private void OnViewerVoted(ViewerVotedEventArgs e)
-        {
-            ViewerVoted?.Invoke(this, e);
+            foreach (IWsMessageHandler handler in handlers)
+            {
+                if (await handler.Handle(args))
+                {
+                    break;
+                }
+            }
         }
 
         internal async Task DisconnectAsync()
@@ -198,10 +222,15 @@ namespace ToolkitExt.Core
         {
             await _webSocket.StartAsync();
         }
-        
-        private void OnPollSettingsUpdated(PollSettingsUpdatedEventArgs e)
+
+        private void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
         {
-            PollSettingsUpdated?.Invoke(this, e);
+            ConnectionEstablished?.Invoke(this, e);
+        }
+
+        private void OnSubscribed(SubscribedEventArgs e)
+        {
+            Subscribed?.Invoke(this, e);
         }
     }
 }
