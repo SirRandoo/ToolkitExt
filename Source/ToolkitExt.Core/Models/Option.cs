@@ -48,29 +48,39 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public void RegisterVote(string userId)
         {
-            if (_voters.Add(userId))
+            lock (_voters)
             {
-                Votes++;
+                if (_voters.Add(userId))
+                {
+                    Votes++;
+                }
             }
         }
 
         /// <inheritdoc/>
         public bool UnregisterVote(string userId)
         {
-            if (_voters.Remove(userId))
+            lock (_voters)
             {
+                if (!_voters.Remove(userId))
+                {
+                    return false;
+                }
+
                 Votes--;
 
                 return true;
             }
-
-            return false;
         }
 
         /// <inheritdoc/>
         public void ClearVotes()
         {
-            _voters.Clear();
+            lock (_voters)
+            {
+                _voters.Clear();
+            }
+
             Votes = 0;
         }
     }
