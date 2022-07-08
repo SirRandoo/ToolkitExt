@@ -20,16 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace ToolkitExt.Api
 {
     public static class Json
     {
-        private static readonly JsonSerializer Serializer = JsonSerializer.CreateDefault();
+        private static readonly JsonSerializer Serializer = JsonSerializer.CreateDefault(
+            new JsonSerializerSettings { Converters = new List<JsonConverter> { new StringEnumConverter(new DefaultNamingStrategy()) } }
+        );
 
         [CanBeNull]
         public static T Load<T>(string filePath) where T : new()
