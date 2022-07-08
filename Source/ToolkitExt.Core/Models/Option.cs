@@ -33,7 +33,7 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public Guid Id { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int Votes { get; private set; }
 
         /// <inheritdoc/>
@@ -45,7 +45,7 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public Action ChosenAction { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void RegisterVote(string userId)
         {
             if (_voters.Add(userId))
@@ -54,7 +54,7 @@ namespace ToolkitExt.Core.Models
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public bool UnregisterVote(string userId)
         {
             if (_voters.Remove(userId))
@@ -63,11 +63,11 @@ namespace ToolkitExt.Core.Models
 
                 return true;
             }
-            
+
             return false;
         }
-        
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public void ClearVotes()
         {
             _voters.Clear();

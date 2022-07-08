@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Responses;
+using ToolkitExt.Mod.Registries;
 using Verse;
 
 namespace ToolkitExt.Mod
@@ -35,7 +35,7 @@ namespace ToolkitExt.Mod
     internal static class ExtensionRunner
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitExt");
-        
+
         static ExtensionRunner()
         {
             Logger.Info("Performing startup operations...");
@@ -47,7 +47,7 @@ namespace ToolkitExt.Mod
             ExtensionMod.Settings.LoadClientPollSettings();
 
             BackendClient.Instance.PollSettingsUpdated += ExtensionMod.Settings.OnPollSettingsUpdated;
-            
+
             if (ExtensionMod.Settings.Auth == null)
             {
                 Logger.Warn("Authentication settings was null; connection aborted.");
@@ -69,11 +69,12 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            Task.Run(async () =>
+            Task.Run(
+                async () =>
                 {
                     Logger.Info("Connecting to the ebs...");
                     await ConnectToEbsAsync();
-                    
+
                     Logger.Info("Fetching poll settings from backend...");
                     await LoadPollSettingsAsync();
 
@@ -82,7 +83,7 @@ namespace ToolkitExt.Mod
                 }
             );
         }
-        
+
         private static async Task LoadPollSettingsAsync()
         {
             PollSettingsResponse response = await BackendClient.Instance.GetPollSettings();

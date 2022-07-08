@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using ToolkitExt.Api.Enums;
-using ToolkitExt.Core.Enums;
 
 namespace ToolkitExt.Api.Interfaces
 {

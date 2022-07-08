@@ -26,8 +26,7 @@ namespace ToolkitExt.Core.Requests
 {
     public class SubscribeRequest : PusherRequest
     {
-        [JsonProperty("data")]
-        public SubscribeData Data { get; set; } = new SubscribeData();
+        [JsonProperty("data")] public SubscribeData Data { get; set; } = new SubscribeData();
 
         public class SubscribeData
         {

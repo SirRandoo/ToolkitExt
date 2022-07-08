@@ -21,13 +21,15 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Core.Requests
 {
     public abstract class PusherRequest : IPusherMessage
     {
-        /// <inheritdoc />
-        [JsonProperty("event")] public string Event { get; set; }
+        /// <inheritdoc/>
+        [JsonProperty("event")]
+        public PusherEvent Event { get; set; }
     }
 }

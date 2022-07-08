@@ -34,34 +34,35 @@ namespace ToolkitExt.Api.Enums
         /// </summary>
         [EnumMember(Value = "string")]
         String,
-        
+
         /// <summary>
         ///     Represents a <see cref="int"/>.
         /// </summary>
         [EnumMember(Value = "integer")]
         Integer,
-        
+
         /// <summary>
         ///     Represents a <see cref="float"/>.
         /// </summary>
         [EnumMember(Value = "float")]
         Float,
-        
+
         /// <summary>
         ///     Represents a percentage.
         /// </summary>
         /// <remarks>
-        ///     A percentage is a <see cref="float"/> between <c>0f</c> and <c>1f</c>
+        ///     A percentage is a <see cref="float"/> between <c>0f</c> and
+        ///     <c>1f</c>
         /// </remarks>
         [EnumMember(Value = "percentage")]
         Percentage,
-        
+
         /// <summary>
         ///     Represents a <see cref="bool"/>.
         /// </summary>
         [EnumMember(Value = "boolean")]
         Boolean,
-        
+
         /// <summary>
         ///     Represents an <see cref="Enum"/>.
         /// </summary>

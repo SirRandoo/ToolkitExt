@@ -27,7 +27,9 @@ namespace ToolkitExt.Core.Requests
     public class PongRequest : PusherRequest
     {
         [JsonProperty("data")] public PongData Data { get; set; } = new PongData();
-        
-        public class PongData {}
+
+        public class PongData
+        {
+        }
     }
 }

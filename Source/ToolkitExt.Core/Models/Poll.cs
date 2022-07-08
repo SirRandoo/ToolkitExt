@@ -27,13 +27,13 @@ namespace ToolkitExt.Core.Models
 {
     public class Poll : IPoll
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int Id { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int TotalVotes
         {
             get
@@ -49,18 +49,18 @@ namespace ToolkitExt.Core.Models
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DateTime EndedAt { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DateTime StartedAt { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IOption[] Options { get; set; }
 
         public int Duration => (int)Math.Ceiling((EndedAt - StartedAt).TotalMinutes);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void RegisterVote(string userId, Guid choiceId)
         {
             for (var i = 0; i < Options.Length; i++)
@@ -74,7 +74,7 @@ namespace ToolkitExt.Core.Models
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public bool UnregisterVote(string userId)
         {
             var hits = 0;
@@ -89,8 +89,8 @@ namespace ToolkitExt.Core.Models
 
             return hits > 0;
         }
-        
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public void ClearVotes()
         {
             for (var i = 0; i < Options.Length; i++)

@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using ToolkitExt.Api;
-using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
 
@@ -40,7 +37,7 @@ namespace ToolkitExt.Mod
         public static ExtensionSettings Settings { get; private set; }
         public static ExtensionMod Instance { get; private set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override string SettingsCategory() => Content.Name;
 
         /// <inheritdoc/>

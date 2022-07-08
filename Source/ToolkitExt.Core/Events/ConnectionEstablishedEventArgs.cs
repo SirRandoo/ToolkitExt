@@ -31,7 +31,7 @@ namespace ToolkitExt.Core.Events
             SocketId = socketId;
             ActivityTimeout = activityTimeout;
         }
-        
+
         public string SocketId { get; }
         public int ActivityTimeout { get; }
     }

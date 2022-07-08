@@ -34,25 +34,26 @@ namespace ToolkitExt.Api.Interfaces
         ///     The unique identifier of the choice.
         /// </summary>
         public Guid Id { get; set; }
-        
+
         /// <summary>
         ///     The number of people who've voted for this choice.
         /// </summary>
         public int Votes { get; }
-        
+
         /// <summary>
         ///     The label used for displaying the choice to the end user.
         /// </summary>
         public string Label { get; set; }
-        
+
         /// <summary>
         ///     The tooltip for displaying the choice to the end user.
         /// </summary>
         /// <remarks>
         ///     If no tooltip was supplied, this value will be <c>null</c>.
         /// </remarks>
-        [CanBeNull] public string Tooltip { get; set; }
-        
+        [CanBeNull]
+        public string Tooltip { get; set; }
+
         public Action ChosenAction { get; set; }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace ToolkitExt.Api.Interfaces
         /// </summary>
         /// <param name="userId">The id of the user who voted</param>
         public void RegisterVote(string userId);
-        
+
         /// <summary>
         ///     Unregisters a vote from the user.
         /// </summary>

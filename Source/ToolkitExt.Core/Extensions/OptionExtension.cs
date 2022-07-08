@@ -33,15 +33,9 @@ namespace ToolkitExt.Core.Extensions
         [NotNull]
         public static Option ToOption([NotNull] this IncidentDef incident, IncidentParms parms)
         {
-            return new Option
-            {
-                Id = Guid.NewGuid(),
-                Label = incident.LabelCap,
-                Tooltip = incident.description,
-                ChosenAction = () => InvokeIncident(incident, parms)
-            };
+            return new Option { Id = Guid.NewGuid(), Label = incident.LabelCap, Tooltip = incident.description, ChosenAction = () => InvokeIncident(incident, parms) };
         }
-        
+
         [SyncMethod]
         private static void InvokeIncident([NotNull] IncidentDef incident, IncidentParms parms)
         {

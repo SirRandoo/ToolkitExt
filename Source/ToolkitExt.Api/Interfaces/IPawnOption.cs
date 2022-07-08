@@ -33,7 +33,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     The type of option this object describes.
         /// </summary>
         public OptionType Type { get; }
-        
+
         /// <summary>
         ///     A list of required mods for this given option.
         /// </summary>

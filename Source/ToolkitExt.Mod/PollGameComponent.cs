@@ -21,13 +21,12 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Api.Registries;
 using ToolkitExt.Core;
-using ToolkitExt.Core.Models;
+using ToolkitExt.Mod.UX;
 using UnityEngine;
 using Verse;
 
@@ -37,12 +36,12 @@ namespace ToolkitExt.Mod
     public class PollGameComponent : GameComponent
     {
         private readonly PollDisplayDrawer _drawer = new PollDisplayDrawer();
+        private float _lastHeight = UI.screenHeight;
         private int _lastMinute;
+        private float _lastScale = Prefs.UIScale;
+        private float _lastWidth = UI.screenWidth;
         private bool _pollStarted;
         private int _pollTracker;
-        private float _lastWidth = UI.screenWidth;
-        private float _lastHeight = UI.screenHeight;
-        private float _lastScale = Prefs.UIScale;
 
         [SuppressMessage("ReSharper", "EmptyConstructor")]
         public PollGameComponent(Game game)
@@ -81,7 +80,7 @@ namespace ToolkitExt.Mod
             }
 
             _pollTracker = 0;
-            
+
             foreach (IPollFactory factory in PollFactoryRegistry.AllFactoriesRandom)
             {
                 IPoll poll = factory.Create();
@@ -120,7 +119,7 @@ namespace ToolkitExt.Mod
         private void ValidateGameSettings()
         {
             var shouldRecalculate = false;
-            
+
             if (Mathf.Abs(_lastHeight - UI.screenHeight) > 0.01f)
             {
                 _lastHeight = UI.screenHeight;

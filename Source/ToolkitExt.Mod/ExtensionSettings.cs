@@ -36,10 +36,10 @@ namespace ToolkitExt.Mod
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitSettings");
 
+        private bool _displayingKey;
+
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] internal AuthSettings Auth;
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] public PollSettings Polls;
-
-        private bool _displayingKey;
 
         public void Draw(Rect region)
         {
@@ -107,6 +107,12 @@ namespace ToolkitExt.Mod
             }
         }
 
+        internal void OnPollSettingsUpdated(object sender, [NotNull] PollSettingsUpdatedEventArgs e)
+        {
+            Polls.Interval = e.Interval;
+            Polls.Duration = e.Duration;
+        }
+
         /// <summary>
         ///     A class for housing the poll related settings.
         /// </summary>
@@ -140,12 +146,6 @@ namespace ToolkitExt.Mod
                     PollManager.Instance.PollDuration = value;
                 }
             }
-        }
-
-        internal void OnPollSettingsUpdated(object sender, [NotNull] PollSettingsUpdatedEventArgs e)
-        {
-            Polls.Interval = e.Interval;
-            Polls.Duration = e.Duration;
         }
     }
 }

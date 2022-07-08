@@ -26,13 +26,12 @@ namespace ToolkitExt.Core.Events
 {
     public class PollSettingsUpdatedEventArgs : EventArgs
     {
-        public int Duration { get; }
-        public int Interval { get; }
-
         public PollSettingsUpdatedEventArgs(int duration, int interval)
         {
             Duration = duration;
             Interval = interval;
         }
+        public int Duration { get; }
+        public int Interval { get; }
     }
 }

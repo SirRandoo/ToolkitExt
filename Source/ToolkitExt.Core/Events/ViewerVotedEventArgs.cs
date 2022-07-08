@@ -26,15 +26,14 @@ namespace ToolkitExt.Core.Events
 {
     public class ViewerVotedEventArgs : EventArgs
     {
-        public int PollId { get; }
-        public string VoterId { get; }
-        public Guid OptionId { get; }
-
         public ViewerVotedEventArgs(string voterId, int pollId, Guid optionId)
         {
             VoterId = voterId;
             PollId = pollId;
             OptionId = optionId;
         }
+        public int PollId { get; }
+        public string VoterId { get; }
+        public Guid OptionId { get; }
     }
 }

@@ -28,12 +28,15 @@ namespace ToolkitExt.Core.Models
 {
     public class LengthOptionRule : IOptionRule
     {
-        /// <inheritdoc />
-        [JsonProperty("type")] public RuleType Type => RuleType.Length;
-
         /// <summary>
-        ///     The maximum length of a given <see cref="FieldType.String"/> field.
+        ///     The maximum length of a given <see cref="FieldType.String"/>
+        ///     field.
         /// </summary>
-        [JsonProperty("length")] public int Length { get; set; }
+        [JsonProperty("length")]
+        public int Length { get; set; }
+
+        /// <inheritdoc/>
+        [JsonProperty("type")]
+        public RuleType Type => RuleType.Length;
     }
 }

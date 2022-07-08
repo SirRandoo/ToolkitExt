@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Core.Responses
@@ -29,6 +30,6 @@ namespace ToolkitExt.Core.Responses
     {
         /// <inheritdoc/>
         [JsonProperty("event")]
-        public string Event { get; set; }
+        public PusherEvent Event { get; set; }
     }
 }

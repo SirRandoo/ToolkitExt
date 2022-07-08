@@ -30,7 +30,7 @@ namespace ToolkitExt.Core.Events
         {
             ChannelId = channelId;
         }
-        
+
         public string ChannelId { get; }
     }
 }

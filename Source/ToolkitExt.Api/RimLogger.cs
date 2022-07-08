@@ -85,7 +85,7 @@ namespace ToolkitExt.Api
             if (UnityData.IsInMainThread)
             {
                 _context ??= SynchronizationContext.Current;
-                
+
                 Verse.Log.Message(message);
             }
             else

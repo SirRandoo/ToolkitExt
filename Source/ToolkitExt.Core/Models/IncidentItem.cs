@@ -34,9 +34,11 @@ namespace ToolkitExt.Core.Models
         [JsonProperty("def_name")] public string DefName { get; }
         [JsonProperty("mod_id")] public string ModId { get; set; }
         [JsonProperty("label")] public string Label { get; set; }
-        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)] public string Description { get; set; }
 
-        /// <inheritdoc />
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        /// <inheritdoc/>
         public override int GetHashCode() => DefName.GetHashCode();
     }
 }

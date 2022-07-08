@@ -33,7 +33,8 @@ namespace ToolkitExt.Core.Models
         [JsonProperty("maximum")] public float Maximum { get; set; }
 
         /// <inheritdoc/>
-        [JsonProperty("type")] public RuleType Type => RuleType.Range;
+        [JsonProperty("type")]
+        public RuleType Type => RuleType.Range;
 
 
         [OnSerializing]

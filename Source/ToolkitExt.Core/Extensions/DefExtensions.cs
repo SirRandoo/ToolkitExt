@@ -45,12 +45,7 @@ namespace ToolkitExt.Core.Extensions
                 return null;
             }
 
-            return new IncidentItem(incident.defName)
-            {
-                ModId = name,
-                Label = incident.LabelCap,
-                Description = incident.letterLabel ?? null,
-            };
+            return new IncidentItem(incident.defName) { ModId = name, Label = incident.LabelCap, Description = incident.letterLabel ?? null };
         }
     }
 }

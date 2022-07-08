@@ -38,12 +38,14 @@ namespace ToolkitExt.Core
         /// <summary>
         ///     The token for the given broadcaster.
         /// </summary>
-        [JsonIgnore] public string Token { get; private set; }
+        [JsonIgnore]
+        public string Token { get; private set; }
 
         /// <summary>
         ///     The channel id of the given broadcaster.
         /// </summary>
-        [JsonIgnore] public string ChannelId { get; private set; }
+        [JsonIgnore]
+        public string ChannelId { get; private set; }
 
         /// <summary>
         ///     The broadcaster's unique key given by the extension.

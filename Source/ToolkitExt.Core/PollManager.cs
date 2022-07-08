@@ -41,8 +41,6 @@ namespace ToolkitExt.Core
         private volatile bool _deleteRequested;
         private volatile bool _deletingPoll;
 
-        public event EventHandler<PollStartedEventArgs> PollStarted; 
-
         private PollManager()
         {
             BackendClient.Instance.ViewerVoted += OnViewerVoted;
@@ -65,6 +63,8 @@ namespace ToolkitExt.Core
                 return _current;
             }
         }
+
+        public event EventHandler<PollStartedEventArgs> PollStarted;
 
         private void OnViewerVoted(object sender, [NotNull] ViewerVotedEventArgs e)
         {
@@ -222,7 +222,7 @@ namespace ToolkitExt.Core
 
             _deletingPoll = false;
         }
-        
+
         protected virtual void OnPollStarted(PollStartedEventArgs e)
         {
             PollStarted?.Invoke(this, e);

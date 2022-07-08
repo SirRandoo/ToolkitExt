@@ -29,11 +29,12 @@ namespace ToolkitExt.Core.Models
 {
     public class IntRangeOptionRule : IOptionRule
     {
-        /// <inheritdoc />
-        [JsonProperty("type")] public RuleType Type => RuleType.Range;
-        
         [JsonProperty("minimum")] public int Minimum { get; set; }
         [JsonProperty("maximum")] public int Maximum { get; set; }
+
+        /// <inheritdoc/>
+        [JsonProperty("type")]
+        public RuleType Type => RuleType.Range;
 
         [OnSerializing]
         internal void OnSerializing(StreamingContext context)
