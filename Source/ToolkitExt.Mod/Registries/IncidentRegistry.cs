@@ -32,7 +32,7 @@ using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Models;
 using Verse;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Mod.Registries
 {
     /// <summary>
     ///     A class for housing <see cref="IncidentDef"/>s.
