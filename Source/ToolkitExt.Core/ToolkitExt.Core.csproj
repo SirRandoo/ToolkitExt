@@ -5,9 +5,9 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj"/>
+        <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="WatsonWebsocket" Version="2.3.2.6"/>
+        <PackageReference Include="WatsonWebsocket" Version="2.3.3" />
     </ItemGroup>
 </Project>
