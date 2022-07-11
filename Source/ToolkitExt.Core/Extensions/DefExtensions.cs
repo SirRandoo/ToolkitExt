@@ -45,7 +45,22 @@ namespace ToolkitExt.Core.Extensions
                 return null;
             }
 
-            return new IncidentItem(incident.defName) { ModId = name, Label = incident.LabelCap, Description = incident.letterLabel ?? null };
+            return new IncidentItem(incident.defName) { ModId = name, Label = incident.LabelCap, Description = incident.letterLabel, Def = incident };
+        }
+
+        public static bool TargetsMap([NotNull] this IncidentDef incident)
+        {
+            if (incident.TargetTagAllowed(IncidentTargetTagDefOf.Map_RaidBeacon))
+            {
+                return true;
+            }
+
+            if (incident.TargetTagAllowed(IncidentTargetTagDefOf.Map_PlayerHome))
+            {
+                return true;
+            }
+
+            return incident.TargetTagAllowed(IncidentTargetTagDefOf.Map_Misc);
         }
     }
 }

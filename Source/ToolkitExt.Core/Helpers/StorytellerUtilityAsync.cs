@@ -22,11 +22,15 @@
 
 using System.Threading.Tasks;
 using RimWorld;
+using TaskExtensions = ToolkitExt.Core.Extensions.TaskExtensions;
 
 namespace ToolkitExt.Core.Helpers
 {
-    public static class StorytellerHelper
+    public static class StorytellerUtilityAsync
     {
-        public static async Task<IncidentParms> DefaultParamsNowAsync
+        public static async Task<IncidentParms> DefaultParamsNowAsync(IncidentCategoryDef category, IIncidentTarget target)
+        {
+            return await TaskExtensions.OnMainAsync(() => StorytellerUtility.DefaultParmsNow(category, target));
+        }
     }
 }

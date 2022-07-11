@@ -86,13 +86,5 @@ namespace ToolkitExt.Core.Extensions
 
             return await runner;
         }
-
-        /// <summary>
-        ///     Attempts to get a <see cref="ThingComp"/> from the given thing.
-        /// </summary>
-        /// <param name="thing">The thing to get the comp from</param>
-        /// <typeparam name="T">The <see cref="Type"/> of the comp being returned</typeparam>
-        /// <returns>The comp instance of <see cref="T"/>, or <c>null</c></returns>
-        public static async Task<T> TryGetCompAsync<T>([NotNull] this Thing thing) where T : ThingComp => await MainThreadFactory.StartNew(thing.TryGetComp<T>);
     }
 }
