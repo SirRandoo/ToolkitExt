@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core.Models
 {
@@ -97,6 +99,38 @@ namespace ToolkitExt.Core.Models
             {
                 Options[i].ClearVotes();
             }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<bool> PreQueue()
+        {
+            CreatePollResponse response = await BackendClient.Instance.SendPoll(this);
+
+            if (response == null)
+            {
+                return false;
+            }
+
+            Id = response.Id;
+            
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task PostQueue()
+        {
+            StartedAt = DateTime.UtcNow;
+            EndedAt = StartedAt.AddMinutes(PollManager.Instance.PollDuration);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task PreDelete()
+        {
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task PostDelete()
+        {
         }
     }
 }

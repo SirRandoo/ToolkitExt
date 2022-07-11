@@ -120,12 +120,11 @@ namespace ToolkitExt.Core
 
         [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
 
-        public async Task<bool> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
-        {
-            UpdateIncidentsResponse response = await _httpClient.UpdateIncidentsAsync(items);
+        public async Task<bool> UpdateIncidentsAsync([NotNull] List<IncidentItem> items) => await _httpClient.UpdateIncidentsAsync(items);
 
-            return response != null;
-        }
+        public async Task<bool> ValidateQueuedPoll(int id, bool valid, string errorString) => await _httpClient.ValidateQueuedPollAsync(id, valid, errorString);
+
+        public async Task<bool> DeleteQueuedPoll(int id) => await _httpClient.DeleteQueuedPollAsync(id);
 
         private static void OnSubscribed(object sender, [NotNull] SubscribedEventArgs e)
         {

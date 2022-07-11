@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 
 namespace ToolkitExt.Api.Interfaces
 {
@@ -107,5 +108,38 @@ namespace ToolkitExt.Api.Interfaces
         ///     Clears all votes for this poll.
         /// </summary>
         public void ClearVotes();
+
+        /// <summary>
+        ///     Called once before the poll is queued.
+        /// </summary>
+        /// <remarks>
+        ///     This method is always called on the main thread.
+        /// </remarks>
+        /// <returns>Whether the poll should be queued</returns>
+        public Task<bool> PreQueue();
+
+        /// <summary>
+        ///     Called once after the poll is queued.
+        /// </summary>
+        /// <remarks>
+        ///     This method is always called on the main thread.
+        /// </remarks>
+        public Task PostQueue();
+
+        /// <summary>
+        ///     Called once before the poll is deleted.
+        /// </summary>
+        /// <remarks>
+        ///     This method may be called on a separate thread.
+        /// </remarks>
+        public Task PreDelete();
+
+        /// <summary>
+        ///     Called once after the poll is deleted.
+        /// </summary>
+        /// <remarks>
+        ///     This method may be called on a separate thread.
+        /// </remarks>
+        public Task PostDelete();
     }
 }

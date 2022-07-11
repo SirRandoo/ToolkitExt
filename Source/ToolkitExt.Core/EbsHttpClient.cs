@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -106,14 +107,38 @@ namespace ToolkitExt.Core
         }
 
         [ItemCanBeNull]
-        internal async Task<UpdateIncidentsResponse> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
+        internal async Task<bool> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
         {
             RestRequest request = GetRequest("/initialize/incident-defs/update", Method.POST);
             request.AddJsonBody(items);
 
             IRestResponse response = await _client.ExecuteAsync(request);
 
-            return ResolveContent(response.Content, out UpdateIncidentsResponse data) ? data : null;
+            return ResolveContent(response.Content, out SuccessResponse _);
+        }
+
+        internal async Task<bool> ValidateQueuedPollAsync(int id, bool valid, string errorString)
+        {
+            RestRequest request = GetRequest($"/broadcasting/polls/queue/update/{id}", Method.POST);
+            request.AddJsonBody(new[] { new QueuedPollValidatedRequest { Validated = valid, ValidationError = errorString } });
+
+            IRestResponse response = await _client.ExecuteAsync(request);
+
+            return ResolveContent(response.Content, out SuccessResponse _);
+        }
+
+        internal async Task<bool> DeleteQueuedPollAsync(int id)
+        {
+            RestRequest request = GetRequest($"/broadcasting/polls/queue/delete/{id}", Method.DELETE);
+            IRestResponse response = await _client.ExecuteAsync(request);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         [ContractAnnotation("=> true, response: notnull; => false, response: null")]

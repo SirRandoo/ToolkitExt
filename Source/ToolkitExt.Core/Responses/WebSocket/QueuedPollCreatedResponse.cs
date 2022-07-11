@@ -21,30 +21,31 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
-using RimWorld;
+using ToolkitExt.Core.Serialization;
 
-namespace ToolkitExt.Core.Models
+namespace ToolkitExt.Core.Responses
 {
-    public class IncidentItem
+    public class QueuedPollCreatedResponse : PusherResponse
     {
-        public IncidentItem(string defName)
+        [JsonProperty("data")]
+        [JsonConverter(typeof(EmbeddedJsonConverter<QueuedPoll>))]
+        public QueuedPoll Data { get; set; }
+
+        public class QueuedPoll
         {
-            DefName = defName;
+            [JsonProperty("id")] public int Id { get; set; }
+            [JsonProperty("length")] public int Length { get; set; }
+            [JsonProperty("delay")] public string Delay { get; set; }
+            [JsonProperty("title")] public string Title { get; set; }
+            [JsonProperty("validated")] public int Validated { get; set; }
+            [JsonProperty("options")] public QueuedOption[] Options { get; set; }
         }
 
-        [JsonProperty("def_name")] public string DefName { get; }
-        [JsonProperty("mod_id")] public string ModId { get; set; }
-        [JsonProperty("label")] public string Label { get; set; }
-
-        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
-        public string Description { get; set; }
-
-        [JsonIgnore] public IncidentDef Def { get; set; }
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => DefName.GetHashCode();
-
-        /// <inheritdoc />
-        public override bool Equals(object obj) => ReferenceEquals(obj, this);
+        public class QueuedOption
+        {
+            [JsonProperty("label")] public string Label { get; set; }
+            [JsonProperty("mod_id")] public string ModId { get; set; }
+            [JsonProperty("def_name")] public string DefName { get; set; }
+        }
     }
 }

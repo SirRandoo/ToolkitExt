@@ -21,13 +21,19 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RimWorld;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
+using ToolkitExt.Core.Extensions;
+using ToolkitExt.Core.Helpers;
+using ToolkitExt.Core.Models;
+using ToolkitExt.Core.Registries;
 using ToolkitExt.Core.Responses;
 using Verse;
 
@@ -37,10 +43,12 @@ namespace ToolkitExt.Core
     {
         public const int BufferTimer = 10;
         private static readonly RimLogger Logger = new RimLogger("PollManager");
-        private readonly Queue<IPoll> _polls = new Queue<IPoll>();
+        private readonly ConcurrentQueue<IPoll> _polls = new ConcurrentQueue<IPoll>();
         private IPoll _current;
         private volatile bool _deleteRequested;
         private volatile bool _deletingPoll;
+        private volatile bool _dequeuing;
+        private volatile bool _concluding;
 
         private PollManager()
         {
@@ -56,9 +64,9 @@ namespace ToolkitExt.Core
         {
             get
             {
-                if (_current == null)
+                if (_current == null && !_dequeuing)
                 {
-                    NextPoll();
+                    Task.Run(NextPollAsync);
                 }
 
                 return _current;
@@ -92,39 +100,45 @@ namespace ToolkitExt.Core
             _polls.Enqueue(poll);
         }
 
-        private void NextPoll()
+        private async Task NextPollAsync()
         {
-            if (_current != null || !_polls.TryDequeue(out _current))
+            _dequeuing = true;
+            
+            if (_current != null || !_polls.TryDequeue(out IPoll next))
             {
+                _dequeuing = false;
+                
                 return;
             }
 
-            _current.StartedAt = DateTime.UtcNow;
-            _current.EndedAt = _current.StartedAt.AddMinutes(PollDuration);
+            bool shouldQueue = await next.PreQueue();
+
+            if (!shouldQueue)
+            {
+                _dequeuing = false;
+                
+                return;
+            }
+
+            _current = next;
+            await next.PostQueue();
+            
             OnPollStarted(new PollStartedEventArgs { Poll = _current });
-            Task.Run(async () => await SendPollAsync()).ConfigureAwait(false);
-        }
-
-        private async Task SendPollAsync()
-        {
-            CreatePollResponse response = await BackendClient.Instance.SendPoll(_current);
-
-            if (response == null)
-            {
-                _current = null;
-
-                return;
-            }
-
-            _current.Id = response.Id;
         }
 
         public void ConcludePoll()
         {
-            if (_current == null || DateTime.UtcNow < _current.EndedAt)
+            if (_current == null || DateTime.UtcNow < _current?.EndedAt)
             {
                 return;
             }
+
+            if (_concluding)
+            {
+                return;
+            }
+
+            Task.Run(async () => await ConcludePollInternal());
 
             if (!_deleteRequested)
             {
@@ -134,25 +148,37 @@ namespace ToolkitExt.Core
             }
             else if (!_deletingPoll)
             {
-                CompletePoll();
+                CompletePollAsync();
 
                 _deletingPoll = false;
                 _deleteRequested = false;
             }
         }
-
-        private void CompletePoll()
+        
+        private async Task ConcludePollInternal()
         {
-            if (CurrentPoll == null)
+            await _current.PreDelete();
+            await DeletePoll();
+            await _current.PostDelete();
+
+            await CompletePollAsync();
+        }
+
+        private async Task CompletePollAsync()
+        {
+            if (_current == null)
             {
                 return;
             }
 
-            lock (CurrentPoll.Options)
+            string actionName = null;
+            Action chosenAction = null;
+            
+            lock (_current.Options)
             {
                 var highest = 0;
 
-                foreach (IOption option in CurrentPoll.Options)
+                foreach (IOption option in _current.Options)
                 {
                     if (option.Votes > highest)
                     {
@@ -162,7 +188,7 @@ namespace ToolkitExt.Core
 
                 var winners = new List<IOption>();
 
-                foreach (IOption option in CurrentPoll.Options)
+                foreach (IOption option in _current.Options)
                 {
                     if (option.Votes == highest)
                     {
@@ -172,14 +198,20 @@ namespace ToolkitExt.Core
 
                 if (winners.TryRandomElement(out IOption result))
                 {
-                    try
-                    {
-                        result.ChosenAction();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error($"Encountered an error executing {result.Label}", e);
-                    }
+                    actionName = result.Label;
+                    chosenAction = result.ChosenAction;
+                }
+            }
+
+            if (chosenAction != null)
+            {
+                try
+                {
+                    await chosenAction.OnMainAsync();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Encountered an error executing {actionName}", e);
                 }
             }
 
@@ -228,13 +260,13 @@ namespace ToolkitExt.Core
         {
             PollStarted?.Invoke(this, e);
         }
-        
+
         private sealed class VoteEventHandler : IWsMessageHandler
         {
-            /// <inheritdoc />
+            /// <inheritdoc/>
             public PusherEvent Event => PusherEvent.ViewerVoted;
 
-            /// <inheritdoc />
+            /// <inheritdoc/>
             public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
             {
                 var response = await args.AsEventAsync<ViewerVotedResponse>();
@@ -252,6 +284,76 @@ namespace ToolkitExt.Core
                 Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
 
                 return true;
+            }
+        }
+
+        private sealed class QueuedEventHandler : IWsMessageHandler
+        {
+            /// <inheritdoc/>
+            public PusherEvent Event => PusherEvent.QueuedPollCreated;
+
+            /// <inheritdoc/>
+            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            {
+                var @event = await args.AsEventAsync<QueuedPollCreatedResponse>();
+
+                if (@event == null)
+                {
+                    return false;
+                }
+
+                var options = new List<IOption>();
+
+                foreach (QueuedPollCreatedResponse.QueuedOption option in @event.Data.Options)
+                {
+                    IncidentDef incident = GetIncident(option.ModId, option.DefName);
+
+                    if (incident == null)
+                    {
+                        // Invalidate the poll as an option is missing
+                        break;
+                    }
+
+                    IncidentParms @params = await GetIncidentParamsAsync(incident).OnMainAsync();
+
+                    options.Add(incident.ToOption(@params));
+                }
+
+                Instance.Queue(new QueuedPoll { Caption = @event.Data.Title, Length = @event.Data.Length, Id = @event.Data.Id, Options = options.ToArray() });
+                
+                return true;
+            }
+
+            [CanBeNull] private static IncidentDef GetIncident(string mod, string defName) => IncidentRegistry.Get(mod, defName)?.Def;
+
+            [ItemCanBeNull]
+            private static async Task<IncidentParms> GetIncidentParamsAsync([NotNull] IncidentDef incident)
+            {
+                if (incident.TargetTagAllowed(IncidentTargetTagDefOf.World))
+                {
+                    return await GetWorldIncidentParamsAsync(incident);
+                }
+
+                //  If we don't support a modded target tag, we'll just return null.
+                return incident.TargetsMap() ? await GetMapIncidentParamsAsync(incident) : null;
+            }
+
+            [ItemCanBeNull]
+            private static async Task<IncidentParms> GetWorldIncidentParamsAsync([NotNull] IncidentDef incident)
+            {
+                IncidentParms @params = await StorytellerUtilityAsync.DefaultParamsNowAsync(incident.category, Find.World);
+                bool canFireNow = await incident.Worker.CanFireNowAsync(@params);
+
+                return !canFireNow ? null : @params;
+            }
+
+            [ItemCanBeNull]
+            private static async Task<IncidentParms> GetMapIncidentParamsAsync([NotNull] IncidentDef incident)
+            {
+                IncidentParms @params = await StorytellerUtilityAsync.DefaultParamsNowAsync(incident.category, Find.AnyPlayerHomeMap);
+                bool canFireNow = await incident.Worker.CanFireNowAsync(@params);
+
+                return !canFireNow ? null : @params;
             }
         }
     }
