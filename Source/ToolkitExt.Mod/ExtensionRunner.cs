@@ -24,8 +24,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
+using ToolkitExt.Core.Registries;
 using ToolkitExt.Core.Responses;
-using ToolkitExt.Mod.Registries;
 using Verse;
 
 namespace ToolkitExt.Mod

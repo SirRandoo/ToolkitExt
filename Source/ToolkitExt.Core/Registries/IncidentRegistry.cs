@@ -27,12 +27,11 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RimWorld;
 using ToolkitExt.Api;
-using ToolkitExt.Core;
 using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Models;
 using Verse;
 
-namespace ToolkitExt.Mod.Registries
+namespace ToolkitExt.Core.Registries
 {
     /// <summary>
     ///     A class for housing <see cref="IncidentDef"/>s.
@@ -41,6 +40,7 @@ namespace ToolkitExt.Mod.Registries
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitIncidents");
         private static readonly HashSet<IncidentItem> IncidentDefs = new HashSet<IncidentItem>();
+        private static readonly Dictionary<string, IncidentItem> IncidentDefsKeyed = new Dictionary<string, IncidentItem>();
         private static volatile bool _isSyncing;
 
         static IncidentRegistry()
@@ -84,7 +84,15 @@ namespace ToolkitExt.Mod.Registries
         {
             IncidentItem item = incident.ToItem();
 
-            return item != null && IncidentDefs.Add(item);
+            if (item == null)
+            {
+                return false;
+            }
+
+            lock (IncidentDefs)
+            {
+                return IncidentDefs.Add(item) && IncidentDefsKeyed.TryAdd($"{item.ModId}:{item.DefName}", item);
+            }
         }
 
         /// <summary>
@@ -92,7 +100,26 @@ namespace ToolkitExt.Mod.Registries
         /// </summary>
         /// <param name="item">The incident to remove</param>
         /// <returns>Whether the incident was removed</returns>
-        public static bool Remove(IncidentItem item) => IncidentDefs.Remove(item);
+        public static bool Remove(IncidentItem item)
+        {
+            lock (IncidentDefs)
+            {
+                return IncidentDefs.Remove(item) && IncidentDefsKeyed.Remove($"{item.ModId}:{item.DefName}");
+            }
+        }
+
+        public static IncidentItem Get(string mod, string defName)
+        {
+            lock (IncidentDefs)
+            {
+                if (IncidentDefsKeyed.TryGetValue($"{mod}:{defName}", out IncidentItem item))
+                {
+                    return item;
+                }
+            }
+            
+            return null;
+        }
 
         public static void Sync()
         {
@@ -114,7 +141,14 @@ namespace ToolkitExt.Mod.Registries
 
             try
             {
-                synced = await BackendClient.Instance.UpdateIncidentsAsync(new List<IncidentItem>(IncidentDefs));
+                List<IncidentItem> clone;
+                
+                lock (IncidentDefs)
+                {
+                    clone = new List<IncidentItem>(IncidentDefs);
+                }
+
+                synced = await BackendClient.Instance.UpdateIncidentsAsync(clone);
             }
             catch (Exception e)
             {
