@@ -31,6 +31,9 @@ namespace ToolkitExt.Mod.UX
 {
     public class PollDisplayDrawer
     {
+        private const string LeftColorHex = "#F7941E";
+        private const string RightColorHex = "#1E81F7";
+        
         private const float Width = 512f;
         private const float Height = 72f;
         private float _captionHeight;
@@ -49,6 +52,14 @@ namespace ToolkitExt.Mod.UX
         private Rect _rightRegion = Rect.zero;
         private Rect _rightTextRegion = Rect.zero;
         private Rect _timerRegion = Rect.zero;
+        private static readonly Color LeftColor;
+        private static readonly Color RightColor;
+
+        static PollDisplayDrawer()
+        {
+            LeftColor = ColorUtility.TryParseHtmlString(LeftColorHex, out Color lColor) ? lColor : ColorLibrary.Red;
+            RightColor = ColorUtility.TryParseHtmlString(RightColorHex, out Color rColor) ? rColor : ColorLibrary.Blue;
+        }
 
         public bool IsTransitioning { get; set; }
 
@@ -205,7 +216,7 @@ namespace ToolkitExt.Mod.UX
         private void DrawLeftOption([NotNull] IOption option)
         {
             Color old = GUI.color;
-            GUI.color = ColorLibrary.Red;
+            GUI.color = LeftColor;
             GUI.DrawTexture(_leftInnerRegion, Textures.ProgressLeftAtlas);
             GUI.color = old;
 
@@ -220,7 +231,7 @@ namespace ToolkitExt.Mod.UX
         private void DrawRightOption([NotNull] IOption option)
         {
             Color old = GUI.color;
-            GUI.color = ColorLibrary.Blue;
+            GUI.color = RightColor;
             GUI.DrawTexture(_rightInnerRegion, Textures.ProgressRightAtlas);
             GUI.color = old;
 
