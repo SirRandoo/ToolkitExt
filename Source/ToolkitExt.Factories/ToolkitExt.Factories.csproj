@@ -5,7 +5,7 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj"/>
-        <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj"/>
+        <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj" />
+        <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj" />
     </ItemGroup>
 </Project>

@@ -14,46 +14,26 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
-using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Api.Registries;
 using Verse;
 
-namespace ToolkitExt.Api.Registries
+namespace ToolkitExt.Factories
 {
-    public static class PollFactoryRegistry
+    [UsedImplicitly]
+    [StaticConstructorOnStartup]
+    public static class Registrar
     {
-        private static readonly List<IPollFactory> Factories = new List<IPollFactory>();
-
-        public static IEnumerable<IPollFactory> AllFactories => Factories;
-        public static IEnumerable<IPollFactory> AllFactoriesRandom => Factories.InRandomOrder();
-
-        public static void Register([NotNull] Type type)
+        static Registrar()
         {
-            if (!(Activator.CreateInstance(type) is IPollFactory factory))
-            {
-                return;
-            }
-
-            Factories.Add(factory);
-        }
-
-        public static void Unregister([NotNull] Type type)
-        {
-            for (int i = Factories.Count - 1; i >= 0; i--)
-            {
-                if (Factories[i].GetType() == type)
-                {
-                    Factories.RemoveAt(i);
-                }
-            }
+            PollFactoryRegistry.Register(typeof(MapPollFactory));
+            PollFactoryRegistry.Register(typeof(WorldPollFactory));
         }
     }
 }

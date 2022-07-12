@@ -23,10 +23,9 @@
 using JetBrains.Annotations;
 using RimWorld;
 using ToolkitExt.Api.Interfaces;
-using ToolkitExt.Factories;
 using Verse;
 
-namespace ToolkitExt.Core.Factories
+namespace ToolkitExt.Factories
 {
     public class MapPollFactory : IncidentPollFactory
     {
