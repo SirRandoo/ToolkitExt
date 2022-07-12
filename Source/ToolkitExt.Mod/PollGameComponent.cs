@@ -21,14 +21,10 @@
 // SOFTWARE.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Api.Registries;
 using ToolkitExt.Core;
-using ToolkitExt.Core.Responses;
 using ToolkitExt.Mod.UX;
 using UnityEngine;
 using Verse;
@@ -43,7 +39,7 @@ namespace ToolkitExt.Mod
         private int _lastMinute;
         private float _lastScale = Prefs.UIScale;
         private float _lastWidth = UI.screenWidth;
-        private bool _pollStarted;
+        private volatile bool _pollStarted;
         private int _pollTracker;
 
         public PollGameComponent(Game game)
