@@ -170,13 +170,6 @@ namespace ToolkitExt.Core
                 return;
             }
 
-            List<IWsMessageHandler> handlers;
-
-            lock (_handlers)
-            {
-                handlers = _handlers.FindAll(h => h.Event == baseEvent.Event);
-            }
-
             switch (baseEvent.Event)
             {
                 case PusherEvent.ConnectionEstablished when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
@@ -196,14 +189,21 @@ namespace ToolkitExt.Core
 
                     return;
                 default:
-                    Task.Run(async () => await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content), handlers));
+                    Task.Run(async () => await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content)));
 
                     return;
             }
         }
 
-        private static async Task ProcessMessage(WsMessageEventArgs args, [NotNull] List<IWsMessageHandler> handlers)
+        private async Task ProcessMessage(WsMessageEventArgs args)
         {
+            List<IWsMessageHandler> handlers;
+
+            lock (_handlers)
+            {
+                handlers = _handlers.FindAll(h => h.Event == args.EventId);
+            }
+            
             handlers.SortBy(h => h.Priority);
             
             foreach (IWsMessageHandler handler in handlers)
