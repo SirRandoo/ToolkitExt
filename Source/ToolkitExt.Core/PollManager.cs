@@ -45,8 +45,6 @@ namespace ToolkitExt.Core
         private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly ConcurrentQueue<IPoll> _polls = new ConcurrentQueue<IPoll>();
         private IPoll _current;
-        private volatile bool _deleteRequested;
-        private volatile bool _deletingPoll;
         private volatile bool _dequeuing;
         private volatile bool _concluding;
 
@@ -128,33 +126,15 @@ namespace ToolkitExt.Core
 
         public void ConcludePoll()
         {
-            if (_current == null || DateTime.UtcNow < _current?.EndedAt)
+            if (_concluding || _current == null || DateTime.UtcNow < _current?.EndedAt)
             {
                 return;
             }
 
-            if (_concluding)
-            {
-                return;
-            }
-
+            _concluding = true;
             Task.Run(async () => await ConcludePollInternal());
-
-            if (!_deleteRequested)
-            {
-                _deleteRequested = true;
-                _deletingPoll = true;
-                Task.Run(async () => await DeletePoll());
-            }
-            else if (!_deletingPoll)
-            {
-                CompletePollAsync();
-
-                _deletingPoll = false;
-                _deleteRequested = false;
-            }
         }
-        
+
         private async Task ConcludePollInternal()
         {
             await _current.PreDelete();
@@ -162,66 +142,43 @@ namespace ToolkitExt.Core
             await _current.PostDelete();
 
             await CompletePollAsync();
+            _concluding = false;
         }
 
         private async Task CompletePollAsync()
         {
-            if (_current == null)
-            {
-                return;
-            }
+            string actionName;
+            Action chosenAction;
 
-            string actionName = null;
-            Action chosenAction = null;
-            
             lock (_current.Options)
             {
-                var highest = 0;
+                IOption winner = _current.GetWinningOption();
 
-                foreach (IOption option in _current.Options)
+                if (winner == null)
                 {
-                    if (option.Votes > highest)
-                    {
-                        highest = option.Votes;
-                    }
+                    Logger.Warn($@"Could not get a winning option for the poll ""{_current.Caption}"" (#{_current.Id})");
+                    return;
                 }
 
-                var winners = new List<IOption>();
-
-                foreach (IOption option in _current.Options)
-                {
-                    if (option.Votes == highest)
-                    {
-                        winners.Add(option);
-                    }
-                }
-
-                if (winners.TryRandomElement(out IOption result))
-                {
-                    actionName = result.Label;
-                    chosenAction = result.ChosenAction;
-                }
+                actionName = winner.Label;
+                chosenAction = winner.ChosenAction;
             }
 
-            if (chosenAction != null)
+            try
             {
-                try
-                {
-                    await chosenAction.OnMainAsync();
-                }
-                catch (Exception e)
-                {
-                    Logger.Error($"Encountered an error executing {actionName}", e);
-                }
+                await chosenAction.OnMainAsync();
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Encountered an error executing {actionName}", e);
             }
 
             _current = null;
+            _concluding = false;
         }
 
         private async Task DeletePoll()
         {
-            _deleteRequested = true;
-
             // We'll wait 10 seconds to ensure the backend received all the votes.
             await Task.Delay(BufferTimer * 1000);
 
@@ -230,7 +187,6 @@ namespace ToolkitExt.Core
             if (response == null)
             {
                 Logger.Warn("Could not delete current running poll, but there's an active poll. Was it not sent?");
-                _deletingPoll = false;
 
                 return;
             }
@@ -238,7 +194,6 @@ namespace ToolkitExt.Core
             if (CurrentPoll == null)
             {
                 Logger.Warn("A poll was deleted from the api, but there was no active poll within the manager. Discarding results...");
-                _deletingPoll = false;
 
                 return;
             }
@@ -252,8 +207,6 @@ namespace ToolkitExt.Core
                     CurrentPoll.RegisterVote(vote.UserId, vote.ChoiceId);
                 }
             }
-
-            _deletingPoll = false;
         }
 
         private void OnPollStarted(PollStartedEventArgs e)
