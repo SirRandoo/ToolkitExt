@@ -204,6 +204,8 @@ namespace ToolkitExt.Core
 
         private static async Task ProcessMessage(WsMessageEventArgs args, [NotNull] List<IWsMessageHandler> handlers)
         {
+            handlers.SortBy(h => h.Priority);
+            
             foreach (IWsMessageHandler handler in handlers)
             {
                 if (await handler.Handle(args))

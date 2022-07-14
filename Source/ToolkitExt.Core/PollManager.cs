@@ -263,6 +263,9 @@ namespace ToolkitExt.Core
 
         private sealed class VoteEventHandler : IWsMessageHandler
         {
+            /// <inheritdoc />
+            public int Priority => 1;
+
             /// <inheritdoc/>
             public PusherEvent Event => PusherEvent.ViewerVoted;
 
@@ -289,6 +292,9 @@ namespace ToolkitExt.Core
 
         private sealed class QueuedEventHandler : IWsMessageHandler
         {
+            /// <inheritdoc />
+            public int Priority => 1;
+
             /// <inheritdoc/>
             public PusherEvent Event => PusherEvent.QueuedPollCreated;
 

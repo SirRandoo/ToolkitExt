@@ -155,6 +155,9 @@ namespace ToolkitExt.Mod
         internal sealed class PollSettingsHandler : IWsMessageHandler
         {
             /// <inheritdoc />
+            public int Priority => 1;
+
+            /// <inheritdoc />
             public PusherEvent Event => PusherEvent.PollSettingsUpdated;
 
             /// <inheritdoc />

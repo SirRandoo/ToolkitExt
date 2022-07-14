@@ -27,6 +27,7 @@ namespace ToolkitExt.Api.Interfaces
 {
     public interface IWsMessageHandler
     {
+        public int Priority { get; }
         public PusherEvent Event { get; }
         public Task<bool> Handle(WsMessageEventArgs args);
     }
