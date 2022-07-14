@@ -51,6 +51,7 @@ namespace ToolkitExt.Core
         private PollManager()
         {
             BackendClient.Instance.RegisterHandler(new VoteEventHandler());
+            BackendClient.Instance.RegisterHandler(new QueuedEventHandler());
         }
 
         public int PollDuration { get; set; } = 5;
