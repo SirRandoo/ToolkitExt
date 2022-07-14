@@ -41,7 +41,7 @@ namespace ToolkitExt.Core
 {
     public sealed class PollManager
     {
-        public const int BufferTimer = 10;
+        private const int BufferTimer = 10;
         private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly ConcurrentQueue<IPoll> _polls = new ConcurrentQueue<IPoll>();
         private IPoll _current;
@@ -101,11 +101,11 @@ namespace ToolkitExt.Core
         private async Task NextPollAsync()
         {
             _dequeuing = true;
-            
+
             if (_current != null || !_polls.TryDequeue(out IPoll next))
             {
                 _dequeuing = false;
-                
+
                 return;
             }
 
@@ -114,13 +114,13 @@ namespace ToolkitExt.Core
             if (!shouldQueue)
             {
                 _dequeuing = false;
-                
+
                 return;
             }
 
             _current = next;
             await next.PostQueue();
-            
+
             OnPollStarted(new PollStartedEventArgs { Poll = _current });
         }
 
