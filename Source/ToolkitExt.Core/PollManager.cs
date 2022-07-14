@@ -74,26 +74,6 @@ namespace ToolkitExt.Core
 
         public event EventHandler<PollStartedEventArgs> PollStarted;
 
-        private void OnViewerVoted(object sender, [NotNull] ViewerVotedEventArgs e)
-        {
-            if (_current == null)
-            {
-                Logger.Warn("Received a vote, but the mod has no active poll.");
-
-                return;
-            }
-
-            if (e.PollId != _current?.Id)
-            {
-                Logger.Warn("Received a vote for a poll that isn't the currently active poll.");
-
-                return;
-            }
-
-            _current.UnregisterVote(e.VoterId);
-            _current.RegisterVote(e.VoterId, e.OptionId);
-        }
-
         public void Queue(IPoll poll)
         {
             _polls.Enqueue(poll);
