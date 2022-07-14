@@ -260,7 +260,7 @@ namespace ToolkitExt.Core
                 }
 
                 Instance.Queue(new QueuedPoll { Caption = @event.Data.Title, Length = @event.Data.Length, Id = @event.Data.Id, Options = options.ToArray() });
-                
+
                 return true;
             }
 
