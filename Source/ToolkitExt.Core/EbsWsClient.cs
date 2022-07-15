@@ -202,7 +202,7 @@ namespace ToolkitExt.Core
 
             lock (_handlers)
             {
-                handlers = _handlers.FindAll(h => h.Event == args.EventId);
+                handlers = new List<IWsMessageHandler>(_handlers);
             }
             
             handlers.SortBy(h => h.Priority);

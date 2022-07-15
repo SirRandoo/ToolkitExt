@@ -25,10 +25,34 @@ using ToolkitExt.Api.Events;
 
 namespace ToolkitExt.Api.Interfaces
 {
+    /// <summary>
+    ///     An interface for outlining classes that handle messages from the
+    ///     EBS websocket.
+    /// </summary>
     public interface IWsMessageHandler
     {
-        public int Priority { get; }
-        public PusherEvent Event { get; }
-        public Task<bool> Handle(WsMessageEventArgs args);
+        /// <summary>
+        ///     The priority of the handler.
+        /// </summary>
+        /// <remarks>
+        ///     Handlers with a higher priority will execute before handlers with
+        ///     a lower priority.
+        /// </remarks>
+        int Priority { get; }
+
+        /// <summary>
+        ///     Invoked when a new message is received from the websocket.
+        /// </summary>
+        /// <param name="args">
+        ///     A <see cref="WsMessageEventArgs"/> containing the
+        ///     message from the websocket
+        /// </param>
+        /// <returns>
+        ///     Whether the websocket client should continue calling message
+        ///     handlers. If <c>true</c>, the client will stop calling message
+        ///     handlers. If <c>false</c>, the client will continue calling
+        ///     message handlers.
+        /// </returns>
+        Task<bool> Handle(WsMessageEventArgs args);
     }
 }
