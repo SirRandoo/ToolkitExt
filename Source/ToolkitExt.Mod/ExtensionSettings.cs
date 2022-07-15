@@ -26,6 +26,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Events;

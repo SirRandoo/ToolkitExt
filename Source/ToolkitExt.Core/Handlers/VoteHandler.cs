@@ -20,12 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Newtonsoft.Json;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
+using ToolkitExt.Core.Responses;
 
-namespace ToolkitExt.Core.Responses
+namespace ToolkitExt.Core.Handlers
 {
-    public class SuccessResponse
+    internal sealed class VoteHandler : FilteredMessageHandler
     {
-        [JsonProperty("success")] public string Success { get; set; }
+        internal VoteHandler() : base(PusherEvent.ViewerVoted)
+        {
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<bool> HandleEvent([NotNull] WsMessageEventArgs args)
+        {
+            var response = await args.AsEventAsync<ViewerVotedResponse>();
+
+            if (response == null)
+            {
+                return false;
+            }
+
+            if (PollManager.Instance.CurrentPoll == null || PollManager.Instance.CurrentPoll.Id != response.Data.PollId)
+            {
+                return false;
+            }
+
+            PollManager.Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
+
+            return true;
+        }
     }
 }

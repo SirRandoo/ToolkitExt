@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
-using ToolkitExt.Core.Enums;
 
 namespace ToolkitExt.Core.Models
 {

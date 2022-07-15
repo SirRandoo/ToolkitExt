@@ -22,8 +22,8 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
-using ToolkitExt.Core.Enums;
 using Verse;
 
 namespace ToolkitExt.Core.Models

@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Requests;

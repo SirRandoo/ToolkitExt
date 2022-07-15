@@ -23,7 +23,7 @@
 using System.Runtime.Serialization;
 using RimWorld;
 
-namespace ToolkitExt.Core.Enums
+namespace ToolkitExt.Api.Enums
 {
     /// <summary>
     ///     The different types of options available for customization to
