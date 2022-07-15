@@ -190,5 +190,10 @@ namespace ToolkitExt.Core
             [JsonProperty("error")] public string Error { get; set; }
             [JsonProperty("data")] public List<string> Data { get; set; }
         }
+
+        private sealed class SuccessResponse
+        {
+            [JsonProperty("success")] public string Success { get; set; }
+        }
     }
 }
