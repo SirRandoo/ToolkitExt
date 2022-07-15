@@ -8,6 +8,6 @@
         <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="WatsonWebsocket" Version="2.3.3" />
+        <PackageReference Include="WatsonWebsocket" Version="2.3.4" />
     </ItemGroup>
 </Project>
