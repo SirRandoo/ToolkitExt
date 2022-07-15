@@ -106,7 +106,6 @@ namespace ToolkitExt.Core
             return ResolveContent(response.Content, out PollSettingsResponse data) ? data : null;
         }
 
-        [ItemCanBeNull]
         internal async Task<bool> UpdateIncidentsAsync([NotNull] List<IncidentItem> items)
         {
             RestRequest request = GetRequest("/initialize/incident-defs/update", Method.POST);
