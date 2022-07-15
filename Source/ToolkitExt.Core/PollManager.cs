@@ -22,21 +22,14 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RimWorld;
 using ToolkitExt.Api;
-using ToolkitExt.Api.Enums;
-using ToolkitExt.Api.Events;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Extensions;
-using ToolkitExt.Core.Helpers;
-using ToolkitExt.Core.Models;
-using ToolkitExt.Core.Registries;
+using ToolkitExt.Core.Handlers;
 using ToolkitExt.Core.Responses;
-using Verse;
 
 namespace ToolkitExt.Core
 {
@@ -45,14 +38,14 @@ namespace ToolkitExt.Core
         private const int BufferTimer = 10;
         private static readonly RimLogger Logger = new RimLogger("PollManager");
         private readonly ConcurrentQueue<IPoll> _polls = new ConcurrentQueue<IPoll>();
+        private volatile bool _concluding;
         private IPoll _current;
         private volatile bool _dequeuing;
-        private volatile bool _concluding;
 
         private PollManager()
         {
-            BackendClient.Instance.RegisterHandler(new VoteEventHandler());
-            BackendClient.Instance.RegisterHandler(new QueuedEventHandler());
+            BackendClient.Instance.RegisterHandler(new VoteHandler());
+            BackendClient.Instance.RegisterHandler(new QueuedPollHandler());
         }
 
         public int PollDuration { get; set; } = 5;
@@ -139,6 +132,7 @@ namespace ToolkitExt.Core
                 if (winner == null)
                 {
                     Logger.Warn($@"Could not get a winning option for the poll ""{_current.Caption}"" (#{_current.Id})");
+
                     return;
                 }
 
@@ -194,108 +188,6 @@ namespace ToolkitExt.Core
         private void OnPollStarted(PollStartedEventArgs e)
         {
             PollStarted?.Invoke(this, e);
-        }
-
-        private sealed class VoteEventHandler : IWsMessageHandler
-        {
-            /// <inheritdoc />
-            public int Priority => 1;
-
-            /// <inheritdoc/>
-            public PusherEvent Event => PusherEvent.ViewerVoted;
-
-            /// <inheritdoc/>
-            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
-            {
-                var response = await args.AsEventAsync<ViewerVotedResponse>();
-
-                if (response == null)
-                {
-                    return false;
-                }
-
-                if (Instance.CurrentPoll == null || Instance.CurrentPoll.Id != response.Data.PollId)
-                {
-                    return false;
-                }
-
-                Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
-
-                return true;
-            }
-        }
-
-        private sealed class QueuedEventHandler : IWsMessageHandler
-        {
-            /// <inheritdoc />
-            public int Priority => 1;
-
-            /// <inheritdoc/>
-            public PusherEvent Event => PusherEvent.QueuedPollCreated;
-
-            /// <inheritdoc/>
-            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
-            {
-                var @event = await args.AsEventAsync<QueuedPollCreatedResponse>();
-
-                if (@event == null)
-                {
-                    return false;
-                }
-
-                var options = new List<IOption>();
-
-                foreach (QueuedPollCreatedResponse.QueuedOption option in @event.Data.Options)
-                {
-                    IncidentDef incident = GetIncident(option.ModId, option.DefName);
-
-                    if (incident == null)
-                    {
-                        // Invalidate the poll as an option is missing
-                        break;
-                    }
-
-                    IncidentParms @params = await GetIncidentParamsAsync(incident).OnMainAsync();
-
-                    options.Add(incident.ToOption(@params));
-                }
-
-                Instance.Queue(new QueuedPoll { Caption = @event.Data.Title, Length = @event.Data.Length, Id = @event.Data.Id, Options = options.ToArray() });
-
-                return true;
-            }
-
-            [CanBeNull] private static IncidentDef GetIncident(string mod, string defName) => IncidentRegistry.Get(mod, defName)?.Def;
-
-            [ItemCanBeNull]
-            private static async Task<IncidentParms> GetIncidentParamsAsync([NotNull] IncidentDef incident)
-            {
-                if (incident.TargetTagAllowed(IncidentTargetTagDefOf.World))
-                {
-                    return await GetWorldIncidentParamsAsync(incident);
-                }
-
-                //  If we don't support a modded target tag, we'll just return null.
-                return incident.TargetsMap() ? await GetMapIncidentParamsAsync(incident) : null;
-            }
-
-            [ItemCanBeNull]
-            private static async Task<IncidentParms> GetWorldIncidentParamsAsync([NotNull] IncidentDef incident)
-            {
-                IncidentParms @params = await StorytellerUtilityAsync.DefaultParamsNowAsync(incident.category, Find.World);
-                bool canFireNow = await incident.Worker.CanFireNowAsync(@params);
-
-                return !canFireNow ? null : @params;
-            }
-
-            [ItemCanBeNull]
-            private static async Task<IncidentParms> GetMapIncidentParamsAsync([NotNull] IncidentDef incident)
-            {
-                IncidentParms @params = await StorytellerUtilityAsync.DefaultParamsNowAsync(incident.category, Find.AnyPlayerHomeMap);
-                bool canFireNow = await incident.Worker.CanFireNowAsync(@params);
-
-                return !canFireNow ? null : @params;
-            }
         }
     }
 }
