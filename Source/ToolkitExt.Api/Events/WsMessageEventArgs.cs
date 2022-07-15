@@ -23,9 +23,10 @@
 using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Api.Events
 {
     public class WsMessageEventArgs : EventArgs
     {
@@ -40,5 +41,6 @@ namespace ToolkitExt.Api.Enums
         public PusherEvent EventId { get; }
 
         [ItemCanBeNull] public async Task<T> AsEventAsync<T>() where T : IPusherMessage => await Json.DeserializeAsync<T>(_rawEvent);
+        
     }
 }

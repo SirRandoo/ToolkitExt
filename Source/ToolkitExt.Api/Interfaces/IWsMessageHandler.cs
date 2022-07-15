@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 using System.Threading.Tasks;
-using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
 
 namespace ToolkitExt.Api.Interfaces
 {
