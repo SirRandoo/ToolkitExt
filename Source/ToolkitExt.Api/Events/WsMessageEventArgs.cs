@@ -28,6 +28,10 @@ using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Api.Events
 {
+    /// <summary>
+    ///     Represents a message from the pusher websocket transformed into
+    ///     an event.
+    /// </summary>
     public class WsMessageEventArgs : EventArgs
     {
         private readonly string _rawEvent;
@@ -38,9 +42,16 @@ namespace ToolkitExt.Api.Events
             _rawEvent = rawEvent;
         }
 
+        /// <summary>
+        ///     The event received from the websocket.
+        /// </summary>
         public PusherEvent EventId { get; }
 
+        /// <summary>
+        ///     Deserializes the raw event message into the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the message to</typeparam>
+        /// <returns>The deserialized type, or <c>null</c> if it could not be deserialized.</returns>
         [ItemCanBeNull] public async Task<T> AsEventAsync<T>() where T : IPusherMessage => await Json.DeserializeAsync<T>(_rawEvent);
-        
     }
 }

@@ -24,8 +24,15 @@ using ToolkitExt.Api.Enums;
 
 namespace ToolkitExt.Api.Interfaces
 {
+    /// <summary>
+    ///     An interface outlining the basic requirements for a message from
+    ///     the pusher websocket.
+    /// </summary>
     public interface IPusherMessage
     {
+        /// <summary>
+        ///     The event received from the pusher websocket.
+        /// </summary>
         PusherEvent Event { get; set; }
     }
 }
