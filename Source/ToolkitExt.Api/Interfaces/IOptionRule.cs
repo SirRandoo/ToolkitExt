@@ -32,6 +32,6 @@ namespace ToolkitExt.Api.Interfaces
         /// <summary>
         ///     The type of rule this object describes.
         /// </summary>
-        public RuleType Type { get; }
+        RuleType Type { get; }
     }
 }

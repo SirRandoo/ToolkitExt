@@ -33,7 +33,7 @@ namespace ToolkitExt.Api.Interfaces
         /// <summary>
         ///     The unique identifier of the poll.
         /// </summary>
-        public int Id { get; set; }
+        int Id { get; set; }
 
         /// <summary>
         ///     The caption of the poll.
@@ -42,12 +42,12 @@ namespace ToolkitExt.Api.Interfaces
         ///     This property should be used to describe the poll to the user in
         ///     a short sentence.
         /// </remarks>
-        public string Caption { get; set; }
+        string Caption { get; set; }
 
         /// <summary>
         ///     The total number of people that have voted on the poll.
         /// </summary>
-        public int TotalVotes { get; }
+        int TotalVotes { get; }
 
         /// <summary>
         ///     The time this poll ended at.
@@ -57,7 +57,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     should not supply a custom end <c>DateTime</c> or the poll may
         ///     never be displayed to viewers.
         /// </remarks>
-        public DateTime EndedAt { get; set; }
+        DateTime EndedAt { get; set; }
 
         /// <summary>
         ///     The time this poll started at.
@@ -67,7 +67,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     should not supply a custom start <c>DateTime</c> or the poll may
         ///     never be displayed to viewers.
         /// </remarks>
-        public DateTime StartedAt { get; set; }
+        DateTime StartedAt { get; set; }
 
         /// <summary>
         ///     The choices viewers can vote on.
@@ -77,19 +77,19 @@ namespace ToolkitExt.Api.Interfaces
         ///     two choices. Polls exceeding this limit will be truncated down to
         ///     meet that limit.
         /// </remarks>
-        public IOption[] Options { get; set; }
+        IOption[] Options { get; set; }
 
         /// <summary>
         ///     The duration of the poll in minutes.
         /// </summary>
-        public int Duration { get; }
+        int Duration { get; }
 
         /// <summary>
         ///     Registers a vote for the given choice by the given user.
         /// </summary>
         /// <param name="userId">The id of the user who voted</param>
         /// <param name="choiceId">The id of the choice the user voted for</param>
-        public void RegisterVote(string userId, Guid choiceId);
+        void RegisterVote(string userId, Guid choiceId);
 
         /// <summary>
         ///     Unregisters a vote from the given user.
@@ -102,12 +102,12 @@ namespace ToolkitExt.Api.Interfaces
         ///     exists on the off chance that the poll's votes don't align with
         ///     what the EBS returned.
         /// </remarks>
-        public bool UnregisterVote(string userId);
+        bool UnregisterVote(string userId);
 
         /// <summary>
         ///     Clears all votes for this poll.
         /// </summary>
-        public void ClearVotes();
+        void ClearVotes();
 
         /// <summary>
         ///     Called once before the poll is queued.
@@ -116,7 +116,7 @@ namespace ToolkitExt.Api.Interfaces
         ///     This method is always called on the main thread.
         /// </remarks>
         /// <returns>Whether the poll should be queued</returns>
-        public Task<bool> PreQueue();
+        Task<bool> PreQueue();
 
         /// <summary>
         ///     Called once after the poll is queued.
@@ -124,7 +124,7 @@ namespace ToolkitExt.Api.Interfaces
         /// <remarks>
         ///     This method is always called on the main thread.
         /// </remarks>
-        public Task PostQueue();
+        Task PostQueue();
 
         /// <summary>
         ///     Called once before the poll is deleted.
@@ -132,7 +132,7 @@ namespace ToolkitExt.Api.Interfaces
         /// <remarks>
         ///     This method may be called on a separate thread.
         /// </remarks>
-        public Task PreDelete();
+        Task PreDelete();
 
         /// <summary>
         ///     Called once after the poll is deleted.
@@ -140,6 +140,6 @@ namespace ToolkitExt.Api.Interfaces
         /// <remarks>
         ///     This method may be called on a separate thread.
         /// </remarks>
-        public Task PostDelete();
+        Task PostDelete();
     }
 }

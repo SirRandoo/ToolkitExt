@@ -32,11 +32,11 @@ namespace ToolkitExt.Api.Interfaces
         /// <summary>
         ///     The type of option this object describes.
         /// </summary>
-        public OptionType Type { get; }
+        OptionType Type { get; }
 
         /// <summary>
         ///     A list of required mods for this given option.
         /// </summary>
-        public IModRequirement[] RequiresMods { get; set; }
+        IModRequirement[] RequiresMods { get; set; }
     }
 }

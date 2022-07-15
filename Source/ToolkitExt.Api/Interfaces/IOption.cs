@@ -33,17 +33,17 @@ namespace ToolkitExt.Api.Interfaces
         /// <summary>
         ///     The unique identifier of the choice.
         /// </summary>
-        public Guid Id { get; set; }
+        Guid Id { get; set; }
 
         /// <summary>
         ///     The number of people who've voted for this choice.
         /// </summary>
-        public int Votes { get; }
+        int Votes { get; }
 
         /// <summary>
         ///     The label used for displaying the choice to the end user.
         /// </summary>
-        public string Label { get; set; }
+        string Label { get; set; }
 
         /// <summary>
         ///     The tooltip for displaying the choice to the end user.
@@ -52,15 +52,15 @@ namespace ToolkitExt.Api.Interfaces
         ///     If no tooltip was supplied, this value will be <c>null</c>.
         /// </remarks>
         [CanBeNull]
-        public string Tooltip { get; set; }
+        string Tooltip { get; set; }
 
-        public Action ChosenAction { get; set; }
+        Action ChosenAction { get; set; }
 
         /// <summary>
         ///     Registers a vote from the user.
         /// </summary>
         /// <param name="userId">The id of the user who voted</param>
-        public void RegisterVote(string userId);
+        void RegisterVote(string userId);
 
         /// <summary>
         ///     Unregisters a vote from the user.
@@ -73,11 +73,11 @@ namespace ToolkitExt.Api.Interfaces
         ///     exists on the off chance that the poll's votes don't align with
         ///     what the EBS returned.
         /// </remarks>
-        public bool UnregisterVote(string userId);
+        bool UnregisterVote(string userId);
 
         /// <summary>
         ///     Clears all votes for this option.
         /// </summary>
-        public void ClearVotes();
+        void ClearVotes();
     }
 }

@@ -26,6 +26,6 @@ namespace ToolkitExt.Api.Interfaces
 {
     public interface IPusherMessage
     {
-        public PusherEvent Event { get; set; }
+        PusherEvent Event { get; set; }
     }
 }
