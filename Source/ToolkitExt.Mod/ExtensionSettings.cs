@@ -27,7 +27,6 @@ using Newtonsoft.Json;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Events;
-using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Responses;
@@ -152,17 +151,15 @@ namespace ToolkitExt.Mod
                 }
             }
         }
-        
-        internal sealed class PollSettingsHandler : IWsMessageHandler
+
+        internal sealed class PollSettingsHandler : FilteredMessageHandler
         {
-            /// <inheritdoc />
-            public int Priority => 1;
+            public PollSettingsHandler() : base(PusherEvent.PollSettingsUpdated)
+            {
+            }
 
-            /// <inheritdoc />
-            public PusherEvent Event => PusherEvent.PollSettingsUpdated;
-
-            /// <inheritdoc />
-            public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+            /// <inheritdoc/>
+            protected override async Task<bool> HandleEvent([NotNull] WsMessageEventArgs args)
             {
                 var response = await args.AsEventAsync<PollSettingsUpdatedResponse>();
 
@@ -173,7 +170,7 @@ namespace ToolkitExt.Mod
 
                 ExtensionMod.Settings.Polls.Duration = response.Duration;
                 ExtensionMod.Settings.Polls.Interval = response.Interval;
-                
+
                 return true;
             }
         }
