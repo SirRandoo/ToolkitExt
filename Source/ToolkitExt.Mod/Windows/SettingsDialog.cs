@@ -21,10 +21,11 @@
 // SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RimWorld;
 using SirRandoo.CommonLib.Helpers;
 using SirRandoo.CommonLib.Windows;
+using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
 
@@ -102,6 +103,15 @@ namespace ToolkitExt.Mod.Windows
             listing.GroupHeader("Poll");
 
             Widgets.CheckboxLabeled(listing.GetRect(Text.LineHeight), "Use larger text on the poll display.", ref ExtensionMod.Settings.Polls.LargeText);
+        }
+
+        /// <inheritdoc/>
+        public override void PostClose()
+        {
+            if (_tokenChanged)
+            {
+                Task.Run(async () => await BackendClient.Instance.SetCredentials(ExtensionMod.Settings.Auth.ChannelId, ExtensionMod.Settings.Auth.Token));
+            }
         }
     }
 }
