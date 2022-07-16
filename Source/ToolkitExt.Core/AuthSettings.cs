@@ -39,7 +39,7 @@ namespace ToolkitExt.Core
         ///     The token for the given broadcaster.
         /// </summary>
         [JsonIgnore]
-        public string Token { get; set; }
+        public string Token { get; private set; }
 
         /// <summary>
         ///     The channel id of the given broadcaster.

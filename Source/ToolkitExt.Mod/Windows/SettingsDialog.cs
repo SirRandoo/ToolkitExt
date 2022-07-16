@@ -50,6 +50,7 @@ namespace ToolkitExt.Mod.Windows
             listing.Begin(region.AtZero());
 
             DrawGeneralSettings(listing);
+            DrawPollSettings(listing);
 
             listing.End();
 
@@ -68,17 +69,17 @@ namespace ToolkitExt.Mod.Windows
 
             if (_displayingKey)
             {
-                if (UiHelper.TextField(trueKeyField, ExtensionMod.Settings.Auth.Token, out string token))
+                if (UiHelper.TextField(trueKeyField, ExtensionMod.Settings.Auth.BroadcasterKey, out string token))
                 {
                     _tokenChanged = true;
-                    ExtensionMod.Settings.Auth.Token = token;
+                    ExtensionMod.Settings.Auth.BroadcasterKey = token;
                 }
             }
             else
             {
-                ExtensionMod.Settings.Auth.Token = GUI.PasswordField(trueKeyField, ExtensionMod.Settings.Auth.Token, '*');
+                ExtensionMod.Settings.Auth.BroadcasterKey = GUI.PasswordField(trueKeyField, ExtensionMod.Settings.Auth.BroadcasterKey, '*');
             }
-            
+
             UiHelper.Icon(visibilityButton, _displayingKey ? Textures.Hidden : Textures.Visible, Color.white);
             TooltipHandler.TipRegion(visibilityButton, "Click to toggle the visibility of the broadcaster key.");
 
@@ -92,7 +93,7 @@ namespace ToolkitExt.Mod.Windows
 
             if (Widgets.ButtonInvisible(pasteButton))
             {
-                ExtensionMod.Settings.Auth.Token = GUIUtility.systemCopyBuffer;
+                ExtensionMod.Settings.Auth.BroadcasterKey = GUIUtility.systemCopyBuffer;
             }
         }
 
