@@ -7,4 +7,9 @@
     <ItemGroup>
         <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+      <Reference Include="SirRandoo.CommonLib">
+        <HintPath>..\Libs\SirRandoo.CommonLib.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>
