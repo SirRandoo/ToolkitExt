@@ -20,12 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using UnityEngine;
+using JetBrains.Annotations;
+using SirRandoo.CommonLib;
+using SirRandoo.CommonLib.Windows;
+using ToolkitExt.Mod.Windows;
 using Verse;
 
 namespace ToolkitExt.Mod
 {
-    public class ExtensionMod : Verse.Mod
+    public class ExtensionMod : ModPlus
     {
         /// <inheritdoc/>
         public ExtensionMod(ModContentPack content) : base(content)
@@ -38,13 +41,11 @@ namespace ToolkitExt.Mod
         public static ExtensionMod Instance { get; private set; }
 
         /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
+        [NotNull]
+        protected override ProxySettingsWindow SettingsWindow => new SettingsDialog();
 
         /// <inheritdoc/>
-        public override void DoSettingsWindowContents(Rect inRect)
-        {
-            Settings.Draw(inRect);
-        }
+        public override string SettingsCategory() => Content.Name;
 
         /// <inheritdoc/>
         public override void WriteSettings()

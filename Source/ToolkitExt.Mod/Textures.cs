@@ -30,6 +30,8 @@ namespace ToolkitExt.Mod
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public static class Textures
     {
+        public static readonly Texture2D Hidden = ContentFinder<Texture2D>.Get("UI/Hidden");
+        public static readonly Texture2D Visible = ContentFinder<Texture2D>.Get("UI/Visible");
         public static readonly Texture2D Toolbox = ContentFinder<Texture2D>.Get("UI/Polls/Toolbox");
         public static readonly Texture2D WindowAtlas = ContentFinder<Texture2D>.Get("UI/Polls/Atlas");
         public static readonly Texture2D GradientOverlay = ContentFinder<Texture2D>.Get("UI/Polls/Gradient");

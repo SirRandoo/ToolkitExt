@@ -30,7 +30,6 @@ using ToolkitExt.Api.Events;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Responses;
-using UnityEngine;
 using Verse;
 
 namespace ToolkitExt.Mod
@@ -40,22 +39,8 @@ namespace ToolkitExt.Mod
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitSettings");
 
-        private bool _displayingKey;
-
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] internal AuthSettings Auth;
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] public PollSettings Polls;
-
-        public void Draw(Rect region)
-        {
-            var labelRect = new Rect(region.x, region.y, Mathf.FloorToInt(region.width * 0.8f), Text.SmallFontHeight);
-            var fieldRect = new Rect(region.width - labelRect.width, region.y, region.width - labelRect.width, Text.SmallFontHeight);
-
-            Widgets.Label(labelRect, "Broadcaster key");
-
-            Auth.BroadcasterKey = _displayingKey
-                ? Widgets.TextField(fieldRect, Auth.BroadcasterKey ?? string.Empty)
-                : GUI.PasswordField(fieldRect, Auth.BroadcasterKey ?? string.Empty, '*');
-        }
 
         internal void LoadAuthSettings()
         {
