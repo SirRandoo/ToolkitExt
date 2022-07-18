@@ -168,16 +168,22 @@ namespace ToolkitExt.Core
 
             if (!Json.TryDeserialize(content, out PusherResponse baseEvent))
             {
+                Logger.Debug($@"Could not deserialize {content} into a pusher response; is there a new format?");
+                
                 return;
             }
+
+            Logger.Debug($"Received {baseEvent.Event} from the websocket.");
 
             switch (baseEvent.Event)
             {
                 case PusherEvent.ConnectionEstablished when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
+                    Logger.Debug(@"Raising ""connection established"" event...");
                     OnConnectionEstablished(new ConnectionEstablishedEventArgs(ev.Data.SocketId, ev.Data.ActivityTimeout));
 
                     return;
                 case PusherEvent.Subscribe when Json.TryDeserialize(content, out SubscriptionSucceededResponse ev):
+                    Logger.Debug(@"Raising ""subscribed"" event...");
                     OnSubscribed(new SubscribedEventArgs(ev.Channel));
 
                     return;
@@ -186,11 +192,25 @@ namespace ToolkitExt.Core
 
                     return;
                 case PusherEvent.Ping:
-                    Task.Run(async () => await Send(new PongRequest()));
+                    Task.Run(
+                        async () =>
+                        {
+                            Logger.Debug("Sending pong request...");
+
+                            return await Send(new PongRequest());
+                        }
+                    );
 
                     return;
                 default:
-                    Task.Run(async () => await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content)));
+                    Task.Run(
+                        async () =>
+                        {
+                            Logger.Debug("Passing message onto message handlers...");
+
+                            await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content));
+                        }
+                    );
 
                     return;
             }
@@ -198,19 +218,26 @@ namespace ToolkitExt.Core
 
         private async Task ProcessMessage(WsMessageEventArgs args)
         {
+            Logger.Debug("Gathering handlers...");
             List<IWsMessageHandler> handlers;
 
             lock (_handlers)
             {
                 handlers = new List<IWsMessageHandler>(_handlers);
             }
-            
+
             handlers.SortBy(h => h.Priority);
-            
+
+            Logger.Debug($"Gathered {handlers:N0} handlers");
+
             foreach (IWsMessageHandler handler in handlers)
             {
+                Logger.Debug($@"Calling message handler ""{handler.GetType().Name}""");
+
                 if (await handler.Handle(args))
                 {
+                    Logger.Debug("Message was handled.");
+
                     break;
                 }
             }

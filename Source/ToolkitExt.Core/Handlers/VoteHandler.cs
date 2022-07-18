@@ -22,14 +22,18 @@
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Events;
 using ToolkitExt.Core.Responses;
+using UnityEngine;
 
 namespace ToolkitExt.Core.Handlers
 {
     internal sealed class VoteHandler : FilteredMessageHandler
     {
+        private static readonly RimLogger Logger = new RimLogger("VoteHandler");
+    
         internal VoteHandler() : base(PusherEvent.ViewerVoted)
         {
         }
@@ -41,14 +45,26 @@ namespace ToolkitExt.Core.Handlers
 
             if (response == null)
             {
+                Logger.Debug("Message received was not a vote response; ignoring.");
                 return false;
             }
 
-            if (PollManager.Instance.CurrentPoll == null || PollManager.Instance.CurrentPoll.Id != response.Data.PollId)
+            if (PollManager.Instance.CurrentPoll == null)
             {
+                Logger.Debug($"Received a vote for poll #{response.Data.PollId}, but there is no active poll in the manager.");
                 return false;
             }
 
+            if (PollManager.Instance.CurrentPoll.Id != response.Data.PollId)
+            {
+                Logger.Debug(
+                    $"Received a vote for poll #{response.Data.PollId}, but it does not match the current poll of #{PollManager.Instance.CurrentPoll.Id}; ignoring.."
+                );
+                
+                return false;
+            }
+
+            Logger.Debug("Registering vote...");
             PollManager.Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
 
             return true;
