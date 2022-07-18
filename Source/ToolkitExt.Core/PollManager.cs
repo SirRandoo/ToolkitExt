@@ -97,6 +97,8 @@ namespace ToolkitExt.Core
             await next.PostQueue();
 
             OnPollStarted(new PollStartedEventArgs { Poll = _current });
+
+            _dequeuing = false;
         }
 
         public void ConcludePoll()
