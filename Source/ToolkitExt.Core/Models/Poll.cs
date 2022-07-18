@@ -23,6 +23,7 @@
 using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Responses;
 
@@ -30,6 +31,8 @@ namespace ToolkitExt.Core.Models
 {
     public class Poll : IPoll
     {
+        private static readonly RimLogger Logger = new RimLogger("ExtPolls");
+        
         /// <inheritdoc/>
         public int Id { get; set; }
 
@@ -66,12 +69,15 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public void RegisterVote(string userId, Guid choiceId)
         {
+            Logger.Debug($"Registering {userId}'s vote on option {choiceId}...");
+            
             for (var i = 0; i < Options.Length; i++)
             {
                 IOption option = Options[i];
 
                 if (option.Id == choiceId)
                 {
+                    Logger.Debug($"Registering {userId} to {choiceId}'s internal data...");
                     option.RegisterVote(userId);
                 }
             }

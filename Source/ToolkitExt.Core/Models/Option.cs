@@ -22,12 +22,15 @@
 
 using System;
 using System.Collections.Generic;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
+using UnityEngine;
 
 namespace ToolkitExt.Core.Models
 {
     public class Option : IOption
     {
+        private static readonly RimLogger Logger = new RimLogger("ExtPollOption");
         private readonly HashSet<string> _voters = new HashSet<string>();
 
         /// <inheritdoc/>
@@ -48,11 +51,18 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public void RegisterVote(string userId)
         {
+            Logger.Debug($"Registering {userId} to voter list...");
+            
             lock (_voters)
             {
                 if (_voters.Add(userId))
                 {
                     Votes++;
+                    Logger.Debug($"Registered {userId} to voter list.");
+                }
+                else
+                {
+                    Logger.Debug($"Could not add {userId} to voter list.");
                 }
             }
         }
@@ -76,6 +86,8 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public void ClearVotes()
         {
+            Logger.Debug($"Clearing voter from option {Id}");
+            
             lock (_voters)
             {
                 _voters.Clear();
