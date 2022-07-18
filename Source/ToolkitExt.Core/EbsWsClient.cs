@@ -228,7 +228,7 @@ namespace ToolkitExt.Core
 
             handlers.SortBy(h => h.Priority);
 
-            Logger.Debug($"Gathered {handlers:N0} handlers");
+            Logger.Debug($"Gathered {handlers.Count:N0} handlers");
 
             foreach (IWsMessageHandler handler in handlers)
             {
