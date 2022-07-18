@@ -138,15 +138,7 @@ namespace ToolkitExt.Api
         /// <param name="message">The message to log</param>
         public void Debug(string message)
         {
-            if (!_debugChecked)
-            {
-                _debugEnabled = Assembly.GetCallingAssembly().GetCustomAttribute<DebuggableAttribute>()?.DebuggingFlags
-                    == DebuggableAttribute.DebuggingModes.DisableOptimizations;
-
-                _debugChecked = true;
-            }
-
-            if (_debugEnabled)
+            if (Prefs.DevMode && Prefs.LogVerbose)
             {
                 LogInternal(FormatMessage("DEBUG", message, ColorUtility.ToHtmlStringRGB(ColorLibrary.LightPink)));
             }
