@@ -33,7 +33,7 @@ namespace ToolkitExt.Core
     [UsedImplicitly]
     public class AuthSettings
     {
-        private string _broadcasterId;
+        private string _broadcasterId = string.Empty;
 
         /// <summary>
         ///     The token for the given broadcaster.
