@@ -28,10 +28,10 @@ namespace ToolkitExt.Api.Enums
     {
         [EnumMember(Value = "pusher:pong")] Pong,
         [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "viewer-voted")] ViewerVoted,
+        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
         [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "queuedpoll-created")] QueuedPollCreated,
-        [EnumMember(Value = "pollsettings-update")] PollSettingsUpdated,
+        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
+        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
         [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
         [EnumMember(Value = "pusher_internal:subscription_succeeded")]
         SubscriptionSucceeded
