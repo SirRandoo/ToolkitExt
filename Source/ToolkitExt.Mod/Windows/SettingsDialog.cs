@@ -34,11 +34,12 @@ namespace ToolkitExt.Mod.Windows
     public class SettingsDialog : ProxySettingsWindow
     {
         private bool _displayingKey;
-        private bool _tokenChanged;
+        private string _lastToken;
 
         /// <inheritdoc/>
         public SettingsDialog() : base(ExtensionMod.Instance)
         {
+            _lastToken = ExtensionMod.Settings.Auth.Token;
         }
 
         /// <inheritdoc/>
@@ -72,7 +73,6 @@ namespace ToolkitExt.Mod.Windows
             {
                 if (UiHelper.TextField(trueKeyField, ExtensionMod.Settings.Auth.BroadcasterKey, out string token))
                 {
-                    _tokenChanged = true;
                     ExtensionMod.Settings.Auth.BroadcasterKey = token;
                 }
             }
@@ -108,7 +108,7 @@ namespace ToolkitExt.Mod.Windows
         /// <inheritdoc/>
         public override void PostClose()
         {
-            if (_tokenChanged)
+            if (!string.Equals(_lastToken, ExtensionMod.Settings.Auth.Token))
             {
                 Task.Run(async () => await BackendClient.Instance.SetCredentials(ExtensionMod.Settings.Auth.ChannelId, ExtensionMod.Settings.Auth.Token));
             }
