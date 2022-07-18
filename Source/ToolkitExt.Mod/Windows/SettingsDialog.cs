@@ -71,9 +71,9 @@ namespace ToolkitExt.Mod.Windows
 
             if (_displayingKey)
             {
-                if (UiHelper.TextField(trueKeyField, ExtensionMod.Settings.Auth.BroadcasterKey, out string token))
+                if (UiHelper.TextField(trueKeyField, ExtensionMod.Settings.Auth.BroadcasterKey, out string key))
                 {
-                    ExtensionMod.Settings.Auth.BroadcasterKey = token;
+                    ExtensionMod.Settings.Auth.BroadcasterKey = key;
                 }
             }
             else
