@@ -59,7 +59,7 @@ namespace ToolkitExt.Core
             {
                 if (_current == null && !_dequeuing)
                 {
-                    Task.Run(NextPollAsync);
+                    Task.Run(async () => await NextPollAsync());
                 }
 
                 return _current;
