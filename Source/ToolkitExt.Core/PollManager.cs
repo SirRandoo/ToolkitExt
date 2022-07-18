@@ -67,6 +67,7 @@ namespace ToolkitExt.Core
         }
 
         public event EventHandler<PollStartedEventArgs> PollStarted;
+        public event EventHandler<ViewerVotedEventArgs> ViewerVoted; 
 
         public void Queue(IPoll poll)
         {
@@ -190,6 +191,16 @@ namespace ToolkitExt.Core
         private void OnPollStarted(PollStartedEventArgs e)
         {
             PollStarted?.Invoke(this, e);
+        }
+        
+        private void OnViewerVoted(ViewerVotedEventArgs e)
+        {
+            ViewerVoted?.Invoke(this, e);
+        }
+
+        public void NotifyViewerVoted(string userId, int pollId, Guid optionId)
+        {
+            OnViewerVoted(new ViewerVotedEventArgs(userId, pollId, optionId));
         }
     }
 }

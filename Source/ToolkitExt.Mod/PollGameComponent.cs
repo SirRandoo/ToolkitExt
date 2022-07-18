@@ -41,10 +41,12 @@ namespace ToolkitExt.Mod
         private float _lastWidth = UI.screenWidth;
         private volatile bool _pollStarted;
         private int _pollTracker;
+        private volatile bool _shouldInvalidate;
 
         public PollGameComponent(Game game)
         {
             PollManager.Instance.PollStarted += (_, __) => _pollStarted = true;
+            PollManager.Instance.ViewerVoted += (_, __) => _shouldInvalidate = true;
         }
 
         /// <inheritdoc/>
@@ -103,7 +105,7 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            if (_pollStarted || _drawer.IsTransitioning)
+            if (_pollStarted || _drawer.IsTransitioning || _shouldInvalidate)
             {
                 _drawer.Invalidate();
                 _pollStarted = false;

@@ -66,6 +66,7 @@ namespace ToolkitExt.Core.Handlers
 
             Logger.Debug("Registering vote...");
             PollManager.Instance.CurrentPoll.RegisterVote(response.Data.VoterId, response.Data.OptionId);
+            PollManager.Instance.NotifyViewerVoted(response.Data.VoterId, response.Data.PollId, response.Data.OptionId);
 
             return true;
         }
