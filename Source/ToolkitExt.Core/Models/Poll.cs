@@ -22,6 +22,7 @@
 
 using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Responses;
 
@@ -104,6 +105,9 @@ namespace ToolkitExt.Core.Models
         /// <inheritdoc/>
         public virtual async Task<bool> PreQueue()
         {
+            StartedAt = DateTime.UtcNow;
+            EndedAt = StartedAt.AddMinutes(PollManager.Instance.PollDuration);
+
             CreatePollResponse response = await BackendClient.Instance.SendPoll(this);
 
             if (response == null)
@@ -112,25 +116,29 @@ namespace ToolkitExt.Core.Models
             }
 
             Id = response.Id;
-            
+
             return true;
         }
 
         /// <inheritdoc/>
-        public virtual async Task PostQueue()
+        [NotNull]
+        public virtual Task PostQueue()
         {
-            StartedAt = DateTime.UtcNow;
-            EndedAt = StartedAt.AddMinutes(PollManager.Instance.PollDuration);
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
-        public virtual async Task PreDelete()
+        [NotNull]
+        public virtual Task PreDelete()
         {
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
-        public virtual async Task PostDelete()
+        [NotNull]
+        public virtual Task PostDelete()
         {
+            return Task.CompletedTask;
         }
     }
 }

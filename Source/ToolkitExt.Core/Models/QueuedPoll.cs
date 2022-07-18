@@ -41,6 +41,9 @@ namespace ToolkitExt.Core.Models
                 return false;
             }
 
+            StartedAt = DateTime.UtcNow;
+            EndedAt = StartedAt.AddMinutes(Length);
+
             CreatePollResponse response = await BackendClient.Instance.SendPoll(this);
 
             if (response == null)
@@ -51,13 +54,6 @@ namespace ToolkitExt.Core.Models
             Id = response.Id;
             
             return true;
-        }
-
-        /// <inheritdoc />
-        public override async Task PostQueue()
-        {
-            StartedAt = DateTime.UtcNow;
-            EndedAt = StartedAt.AddMinutes(Length);
         }
     }
 }
