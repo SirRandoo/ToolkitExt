@@ -60,6 +60,12 @@ namespace ToolkitExt.Core
         public static BackendClient Instance { get; } = new BackendClient();
 
         public bool Connected => _wsClient.IsConnected;
+        
+        public string ChannelId
+        {
+            get => _channelId;
+            private set => _channelId = value;
+        }
 
         public void RegisterHandler(IWsMessageHandler handler) => _wsClient.RegisterHandler(handler);
 
@@ -89,7 +95,7 @@ namespace ToolkitExt.Core
         public async Task SetCredentials(string channelId, string token)
         {
             _httpClient.SetToken(token);
-            _channelId = channelId;
+            ChannelId = channelId;
 
             if (_wsClient.IsConnected)
             {
@@ -116,7 +122,7 @@ namespace ToolkitExt.Core
         ///     Retrieves the channel's poll settings from the backend service.
         /// </summary>
         [ItemCanBeNull]
-        public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(_channelId);
+        public async Task<PollSettingsResponse> GetPollSettings() => await _httpClient.GetPollSettingsAsync(ChannelId);
 
         [ItemCanBeNull] internal async Task<DeletePollResponse> DeletePoll() => await _httpClient.DeletePollAsync();
 
@@ -138,7 +144,7 @@ namespace ToolkitExt.Core
             Task.Run(
                     async () =>
                     {
-                        AuthResponse response = await _httpClient.RetrieveToken(socketId, _channelId);
+                        AuthResponse response = await _httpClient.RetrieveToken(socketId, ChannelId);
 
                         if (response == null)
                         {
@@ -156,7 +162,7 @@ namespace ToolkitExt.Core
             await _wsClient.Send(
                 new SubscribeRequest
                 {
-                    Event = PusherEvent.Subscribe, Data = new SubscribeRequest.SubscribeData { Channel = $"private-gameclient.{_channelId}", Auth = response.Auth }
+                    Event = PusherEvent.Subscribe, Data = new SubscribeRequest.SubscribeData { Channel = $"private-gameclient.{ChannelId}", Auth = response.Auth }
                 }
             );
         }

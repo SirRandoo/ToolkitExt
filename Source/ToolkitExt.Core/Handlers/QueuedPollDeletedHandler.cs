@@ -14,27 +14,41 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
+using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
+using ToolkitExt.Core.Responses;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Core.Handlers
 {
-    public enum PusherEvent
+    public class QueuedPollDeletedHandler : FilteredMessageHandler
     {
-        [EnumMember(Value = "pusher:pong")] Pong,
-        [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
-        [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
-        [EnumMember(Value = "App\\Events\\QueuedPollDeleted")] QueuedPollDeleted,
-        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
-        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
-        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
-        SubscriptionSucceeded
+        /// <inheritdoc />
+        public QueuedPollDeletedHandler() : base(PusherEvent.QueuedPollDeleted)
+        {
+        }
+        
+        /// <inheritdoc />
+        protected override async Task<bool> HandleEvent([NotNull] WsMessageEventArgs args)
+        {
+            var response = await args.AsEventAsync<QueuedPollDeletedResponse>();
+
+            if (response == null || response.Data.ChannelId != BackendClient.Instance.ChannelId)
+            {
+                return false;
+            }
+
+            PollManager.Instance.DeletePoll(response.Data.Id);
+
+            return true;
+        }
     }
 }

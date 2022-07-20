@@ -14,27 +14,24 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Core.Responses
 {
-    public enum PusherEvent
+    public class QueuedPollDeletedResponse : PusherResponse
     {
-        [EnumMember(Value = "pusher:pong")] Pong,
-        [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
-        [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
-        [EnumMember(Value = "App\\Events\\QueuedPollDeleted")] QueuedPollDeleted,
-        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
-        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
-        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
-        SubscriptionSucceeded
+        [JsonProperty("data")] public DeletedData Data { get; set; }
+
+        public class DeletedData
+        {
+            [JsonProperty("id")] public int Id { get; set; }
+            [JsonProperty("providerId")] public string ChannelId { get; set; }
+        }
     }
 }

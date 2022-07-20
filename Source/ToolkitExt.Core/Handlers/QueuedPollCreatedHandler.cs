@@ -36,9 +36,9 @@ using Verse;
 
 namespace ToolkitExt.Core.Handlers
 {
-    internal sealed class QueuedPollHandler : FilteredMessageHandler
+    internal sealed class QueuedPollCreatedHandler : FilteredMessageHandler
     {
-        internal QueuedPollHandler() : base(PusherEvent.QueuedPollCreated)
+        internal QueuedPollCreatedHandler() : base(PusherEvent.QueuedPollCreated)
         {
         }
 
