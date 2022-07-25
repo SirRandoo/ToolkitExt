@@ -34,7 +34,7 @@ namespace ToolkitExt.Mod.Windows
     public class SettingsDialog : ProxySettingsWindow
     {
         private bool _displayingKey;
-        private string _lastToken;
+        private readonly string _lastToken;
 
         /// <inheritdoc/>
         public SettingsDialog() : base(ExtensionMod.Instance)
