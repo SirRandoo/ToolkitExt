@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using SirRandoo.CommonLib.Helpers;
 using SirRandoo.CommonLib.Windows;
+using ToolkitExt.Api;
 using ToolkitExt.Core;
 using UnityEngine;
 using Verse;
@@ -35,6 +36,16 @@ namespace ToolkitExt.Mod.Windows
     {
         private bool _displayingKey;
         private readonly string _lastToken;
+        private string _settingsHeader;
+        private string _keyLabel;
+        private string _keyDescription;
+        private string _generalGroup;
+        private string _largeTextLabel;
+        private string _largeTextDescription;
+        private string _showKeyTooltip;
+        private string _hideKeyTooltip;
+        private string _pasteKeyTooltip;
+        private string _pollGroup;
 
         /// <inheritdoc/>
         public SettingsDialog() : base(ExtensionMod.Instance)
@@ -47,24 +58,42 @@ namespace ToolkitExt.Mod.Windows
         {
             GUI.BeginGroup(region);
 
+            var headerRect = new Rect(0f, 0f, region.width, Text.LineHeight * 2f);
+            var separatorRect = new Rect(10f, headerRect.height + 2f, region.width - 20f, Text.LineHeight);
+
+            float settingsY = separatorRect.y + separatorRect.height + 2f;
+            var settingsRect = new Rect(0f, settingsY, region.width, region.height - settingsY);
+
+            GUI.BeginGroup(headerRect);
+            DrawSettingsHeader(headerRect);
+            GUI.EndGroup();
+
+            Widgets.DrawLineHorizontal(separatorRect.x, separatorRect.y, separatorRect.width);
+
+            GUI.BeginGroup(settingsRect);
             var listing = new Listing_Standard();
-
-            listing.Begin(region.AtZero());
-
+            listing.Begin(settingsRect.AtZero());
+            
             DrawGeneralSettings(listing);
             DrawPollSettings(listing);
 
             listing.End();
+            GUI.EndGroup();
 
             GUI.EndGroup();
         }
 
+        private void DrawSettingsHeader(Rect region)
+        {
+            UiHelper.Label(region, _settingsHeader, TextAnchor.MiddleCenter);
+        }
+
         private void DrawGeneralSettings([NotNull] Listing listing)
         {
-            listing.GroupHeader("General", false);
+            listing.GroupHeader(_generalGroup, false);
 
             (Rect keyLabel, Rect keyField) = listing.Split();
-            UiHelper.Label(keyLabel, "Broadcaster key");
+            UiHelper.Label(keyLabel, _keyLabel);
 
             (Rect trueKeyField, Rect buttonRects) = keyField.Split(0.7f);
             (Rect visibilityButton, Rect pasteButton) = buttonRects.Split(0.5f);
@@ -82,7 +111,7 @@ namespace ToolkitExt.Mod.Windows
             }
 
             UiHelper.Icon(visibilityButton, _displayingKey ? Textures.Hidden : Textures.Visible, Color.white);
-            TooltipHandler.TipRegion(visibilityButton, "Click to toggle the visibility of the broadcaster key.");
+            TooltipHandler.TipRegion(visibilityButton, _displayingKey ? _hideKeyTooltip : _showKeyTooltip);
 
             if (Widgets.ButtonInvisible(visibilityButton))
             {
@@ -90,19 +119,41 @@ namespace ToolkitExt.Mod.Windows
             }
 
             UiHelper.Icon(pasteButton, TexButton.Paste, Color.white);
-            TooltipHandler.TipRegion(pasteButton, "Click to paste the broadcaster key from your clipboard.");
+            TooltipHandler.TipRegion(pasteButton, _pasteKeyTooltip);
 
             if (Widgets.ButtonInvisible(pasteButton))
             {
                 ExtensionMod.Settings.Auth.BroadcasterKey = GUIUtility.systemCopyBuffer;
             }
+            
+            listing.DrawDescription(_keyDescription);
         }
 
         private void DrawPollSettings([NotNull] Listing listing)
         {
-            listing.GroupHeader("Poll");
+            listing.GroupHeader(_pollGroup);
 
-            Widgets.CheckboxLabeled(listing.GetRect(Text.LineHeight), "Use larger text on the poll display.", ref ExtensionMod.Settings.Polls.LargeText);
+            Widgets.CheckboxLabeled(listing.GetRect(Text.LineHeight), _largeTextLabel, ref ExtensionMod.Settings.Polls.LargeText);
+            listing.DrawDescription(_largeTextDescription);
+        }
+
+        /// <inheritdoc />
+        protected override void GetTranslations()
+        {
+            _generalGroup = "TExt.SettingGroups.General".TranslateSimple();
+            _pollGroup = "TExt.SettingGroups.Poll".TranslateSimple();
+            
+            _settingsHeader = string.Format("TExt.Headers.ClientSideSettings".TranslateSimple(), SiteMap.Dashboard.AbsoluteUri);
+            
+            _keyLabel = "TExt.Settings.BroadcasterKey.Label".TranslateSimple();
+            _keyDescription = string.Format("TExt.Settings.BroadcasterKey.Description".TranslateSimple(), SiteMap.Dashboard.AbsoluteUri);
+
+            _largeTextLabel = "TExt.Settings.LargeText.Label".TranslateSimple();
+            _largeTextDescription = "TExt.Settings.LargeText.Description".TranslateSimple();
+
+            _pasteKeyTooltip = "TExt.Tooltips.PasteBroadcasterKey".TranslateSimple();
+            _showKeyTooltip = "TExt.Tooltips.ToggleBroadcasterKey.Hidden".TranslateSimple();
+            _hideKeyTooltip = "TExt.Tooltips.ToggleBroadcasterKey.Visible".TranslateSimple();
         }
 
         /// <inheritdoc/>

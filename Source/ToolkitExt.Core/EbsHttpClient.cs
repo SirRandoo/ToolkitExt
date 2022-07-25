@@ -40,8 +40,7 @@ namespace ToolkitExt.Core
     internal class EbsHttpClient
     {
         private static readonly RimLogger Logger = new RimLogger("ToolkitHttp");
-        private static readonly Uri APIUrl = new Uri("https://toolkit-ext.com/api/");
-        private readonly RestClient _client = new RestClient(APIUrl);
+        private readonly RestClient _client = new RestClient(SiteMap.ApiBase);
         private volatile string _token;
 
         protected internal EbsHttpClient()

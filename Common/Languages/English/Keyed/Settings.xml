@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <TExt.Settings.BroadcasterKey.Label>Broadcaster key</TExt.Settings.BroadcasterKey.Label>
+    <TExt.Settings.BroadcasterKey.Description>The key received from your extension configuration page, or the website's dashboard. If you don't have a key, or otherwise lost your existing key, you can obtain a new key by going to {0}.</TExt.Settings.BroadcasterKey.Description>
+    
+    <TExt.Settings.LargeText.Label>Use large text on the poll display</TExt.Settings.LargeText.Label>
+    <TExt.Settings.LargeText.Description>When enabled, the poll display will use larger than normal text. Incredibly useful if you want viewers to see which option is winning.</TExt.Settings.LargeText.Description>
+</LanguageData>
