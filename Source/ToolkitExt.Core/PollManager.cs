@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
@@ -42,6 +43,7 @@ namespace ToolkitExt.Core
         private volatile bool _concluding;
         private IPoll _current;
         private volatile bool _dequeuing;
+        private volatile bool _generating;
 
         private PollManager()
         {
@@ -51,6 +53,11 @@ namespace ToolkitExt.Core
         }
 
         public int PollDuration { get; set; } = 5;
+        
+        public bool ShouldGenerate
+        {
+            get => _generating;
+        }
 
         public static PollManager Instance { get; } = new PollManager();
 
@@ -214,6 +221,13 @@ namespace ToolkitExt.Core
                 _polls.Enqueue(poll);
             }
         }
+
+        public void QueueQueuedPoll(IPoll poll)
+        {
+            _generating = false;
+            Queue(poll);
+        }
+
         private void OnPollStarted(PollStartedEventArgs e)
         {
             PollStarted?.Invoke(this, e);

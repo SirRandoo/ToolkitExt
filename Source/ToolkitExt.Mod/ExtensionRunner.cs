@@ -20,10 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
+using ToolkitExt.Core.Entities;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Registries;
 using ToolkitExt.Core.Responses;
 using Verse;
@@ -70,19 +74,37 @@ namespace ToolkitExt.Mod
                 return;
             }
 
-            Task.Run(
-                async () =>
-                {
-                    Logger.Info("Connecting to the ebs...");
-                    await ConnectToEbsAsync();
+            Task.Run(async () => await DoStartupOperationsAsync());
+        }
+        private static async Task DoStartupOperationsAsync()
+        {
+            Logger.Info("Connecting to the ebs...");
+            await ConnectToEbsAsync();
 
-                    Logger.Info("Fetching poll settings from backend...");
-                    await LoadPollSettingsAsync();
+            Logger.Info("Fetching poll settings from backend...");
+            await LoadPollSettingsAsync();
 
-                    Logger.Info("Syncing incidents...");
-                    IncidentRegistry.Sync();
-                }
-            );
+            Logger.Info("Syncing incidents...");
+            IncidentRegistry.Sync();
+
+            Logger.Info("Loading queued polls...");
+            await LoadQueuedPollsAsync();
+        }
+        
+        private static async Task LoadQueuedPollsAsync()
+        {
+            QueuedPollPaginator paginator = await BackendClient.Instance.GetQueuedPolls();
+            List<RawQueuedPoll> queue = await paginator.GetNextPageAsync();
+
+            while (paginator.HasNext)
+            {
+                queue.AddRange(await paginator.GetNextPageAsync());
+            }
+            
+            foreach (RawQueuedPoll poll in queue)
+            {
+                QueuedPollRepository.Add(poll);
+            }
         }
 
         private static async Task LoadPollSettingsAsync()

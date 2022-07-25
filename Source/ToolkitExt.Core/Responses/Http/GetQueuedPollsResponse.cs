@@ -14,22 +14,28 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using ToolkitExt.Core.Models;
-using ToolkitExt.Core.Serialization;
 
 namespace ToolkitExt.Core.Responses
 {
-    public class QueuedPollCreatedResponse : PusherResponse
+    public class GetQueuedPollsResponse
     {
-        [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<RawQueuedPoll>))]
-        public RawQueuedPoll Data { get; set; }
+        [JsonProperty("current_page")] public int CurrentPage { get; set; }
+        [JsonProperty("data")] public List<RawQueuedPoll> Data { get; set; }
+        [JsonProperty("next_page_url")] public Uri NextPageUrl { get; set; }
+        [JsonProperty("path")] public Uri Path { get; set; }
+        [JsonProperty("per_page")] public int PerPage { get; set; }
+        [JsonProperty("previous_page_url")] public Uri PreviousPageUrl { get; set; }
+        [JsonProperty("to")] public int To { get; set; }
+        [JsonProperty("total")] public int Total { get; set; }
     }
 }

@@ -29,6 +29,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using RestSharp;
 using ToolkitExt.Api;
+using ToolkitExt.Core.Entities;
 using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
@@ -138,6 +139,24 @@ namespace ToolkitExt.Core
                 default:
                     return false;
             }
+        }
+
+        [ItemNotNull]
+        internal Task<QueuedPollPaginator> GetQueuedPollsAsync(string channelId)
+        {
+            return Task.FromResult(new QueuedPollPaginator(this, channelId));
+        }
+
+        [ItemCanBeNull]
+        internal async Task<GetQueuedPollsResponse> GetQueuedPollsAsync([NotNull] string channelId, int page)
+        {
+            IRestRequest request = GetRequest($"/broadcasting/polls/queue/index/{channelId}", Method.GET);
+            request.AddQueryParameter("page", page.ToString());
+            request.AddUrlSegment("channelId", channelId, false);
+
+            IRestResponse response = await _client.ExecuteAsync(request, Method.GET);
+
+            return ResolveContent(response.Content, out GetQueuedPollsResponse data) ? data : null;
         }
 
         [ContractAnnotation("=> true, response: notnull; => false, response: null")]

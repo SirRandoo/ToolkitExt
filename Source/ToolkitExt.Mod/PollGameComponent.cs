@@ -63,6 +63,11 @@ namespace ToolkitExt.Mod
         /// <inheritdoc/>
         public override void GameComponentUpdate()
         {
+            if (!PollManager.Instance.ShouldGenerate)
+            {
+                return;
+            }
+            
             int currentMinute = GetCurrentMinute();
 
             if (currentMinute <= _lastMinute || currentMinute < 1)

@@ -27,6 +27,7 @@ using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Interfaces;
+using ToolkitExt.Core.Entities;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
@@ -131,6 +132,8 @@ namespace ToolkitExt.Core
         public async Task<bool> ValidateQueuedPoll(int id, bool valid, string errorString) => await _httpClient.ValidateQueuedPollAsync(id, valid, errorString);
 
         public async Task<bool> DeleteQueuedPoll(int id) => await _httpClient.DeleteQueuedPollAsync(id);
+
+        [ItemNotNull] public async Task<QueuedPollPaginator> GetQueuedPolls() => await _httpClient.GetQueuedPollsAsync(_channelId);
 
         private static void OnSubscribed(object sender, [NotNull] SubscribedEventArgs e)
         {

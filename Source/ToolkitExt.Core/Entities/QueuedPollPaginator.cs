@@ -20,47 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using ToolkitExt.Api;
-using ToolkitExt.Api.Enums;
-using ToolkitExt.Api.Events;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Responses;
-using ToolkitExt.Core.Workers;
 
-namespace ToolkitExt.Core.Handlers
+namespace ToolkitExt.Core.Entities
 {
-    internal sealed class QueuedPollCreatedHandler : FilteredMessageHandler
+    public class QueuedPollPaginator
     {
-        private static readonly RimLogger Logger = new RimLogger("Handlers:QueuedPollCreated");
-        
-        internal QueuedPollCreatedHandler() : base(PusherEvent.QueuedPollCreated)
+        private static readonly RimLogger Logger = new RimLogger("QueuedPollPaginator");
+        private readonly string _channelId;
+        private readonly EbsHttpClient _client;
+        private int _currentPage;
+        private int _totalPages = 1;
+
+        internal QueuedPollPaginator(EbsHttpClient client, string channelId)
         {
+            _client = client;
+            _channelId = channelId;
         }
 
-        /// <inheritdoc/>
-        protected override async Task<bool> HandleEvent([NotNull] WsMessageEventArgs args)
+        public bool HasNext => _currentPage < _totalPages;
+
+        public async Task<List<RawQueuedPoll>> GetNextPageAsync()
         {
-            var @event = await args.AsEventAsync<QueuedPollCreatedResponse>();
+            GetQueuedPollsResponse response = await _client.GetQueuedPollsAsync(_channelId, ++_currentPage);
 
-            if (@event == null)
+            if (response == null)
             {
-                return false;
+                return null;
             }
 
-            QueuedPollValidator.ValidationResult result = await QueuedPollValidator.ValidateAsync(@event.Data);
-            bool validated = await BackendClient.Instance.ValidateQueuedPoll(result.Poll.Id, result.Valid, result.ErrorString);
-
-            if (!validated)
+            if (response.CurrentPage == _currentPage)
             {
-                Logger.Warn($"Queued poll #{result.Poll.Id:N0} was not validated properly by the server; discarding poll...");
-
-                return false;
+                return response.Data;
             }
 
-            PollManager.Instance.Queue(result.Poll);
+            Logger.Warn($"Received response wasn't excepted response; received page #{response.CurrentPage:N0}, but excepted page #{_currentPage:N0}");
 
-            return true;
+            _totalPages = 0;
+            _currentPage = 0;
+
+            return null;
         }
     }
 }

@@ -14,22 +14,30 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
-using ToolkitExt.Core.Models;
-using ToolkitExt.Core.Serialization;
+using ToolkitExt.Core.Responses;
 
-namespace ToolkitExt.Core.Responses
+namespace ToolkitExt.Core.Models
 {
-    public class QueuedPollCreatedResponse : PusherResponse
+    public class RawQueuedPoll
     {
-        [JsonProperty("data")]
-        [JsonConverter(typeof(EmbeddedJsonConverter<RawQueuedPoll>))]
-        public RawQueuedPoll Data { get; set; }
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("title")] public string Title { get; set; }
+        [JsonProperty("options")] public List<RawQueuedOption> Options { get; set; }
+        [JsonProperty("length")] public int Length { get; set; }
+        [JsonProperty("delay")] public int Delay { get; set; }
+        [JsonProperty("validated")] public int Validated { get; set; }
+        [JsonProperty("validation_error")] public string ValidationError { get; set; }
+        [JsonProperty("created_by_id")] public int CreatedById { get; set; }
+        [JsonProperty("created_at")] public DateTime CreatedAt { get; set; }
+        [JsonProperty("updated_at")] public DateTime UpdatedAt { get; set; }
     }
 }
