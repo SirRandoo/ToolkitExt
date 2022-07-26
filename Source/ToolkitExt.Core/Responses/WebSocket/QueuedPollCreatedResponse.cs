@@ -28,6 +28,8 @@ namespace ToolkitExt.Core.Responses
 {
     public class QueuedPollCreatedResponse : PusherResponse
     {
+        [JsonProperty("channel")] public string Channel { get; set; }
+
         [JsonProperty("data")]
         [JsonConverter(typeof(EmbeddedJsonConverter<RawQueuedPoll>))]
         public RawQueuedPoll Data { get; set; }

@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
 using ToolkitExt.Core.Models;
 using Verse;
 
@@ -30,6 +31,7 @@ namespace ToolkitExt.Core
     [StaticConstructorOnStartup]
     public static class QueuedPollRepository
     {
+        private static readonly RimLogger Logger = new RimLogger("QueuedPollRepository");
         private static readonly List<RawQueuedPoll> QueuedPolls = new List<RawQueuedPoll>();
 
         [NotNull]
@@ -44,8 +46,10 @@ namespace ToolkitExt.Core
             }
         }
 
-        public static void Add(RawQueuedPoll poll)
+        public static void Add([NotNull] RawQueuedPoll poll)
         {
+            Logger.Debug($"Registering #{poll.Id}");
+            
             lock (QueuedPolls)
             {
                 QueuedPolls.Add(poll);
@@ -79,7 +83,15 @@ namespace ToolkitExt.Core
         {
             lock (QueuedPolls)
             {
-                return QueuedPolls.Count > 0 ? QueuedPolls[0] : null;
+                if (QueuedPolls.Count <= 0)
+                {
+                    return null;
+                }
+
+                RawQueuedPoll poll = QueuedPolls[0];
+                QueuedPolls.RemoveAt(0);
+
+                return poll;
             }
         }
 

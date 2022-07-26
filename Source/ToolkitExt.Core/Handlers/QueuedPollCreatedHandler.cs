@@ -27,13 +27,14 @@ using ToolkitExt.Api.Enums;
 using ToolkitExt.Api.Events;
 using ToolkitExt.Core.Responses;
 using ToolkitExt.Core.Workers;
+using Verse;
 
 namespace ToolkitExt.Core.Handlers
 {
     internal sealed class QueuedPollCreatedHandler : FilteredMessageHandler
     {
         private static readonly RimLogger Logger = new RimLogger("Handlers:QueuedPollCreated");
-        
+
         internal QueuedPollCreatedHandler() : base(PusherEvent.QueuedPollCreated)
         {
         }
@@ -48,6 +49,14 @@ namespace ToolkitExt.Core.Handlers
                 return false;
             }
 
+            if (Current.Game == null)
+            {
+                Logger.Debug("There is no active game; adding it to the queue...");
+                QueuedPollRepository.Add(@event.Data);
+
+                return true;
+            }
+
             QueuedPollValidator.ValidationResult result = await QueuedPollValidator.ValidateAsync(@event.Data);
             bool validated = await BackendClient.Instance.ValidateQueuedPoll(result.Poll.Id, result.Valid, result.ErrorString);
 
@@ -58,6 +67,7 @@ namespace ToolkitExt.Core.Handlers
                 return false;
             }
 
+            Logger.Debug("Queuing poll...");
             PollManager.Instance.QueueQueuedPoll(result.Poll);
 
             return true;

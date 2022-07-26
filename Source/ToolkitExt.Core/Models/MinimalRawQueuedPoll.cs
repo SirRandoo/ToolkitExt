@@ -26,11 +26,14 @@ using Newtonsoft.Json;
 
 namespace ToolkitExt.Core.Models
 {
-    public class RawQueuedPoll : MinimalRawQueuedPoll
+    public class MinimalRawQueuedPoll
     {
-        [JsonProperty("validation_error")] public string ValidationError { get; set; }
-        [JsonProperty("created_by_id")] public int CreatedById { get; set; }
-        [JsonProperty("provider_id")] public string ChannelId { get; set; }
-        [JsonProperty("updated_at")] public DateTime UpdatedAt { get; set; }
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("title")] public string Title { get; set; }
+        [JsonProperty("options")] public List<RawQueuedOption> Options { get; set; }
+        [JsonProperty("length")] public int Length { get; set; }
+        [JsonProperty("delay")] public int? Delay { get; set; }
+        [JsonProperty("validated")] public int Validated { get; set; }
+        [JsonProperty("created_at")] public DateTime CreatedAt { get; set; }
     }
 }

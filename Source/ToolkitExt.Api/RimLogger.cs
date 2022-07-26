@@ -23,6 +23,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -33,10 +34,10 @@ namespace ToolkitExt.Api
     public sealed class RimLogger
     {
         private static SynchronizationContext _context = SynchronizationContext.Current;
+        private static readonly string DebugColorHex = ColorUtility.ToHtmlStringRGB(ColorLibrary.LightPink);
+        private const string WarningColorHex = "#FF6B00";
 
         private readonly string _name;
-        private bool _debugChecked;
-        private bool _debugEnabled;
 
         public RimLogger(string name)
         {
@@ -68,8 +69,34 @@ namespace ToolkitExt.Api
         /// <param name="color">The color code of the message</param>
         /// <returns>The formatted message</returns>
         [NotNull]
-        public string FormatMessage([NotNull] string level, string message, [NotNull] string color) =>
-            $@"<color=""#{color.TrimStart('#')}"">{FormatMessage(level, message)}</color>";
+        public string FormatMessage([NotNull] string level, [NotNull] string message, [NotNull] string color)
+        {
+            var builder = new StringBuilder();
+            string colorHex = color.TrimStart('#');
+
+            string[] split = message.Split('\n');
+
+            for (var index = 0; index < split.Length; index++)
+            {
+                string s = split[index];
+
+                if (builder.Length <= 0)
+                {
+                    builder.Append($@"<color=""#{colorHex}"">{FormatMessage(level, EscapeXml(s))}</color>");
+                }
+                else
+                {
+                    builder.Append($@"<color=""#{colorHex}"">{EscapeXml(s)}</color>");
+                }
+
+                if (index < split.Length - 1)
+                {
+                    builder.Append('\n');
+                }
+            }
+
+            return builder.ToString();
+        }
 
         /// <summary>
         ///     Logs a message to RimWorld's log window.
@@ -109,7 +136,7 @@ namespace ToolkitExt.Api
         /// <param name="message">The message to log</param>
         public void Warn(string message)
         {
-            LogInternal(FormatMessage("WARN", message, "#FF6B00"));
+            LogInternal(FormatMessage("WARN", message, WarningColorHex));
         }
 
         /// <summary>
@@ -140,8 +167,17 @@ namespace ToolkitExt.Api
         {
             if (Prefs.DevMode && Prefs.LogVerbose)
             {
-                LogInternal(FormatMessage("DEBUG", message, ColorUtility.ToHtmlStringRGB(ColorLibrary.LightPink)));
+                LogInternal(FormatMessage("DEBUG", message, DebugColorHex));
             }
         }
+        
+        [NotNull]
+        private static string EscapeXml([NotNull]string content) =>
+            content.Replace("&", "&amp;")
+               .Replace("<", "&lt;")
+               .Replace(">", "&gt;")
+               //.Replace("'", "&apos;")
+               //.Replace(@"""", "&quot;")
+               ;
     }
 }

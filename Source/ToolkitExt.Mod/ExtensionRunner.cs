@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Steamworks;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
 using ToolkitExt.Core.Entities;
@@ -89,18 +90,43 @@ namespace ToolkitExt.Mod
 
             Logger.Info("Loading queued polls...");
             await LoadQueuedPollsAsync();
+            Logger.Info("Finished loading queued polls!");
         }
         
         private static async Task LoadQueuedPollsAsync()
         {
+            Logger.Debug("Grabbing queued poll paginator...");
             QueuedPollPaginator paginator = await BackendClient.Instance.GetQueuedPolls();
+
+            Logger.Debug("Getting initial page from the server...");
             List<RawQueuedPoll> queue = await paginator.GetNextPageAsync();
+
+            if (queue == null)
+            {
+                Logger.Debug("There was no queued polls from the server; aborting...");
+
+                return;
+            }
+            
+            Logger.Debug($"Received {queue.Count:N0} polls from the server (initial).");
 
             while (paginator.HasNext)
             {
-                queue.AddRange(await paginator.GetNextPageAsync());
+                List<RawQueuedPoll> polls = await paginator.GetNextPageAsync();
+
+                if (polls == null)
+                {
+                    Logger.Debug("Reached end of list; aborting...");
+                    
+                    return;
+                }
+
+                Logger.Debug($"Received {polls.Count:N0} polls from the server.");
+                
+                queue.AddRange(polls);
             }
-            
+
+            Logger.Debug("Registering polls to queued poll repository...");
             foreach (RawQueuedPoll poll in queue)
             {
                 QueuedPollRepository.Add(poll);

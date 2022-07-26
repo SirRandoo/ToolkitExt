@@ -36,7 +36,7 @@ namespace ToolkitExt.Core.Workers
     public static class QueuedPollValidator
     {
         [ItemNotNull]
-        public static async Task<ValidationResult> ValidateAsync([NotNull] RawQueuedPoll poll)
+        public static async Task<ValidationResult> ValidateAsync([NotNull] MinimalRawQueuedPoll poll)
         {
             var options = new List<IOption>();
 

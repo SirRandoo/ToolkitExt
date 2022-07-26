@@ -31,11 +31,24 @@ namespace ToolkitExt.Core.Responses
     {
         [JsonProperty("current_page")] public int CurrentPage { get; set; }
         [JsonProperty("data")] public List<RawQueuedPoll> Data { get; set; }
+        [JsonProperty("first_page_url")] public Uri FirstPageUrl { get; set; }
+        [JsonProperty("from")] public int From { get; set; }
+        [JsonProperty("last_page")] public int LastPage { get; set; }
+        [JsonProperty("last_page_url")] public Uri LastPageUrl { get; set; }
+        [JsonProperty("link")] public List<QueuedPollLink> Links { get; set; }
         [JsonProperty("next_page_url")] public Uri NextPageUrl { get; set; }
         [JsonProperty("path")] public Uri Path { get; set; }
         [JsonProperty("per_page")] public int PerPage { get; set; }
         [JsonProperty("previous_page_url")] public Uri PreviousPageUrl { get; set; }
         [JsonProperty("to")] public int To { get; set; }
         [JsonProperty("total")] public int Total { get; set; }
+
+
+        public class QueuedPollLink
+        {
+            [JsonProperty("url")] public Uri Url { get; set; }
+            [JsonProperty("label")] public string Label { get; set; }
+            [JsonProperty("active")] public bool Active { get; set; }
+        }
     }
 }

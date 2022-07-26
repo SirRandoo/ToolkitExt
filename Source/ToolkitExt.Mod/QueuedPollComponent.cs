@@ -66,11 +66,18 @@ namespace ToolkitExt.Mod
 
                 if (poll == null)
                 {
+                    Logger.Debug("Repository has next, but no poll was obtained; ignoring");
+                    
                     return;
                 }
 
                 QueuedPollValidator.ValidationResult result = await QueuedPollValidator.ValidateAsync(poll);
+                
+                Logger.Debug($"Validation result for #{poll.Id} was: {result.Valid} (Reason: {result.ErrorString})");
+                
                 bool validated = await BackendClient.Instance.ValidateQueuedPoll(result.Poll.Id, result.Valid, result.ErrorString);
+                
+                Logger.Debug($"Server's response for poll #{poll.Id}: {validated}");
 
                 if (!validated)
                 {
@@ -79,6 +86,7 @@ namespace ToolkitExt.Mod
                     return;
                 }
 
+                Logger.Debug("Queuing poll to poll manager...");
                 PollManager.Instance.QueueQueuedPoll(result.Poll);
             }
         }

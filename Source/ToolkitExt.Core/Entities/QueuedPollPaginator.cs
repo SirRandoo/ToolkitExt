@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Responses;
@@ -44,17 +45,24 @@ namespace ToolkitExt.Core.Entities
 
         public bool HasNext => _currentPage < _totalPages;
 
+        [ItemCanBeNull]
         public async Task<List<RawQueuedPoll>> GetNextPageAsync()
         {
-            GetQueuedPollsResponse response = await _client.GetQueuedPollsAsync(_channelId, ++_currentPage);
+            Logger.Debug($"Loading page #{++_currentPage:N0} from the server");
+            GetQueuedPollsResponse response = await _client.GetQueuedPollsAsync(_channelId, _currentPage);
 
             if (response == null)
             {
+                Logger.Debug("Response was null; aborting...");
                 return null;
             }
 
+            _totalPages = response.LastPage;
+
             if (response.CurrentPage == _currentPage)
             {
+                Logger.Debug("Received the page we requested; returning...");
+                Logger.Debug($"{response.Data.Count:N0} polls received.");
                 return response.Data;
             }
 
