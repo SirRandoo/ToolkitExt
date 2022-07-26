@@ -58,7 +58,7 @@ namespace ToolkitExt.Core.Handlers
                 return false;
             }
 
-            PollManager.Instance.Queue(result.Poll);
+            PollManager.Instance.QueueQueuedPoll(result.Poll);
 
             return true;
         }
