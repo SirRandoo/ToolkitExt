@@ -27,6 +27,7 @@ using SirRandoo.CommonLib.Helpers;
 using SirRandoo.CommonLib.Windows;
 using ToolkitExt.Api;
 using ToolkitExt.Core;
+using ToolkitExt.Core.Entities;
 using UnityEngine;
 using Verse;
 
@@ -46,6 +47,7 @@ namespace ToolkitExt.Mod.Windows
         private string _hideKeyTooltip;
         private string _pasteKeyTooltip;
         private string _pollGroup;
+        private CompositeLabel _headerLabel;
 
         /// <inheritdoc/>
         public SettingsDialog() : base(ExtensionMod.Instance)
@@ -85,7 +87,9 @@ namespace ToolkitExt.Mod.Windows
 
         private void DrawSettingsHeader(Rect region)
         {
-            UiHelper.Label(region, _settingsHeader, TextAnchor.MiddleCenter);
+            _headerLabel ??= CompositeLabel.Compile(region, _settingsHeader);
+
+            _headerLabel.Draw();
         }
 
         private void DrawGeneralSettings([NotNull] Listing listing)
