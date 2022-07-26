@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -34,6 +33,7 @@ using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Requests;
 using ToolkitExt.Core.Responses;
 using ToolkitExt.Core.Serialization;
+using Verse;
 
 namespace ToolkitExt.Core
 {
@@ -72,7 +72,7 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest("/broadcasting/auth", Method.POST);
             request.AddJsonBody(new BroadcastTokenRequest { ChannelName = $"private-gameclient.{channel}", SocketId = socketId });
 
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out AuthResponse data) ? data : null;
         }
@@ -83,7 +83,7 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest("/broadcasting/polls/create", Method.POST);
             request.AddJsonBody(poll);
 
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out CreatePollResponse data) ? data : null;
         }
@@ -92,7 +92,7 @@ namespace ToolkitExt.Core
         internal async Task<DeletePollResponse> DeletePollAsync()
         {
             RestRequest request = GetRequest("/broadcasting/polls/delete", Method.DELETE);
-            IRestResponse<DeletePollResponse> response = await _client.ExecuteAsync<DeletePollResponse>(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out DeletePollResponse data) ? data : null;
         }
@@ -101,7 +101,7 @@ namespace ToolkitExt.Core
         internal async Task<PollSettingsResponse> GetPollSettingsAsync(string id)
         {
             RestRequest request = GetRequest($"/settings/polls/{id}", Method.GET);
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out PollSettingsResponse data) ? data : null;
         }
@@ -111,7 +111,7 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest("/initialize/incident-defs/update", Method.POST);
             request.AddJsonBody(items);
 
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out SuccessResponse _);
         }
@@ -121,7 +121,7 @@ namespace ToolkitExt.Core
             RestRequest request = GetRequest($"/broadcasting/polls/queue/update/{id}", Method.POST);
             request.AddJsonBody(new[] { new QueuedPollValidatedRequest { Validated = valid, ValidationError = errorString } });
 
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out SuccessResponse _);
         }
@@ -129,7 +129,7 @@ namespace ToolkitExt.Core
         internal async Task<bool> DeleteQueuedPollAsync(int id)
         {
             RestRequest request = GetRequest($"/broadcasting/polls/queue/delete/{id}", Method.DELETE);
-            IRestResponse response = await _client.ExecuteAsync(request);
+            IRestResponse response = await ExecuteAsync(request);
 
             switch (response.StatusCode)
             {
@@ -140,22 +140,56 @@ namespace ToolkitExt.Core
             }
         }
 
-        [ItemNotNull]
-        internal Task<QueuedPollPaginator> GetQueuedPollsAsync(string channelId)
-        {
-            return Task.FromResult(new QueuedPollPaginator(this, channelId));
-        }
+        [NotNull] [ItemNotNull] internal Task<QueuedPollPaginator> GetQueuedPollsAsync(string channelId) => Task.FromResult(new QueuedPollPaginator(this, channelId));
 
         [ItemCanBeNull]
         internal async Task<GetQueuedPollsResponse> GetQueuedPollsAsync([NotNull] string channelId, int page)
         {
             IRestRequest request = GetRequest($"/broadcasting/polls/queue/index/{channelId}", Method.GET);
-            request.AddQueryParameter("page", page.ToString());
-            request.AddUrlSegment("channelId", channelId, false);
+            request.AddQueryParameter("page", page.ToString(), false);
 
-            IRestResponse response = await _client.ExecuteAsync(request, Method.GET);
+            IRestResponse response = await ExecuteAsync(request);
 
             return ResolveContent(response.Content, out GetQueuedPollsResponse data) ? data : null;
+        }
+
+        [ItemNotNull]
+        private async Task<IRestResponse> ExecuteAsync([NotNull] IRestRequest request)
+        {
+            IRestResponse response = await _client.ExecuteAsync(request);
+
+            if (!Prefs.DevMode || !Prefs.LogVerbose)
+            {
+                return response;
+            }
+
+            var builder = new StringBuilder();
+            builder.Append($"> {request.Method} {request.Resource}\n");
+
+            foreach (Parameter parameter in request.Parameters)
+            {
+                switch (parameter.Type)
+                {
+                    case ParameterType.HttpHeader:
+                        builder.Append($"> {parameter.Name}: {parameter.Value}\n");
+
+                        break;
+                }
+            }
+
+            builder.Append($"< HTTP/{response.ProtocolVersion} {response.StatusCode} {response.StatusDescription}\n");
+            builder.Append($"< Server: {response.Server}\n");
+
+            foreach (Parameter header in response.Headers)
+            {
+                builder.Append($"> {header.Name}: {header.Value.ToStringSafe()}\n");
+            }
+
+            builder.Append(response.Content);
+
+            Logger.Debug(builder.ToString());
+
+            return response;
         }
 
         [ContractAnnotation("=> true, response: notnull; => false, response: null")]
