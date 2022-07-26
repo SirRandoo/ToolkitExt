@@ -206,7 +206,7 @@ namespace ToolkitExt.Core
                     Task.Run(
                         async () =>
                         {
-                            Logger.Debug("Passing message onto message handlers...");
+                            Logger.Debug($"Passing {content} to message handler...");
 
                             await ProcessMessage(new WsMessageEventArgs(baseEvent.Event, content));
                         }
