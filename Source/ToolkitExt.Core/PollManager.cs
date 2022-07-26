@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
@@ -31,6 +32,7 @@ using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Events;
 using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Handlers;
+using ToolkitExt.Core.Models;
 using ToolkitExt.Core.Responses;
 
 namespace ToolkitExt.Core
@@ -43,7 +45,7 @@ namespace ToolkitExt.Core
         private volatile bool _concluding;
         private IPoll _current;
         private volatile bool _dequeuing;
-        private volatile bool _generating;
+        private volatile int _queuedPolls;
 
         private PollManager()
         {
@@ -54,10 +56,7 @@ namespace ToolkitExt.Core
 
         public int PollDuration { get; set; } = 5;
         
-        public bool ShouldGenerate
-        {
-            get => _generating;
-        }
+        public bool ShouldGenerate => _queuedPolls <= 0;
 
         public static PollManager Instance { get; } = new PollManager();
 
@@ -107,6 +106,11 @@ namespace ToolkitExt.Core
             await next.PostQueue();
 
             OnPollStarted(new PollStartedEventArgs { Poll = _current });
+
+            if (_current is QueuedPoll)
+            {
+                Interlocked.Decrement(ref _queuedPolls);
+            }
 
             _dequeuing = false;
         }
@@ -224,8 +228,16 @@ namespace ToolkitExt.Core
 
         public void QueueQueuedPoll(IPoll poll)
         {
-            _generating = false;
             Queue(poll);
+
+            if (_queuedPolls <= 0)
+            {
+                _queuedPolls = 1;
+            }
+            else
+            {
+                Interlocked.Increment(ref _queuedPolls);
+            }
         }
 
         private void OnPollStarted(PollStartedEventArgs e)
