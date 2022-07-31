@@ -65,6 +65,8 @@ namespace ToolkitExt.Mod
         {
             if (!PollManager.Instance.ShouldGenerate || !ExtensionMod.Settings.Polls.AutomatedPolls)
             {
+                _pollTracker = 0;
+                
                 return;
             }
             
