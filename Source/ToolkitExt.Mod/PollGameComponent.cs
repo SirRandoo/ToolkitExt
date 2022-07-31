@@ -63,7 +63,7 @@ namespace ToolkitExt.Mod
         /// <inheritdoc/>
         public override void GameComponentUpdate()
         {
-            if (!PollManager.Instance.ShouldGenerate)
+            if (!PollManager.Instance.ShouldGenerate || !ExtensionMod.Settings.Polls.AutomatedPolls)
             {
                 return;
             }
