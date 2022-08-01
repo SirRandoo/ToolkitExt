@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using ToolkitExt.Api.Interfaces;
+using UnityEngine;
 
 namespace ToolkitExt.Factories
 {
@@ -64,7 +65,7 @@ namespace ToolkitExt.Factories
         /// <param name="weight">The new weight the save for the given option</param>
         protected void SetWeightFor([NotNull] string identifier, float weight)
         {
-            _weights[identifier] = weight;
+            _weights[identifier] = Mathf.Clamp(weight, 0.001f, 100f);
         }
     }
 }

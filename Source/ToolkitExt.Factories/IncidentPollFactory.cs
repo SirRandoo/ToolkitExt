@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using RimWorld;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Models;
@@ -37,6 +38,7 @@ namespace ToolkitExt.Factories
     public abstract class IncidentPollFactory : WeightedPollFactory
     {
         private readonly IncidentEntry[] _incidentDefs;
+        private static readonly RimLogger Logger = new RimLogger("IncidentPollFactory");
 
         protected IncidentPollFactory()
         {
@@ -89,11 +91,12 @@ namespace ToolkitExt.Factories
         private IOption[] GetOptionsInternal()
         {
             var loops = 0;
+            var containerIndex = 0;
             var container = new IOption[2];
 
-            while (container.Length < 2)
+            while (containerIndex < 2)
             {
-                if (loops > 100)
+                if (loops > 10000)
                 {
                     return Array.Empty<IOption>();
                 }
@@ -109,13 +112,23 @@ namespace ToolkitExt.Factories
 
                 if (!entry.Incident.Worker.CanFireNow(@params))
                 {
+                    loops++;
+                    
                     continue;
                 }
 
-                container[container.Length] = entry.Incident.ToOption(@params);
+                container[containerIndex] = entry.Incident.ToOption(@params);
                 float weight = GetWeightDecrease(entry.Incident, GetWeightFor(entry.Id));
 
                 SetWeightFor(entry.Id, weight);
+                containerIndex++;
+                loops++;
+            }
+
+            for (var index = 0; index < container.Length; index++)
+            {
+                IOption option = container[index];
+                Logger.Debug($"Option #{index:N0} :: {option.ToStringSafe()}");
             }
 
             return container;

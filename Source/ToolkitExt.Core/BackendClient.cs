@@ -113,6 +113,13 @@ namespace ToolkitExt.Core
 
             foreach (IOption choice in poll.Options)
             {
+                if (choice == null)
+                {
+                    Logger.Debug("Encountered a null choice; aborting...");
+
+                    return null;
+                }
+                
                 request.AddOption(choice.Id.ToString(), choice.Label, choice.Tooltip);
             }
 
