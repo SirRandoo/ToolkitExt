@@ -136,7 +136,7 @@ namespace ToolkitExt.Mod
                     PollManager.Instance.PollDuration = value;
                 }
             }
-            
+
             /// <summary>
             ///     Whether the mod will automatically generate polls.
             /// </summary>

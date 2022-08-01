@@ -22,6 +22,7 @@
 
 using System;
 using JetBrains.Annotations;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Api.Registries;
 using ToolkitExt.Core;
@@ -35,6 +36,7 @@ namespace ToolkitExt.Mod
     public class PollGameComponent : GameComponent
     {
         private readonly PollDisplayDrawer _drawer = new PollDisplayDrawer();
+        private static readonly RimLogger Logger = new RimLogger("PollGameComponent");
         private float _lastHeight = UI.screenHeight;
         private int _lastMinute;
         private float _lastScale = Prefs.UIScale;
@@ -93,9 +95,12 @@ namespace ToolkitExt.Mod
 
                 if (poll == null)
                 {
+                    Logger.Debug($"Factory {factory.GetType().Name} returned a null poll; continuing to next factory...");
+                    
                     continue;
                 }
 
+                Logger.Debug($"Factory {factory.GetType().Name} returned a valid poll; queuing...");
                 PollManager.Instance.Queue(poll);
 
                 break;

@@ -67,7 +67,18 @@ namespace ToolkitExt.Core
             {
                 if (_current == null && !_dequeuing)
                 {
-                    Task.Run(async () => await NextPollAsync());
+                    Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await NextPollAsync();
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error("Could not dequeue next poll", e);
+                            }
+                        }
+                    );
                 }
 
                 return _current;
@@ -97,6 +108,7 @@ namespace ToolkitExt.Core
 
             if (!shouldQueue)
             {
+                Logger.Debug("Poll declined being queued; aborting...");
                 _dequeuing = false;
 
                 return;
@@ -113,6 +125,7 @@ namespace ToolkitExt.Core
             }
 
             _dequeuing = false;
+            Logger.Debug("Dequeued.");
         }
 
         public void ConcludePoll()
