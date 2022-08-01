@@ -146,6 +146,7 @@ namespace ToolkitExt.Mod
 
             ExtensionMod.Settings.Polls.Duration = response.Duration;
             ExtensionMod.Settings.Polls.Interval = response.Interval;
+            ExtensionMod.Settings.Polls.AutomatedPolls = response.AutomatedPolls;
         }
 
         private static async Task ConnectToEbsAsync()
