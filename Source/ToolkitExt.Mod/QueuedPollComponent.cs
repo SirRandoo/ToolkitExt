@@ -88,6 +88,10 @@ namespace ToolkitExt.Mod
                 {
                     Logger.Warn($"Poll #{poll.Id:N0} could not be validated by the server; discarding poll...");
 
+                    bool deleted = await BackendClient.Instance.DeleteQueuedPoll(poll.Id);
+                    
+                    Logger.Info($@"Poll #{poll.Id} marked for deletion. Deleted? {deleted.ToStringYesNo()}");
+                    
                     return;
                 }
 
