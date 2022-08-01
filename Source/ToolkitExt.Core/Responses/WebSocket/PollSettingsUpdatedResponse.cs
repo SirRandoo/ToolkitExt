@@ -29,5 +29,6 @@ namespace ToolkitExt.Core.Responses
         [JsonProperty("provider_id")] public string ChannelId { get; set; }
         [JsonProperty("duration")] public int Duration { get; set; }
         [JsonProperty("interval")] public int Interval { get; set; }
+        [JsonProperty("automated_polls")] public bool AutomatedPolls { get; set; }
     }
 }
