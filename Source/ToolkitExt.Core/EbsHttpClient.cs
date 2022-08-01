@@ -164,7 +164,7 @@ namespace ToolkitExt.Core
             }
 
             var builder = new StringBuilder();
-            builder.Append($"> {request.Method} {request.Resource}\n");
+            builder.Append($"> {request.Method} {_client.BaseUrl}{request.Resource}\n");
 
             foreach (Parameter parameter in request.Parameters)
             {

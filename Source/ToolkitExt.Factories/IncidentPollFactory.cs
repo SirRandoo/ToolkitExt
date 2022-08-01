@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using RimWorld;
@@ -33,18 +34,18 @@ namespace ToolkitExt.Factories
     /// <summary>
     ///     An abstract class for making incident polls.
     /// </summary>
-    public abstract class IncidentPollFactory : IPollFactory
+    public abstract class IncidentPollFactory : WeightedPollFactory
     {
-        private protected readonly IncidentDef[] IncidentDefs;
+        private readonly IncidentEntry[] _incidentDefs;
 
         protected IncidentPollFactory()
         {
-            IncidentDefs = GetIncidents();
+            _incidentDefs = GetIncidents();
         }
 
         /// <inheritdoc cref="IPollFactory.Create"/>
         [CanBeNull]
-        public IPoll Create()
+        public override IPoll Create()
         {
             IOption[] options = GetOptions();
 
@@ -74,40 +75,126 @@ namespace ToolkitExt.Factories
         [NotNull]
         protected IOption[] GetOptions()
         {
-            var container = new List<IOption>();
-
-            foreach (IncidentDef incident in IncidentDefs)
+            foreach (IncidentEntry entry in _incidentDefs)
             {
-                if (container.Count >= 2)
+                float oldWeight = GetWeightFor(entry.Id);
+                float weight = GetWeightIncrease(entry.Incident, oldWeight);
+                SetWeightFor(entry.Id, weight);
+            }
+
+            return GetOptionsInternal();
+        }
+
+        [NotNull]
+        private IOption[] GetOptionsInternal()
+        {
+            var loops = 0;
+            var container = new IOption[2];
+
+            while (container.Length < 2)
+            {
+                if (loops > 100)
                 {
-                    break;
+                    return Array.Empty<IOption>();
                 }
 
-                IncidentParms @params = GetParams(incident);
-
-                if (incident.Worker.CanFireNow(@params))
+                if (!_incidentDefs.TryRandomElementByWeight(i => GetWeightFor(i.Id), out IncidentEntry entry))
                 {
-                    container.Add(CreateOption(incident, @params));
+                    loops++;
+
+                    continue;
                 }
+
+                IncidentParms @params = GetParams(entry.Incident);
+
+                if (!entry.Incident.Worker.CanFireNow(@params))
+                {
+                    continue;
+                }
+
+                container[container.Length] = entry.Incident.ToOption(@params);
+                float weight = GetWeightDecrease(entry.Incident, GetWeightFor(entry.Id));
+
+                SetWeightFor(entry.Id, weight);
+            }
+
+            return container;
+        }
+
+        [NotNull]
+        private IncidentEntry[] GetIncidents()
+        {
+            var container = new List<IncidentEntry>();
+
+            foreach (IncidentDef incident in DefDatabase<IncidentDef>.AllDefs)
+            {
+                if (!IsIncidentValid(incident))
+                {
+                    continue;
+                }
+
+                string modName = incident.TryGetMod(out string name) ? name : null;
+
+                if (modName == null)
+                {
+                    continue;
+                }
+
+                var identifier = $"{modName}:{incident.defName}";
+                float defaultWeight = GetDefaultWeight(incident);
+                SetWeightFor(identifier, defaultWeight);
+
+                container.Add(new IncidentEntry { Id = identifier, Incident = incident });
             }
 
             return container.ToArray();
         }
 
-        [NotNull]
-        private IncidentDef[] GetIncidents()
+        private static float GetDefaultWeight([NotNull] IncidentDef incident)
         {
-            var container = new List<IncidentDef>();
+            float weight = ModLister.RoyaltyInstalled ? incident.baseChanceWithRoyalty : incident.baseChance;
 
-            foreach (IncidentDef incident in DefDatabase<IncidentDef>.AllDefs)
+            if (incident.category == IncidentCategoryDefOf.ThreatBig)
             {
-                if (IsIncidentValid(incident))
-                {
-                    container.Add(incident);
-                }
+                return weight - weight * 0.2f;
             }
 
-            return container.ToArray();
+            if (incident.category == IncidentCategoryDefOf.ThreatSmall)
+            {
+                return weight - weight * 0.3f;
+            }
+
+            return weight;
+        }
+
+        private static float GetWeightIncrease([NotNull] IncidentDef incident, float oldWeight)
+        {
+            if (incident.category == IncidentCategoryDefOf.ThreatBig)
+            {
+                return oldWeight + oldWeight * 0.2f;
+            }
+
+            if (incident.category == IncidentCategoryDefOf.ThreatSmall)
+            {
+                return oldWeight + oldWeight * 0.3f;
+            }
+
+            return oldWeight + oldWeight * 0.6f;
+        }
+
+        private static float GetWeightDecrease([NotNull] IncidentDef incident, float oldWeight)
+        {
+            if (incident.category == IncidentCategoryDefOf.ThreatBig)
+            {
+                return oldWeight - oldWeight * 0.9f;
+            }
+
+            if (incident.category == IncidentCategoryDefOf.ThreatSmall)
+            {
+                return oldWeight - oldWeight * 0.8f;
+            }
+
+            return oldWeight - oldWeight * 0.7f;
         }
 
         /// <summary>
@@ -133,5 +220,11 @@ namespace ToolkitExt.Factories
         ///     factory's internal list
         /// </returns>
         protected abstract bool IsIncidentValid(IncidentDef incident);
+
+        private sealed class IncidentEntry
+        {
+            public string Id { get; set; }
+            public IncidentDef Incident { get; set; }
+        }
     }
 }
