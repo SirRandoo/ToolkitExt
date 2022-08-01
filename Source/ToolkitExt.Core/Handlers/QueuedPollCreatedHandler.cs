@@ -69,10 +69,6 @@ namespace ToolkitExt.Core.Handlers
             {
                 Logger.Warn($"Poll #{@event.Data.Id:N0} could not be validated by the server; discarding poll...");
 
-                bool deleted = await BackendClient.Instance.DeleteQueuedPoll(@event.Data.Id);
-                    
-                Logger.Info($@"Poll #{@event.Data.Id} marked for deletion. Deleted? {deleted.ToStringYesNo()}");
-
                 return false;
             }
 
