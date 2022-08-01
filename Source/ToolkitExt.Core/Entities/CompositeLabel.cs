@@ -37,8 +37,6 @@ namespace ToolkitExt.Core.Entities
         {
             var token = new Token { Segment = word, IsLink = Uri.IsWellFormedUriString(word, UriKind.Absolute), Region = region };
             _tokens.Add(token);
-            
-            Log.Message($"Added {token.ToString()}");
         }
 
         public void Draw()

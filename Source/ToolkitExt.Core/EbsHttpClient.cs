@@ -119,7 +119,7 @@ namespace ToolkitExt.Core
         internal async Task<bool> ValidateQueuedPollAsync(int id, bool valid, string errorString)
         {
             RestRequest request = GetRequest($"/broadcasting/polls/queue/update/{id}", Method.POST);
-            request.AddJsonBody(new[] { new QueuedPollValidatedRequest { Validated = valid, ValidationError = errorString } });
+            request.AddJsonBody(new QueuedPollValidatedRequest { Validated = valid, ValidationError = errorString });
 
             IRestResponse response = await ExecuteAsync(request);
 

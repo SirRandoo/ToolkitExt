@@ -100,6 +100,7 @@ namespace ToolkitExt.Mod
         {
             Polls.Interval = e.Interval;
             Polls.Duration = e.Duration;
+            Polls.AutomatedPolls = e.AutomatedPolls;
         }
 
         /// <summary>
@@ -135,6 +136,12 @@ namespace ToolkitExt.Mod
                     PollManager.Instance.PollDuration = value;
                 }
             }
+            
+            /// <summary>
+            ///     Whether the mod will automatically generate polls.
+            /// </summary>
+            [JsonIgnore]
+            public bool AutomatedPolls { get; set; }
         }
 
         internal sealed class PollSettingsHandler : FilteredMessageHandler
@@ -155,6 +162,7 @@ namespace ToolkitExt.Mod
 
                 ExtensionMod.Settings.Polls.Duration = response.Duration;
                 ExtensionMod.Settings.Polls.Interval = response.Interval;
+                ExtensionMod.Settings.Polls.AutomatedPolls = response.AutomatedPolls;
 
                 return true;
             }
