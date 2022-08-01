@@ -80,11 +80,9 @@ namespace ToolkitExt.Mod
                 
                 Logger.Debug($"Validation result for #{poll.Id} was: {result.Valid} (Reason: {result.ErrorString})");
 
-                bool validated = await BackendClient.Instance.ValidateQueuedPoll(poll.Id, result.Valid, result.ErrorString);
-                
-                Logger.Debug($"Server's response for poll #{poll.Id}: {validated}");
+                await BackendClient.Instance.ValidateQueuedPoll(poll.Id, result.Valid, result.ErrorString);
 
-                if (!validated)
+                if (!result.Valid)
                 {
                     Logger.Warn($"Poll #{poll.Id:N0} could not be validated by the server; discarding poll...");
 
