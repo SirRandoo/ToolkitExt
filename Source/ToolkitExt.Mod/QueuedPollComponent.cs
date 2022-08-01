@@ -40,9 +40,12 @@ namespace ToolkitExt.Mod
         {
         }
 
-        /// <inheritdoc/>
-        public override void LoadedGame()
+        /// <inheritdoc />
+        public override void FinalizeInit()
         {
+            Logger.Debug("Game loaded");
+            Logger.Debug($"Should process queue? {(!_processingQueue).ToStringYesNo()}");
+            
             if (!_processingQueue)
             {
                 Task.Run(async () => await ProcessQueueAsync());
@@ -51,12 +54,14 @@ namespace ToolkitExt.Mod
 
         private static async Task ProcessQueueAsync()
         {
+            Logger.Debug("Processing queued polls...");
             _processingQueue = true;
             
             while (QueuedPollRepository.HasNext())
             {
                 if (Current.Game == null)
                 {
+                    Logger.Debug("Game ended; resetting state...");
                     _processingQueue = false;
 
                     return;
@@ -74,14 +79,14 @@ namespace ToolkitExt.Mod
                 QueuedPollValidator.ValidationResult result = await QueuedPollValidator.ValidateAsync(poll);
                 
                 Logger.Debug($"Validation result for #{poll.Id} was: {result.Valid} (Reason: {result.ErrorString})");
-                
-                bool validated = await BackendClient.Instance.ValidateQueuedPoll(result.Poll.Id, result.Valid, result.ErrorString);
+
+                bool validated = await BackendClient.Instance.ValidateQueuedPoll(poll.Id, result.Valid, result.ErrorString);
                 
                 Logger.Debug($"Server's response for poll #{poll.Id}: {validated}");
 
                 if (!validated)
                 {
-                    Logger.Warn($"Poll #{result.Poll.Id:N0} could not be validated by the server; discarding poll...");
+                    Logger.Warn($"Poll #{poll.Id:N0} could not be validated by the server; discarding poll...");
 
                     return;
                 }

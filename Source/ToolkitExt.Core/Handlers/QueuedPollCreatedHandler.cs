@@ -57,12 +57,19 @@ namespace ToolkitExt.Core.Handlers
                 return true;
             }
 
+            Logger.Debug("Validating received queued poll...");
             QueuedPollValidator.ValidationResult result = await QueuedPollValidator.ValidateAsync(@event.Data);
-            bool validated = await BackendClient.Instance.ValidateQueuedPoll(result.Poll.Id, result.Valid, result.ErrorString);
+            
+            Logger.Debug($"Is queued poll valid? {result.Valid.ToStringYesNo()}");
+
+            Logger.Debug("Sending validation result to server...");
+            bool validated = await BackendClient.Instance.ValidateQueuedPoll(@event.Data.Id, result.Valid, result.ErrorString);
+            
+            Logger.Debug($"Send validation result to server; validation response: {validated}");
 
             if (!validated)
             {
-                Logger.Warn($"Queued poll #{result.Poll.Id:N0} was not validated properly by the server; discarding poll...");
+                Logger.Warn($"Queued poll #{@event.Data.Id:N0} was not validated properly by the server; discarding poll...");
 
                 return false;
             }

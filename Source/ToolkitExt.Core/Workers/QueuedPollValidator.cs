@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RimWorld;
+using ToolkitExt.Api;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Helpers;
@@ -35,27 +36,37 @@ namespace ToolkitExt.Core.Workers
 {
     public static class QueuedPollValidator
     {
+        private static readonly RimLogger Logger = new RimLogger("ToolkitValidator");
+        
         [ItemNotNull]
         public static async Task<ValidationResult> ValidateAsync([NotNull] MinimalRawQueuedPoll poll)
         {
             var options = new List<IOption>();
+            Logger.Debug($"Validating poll #{poll.Id}...");
 
             foreach (RawQueuedOption option in poll.Options)
             {
+                Logger.Debug($"Looking for the incident {option.ModId}:{option.DefName}...");
                 IncidentItem incident = IncidentRegistry.Get(option.ModId, option.DefName);
 
                 if (incident?.Def == null)
                 {
+                    Logger.Debug($@"The option ""{option.Label}"" doesn't exist in the game");
+                    
                     return new ValidationResult { Valid = false, ErrorString = $@"The option ""{option.Label}"" doesn't exist in the game." };
                 }
 
+                Logger.Debug("Gathering incident params...");
                 IncidentParms @params = await GetIncidentParamsAsync(incident.Def).OnMainAsync();
 
                 if (@params == null)
                 {
+                    Logger.Debug($@"The option ""{option.Label}"" isn't possible at this time.");
+                
                     return new ValidationResult { Valid = false, ErrorString = $@"The option ""{option.Label}"" isn't possible at this time." };
                 }
 
+                Logger.Debug("Adding option to container...");
                 options.Add(incident.Def.ToOption(@params));
             }
 
