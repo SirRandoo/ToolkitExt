@@ -27,6 +27,7 @@ using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Api.Registries;
 using ToolkitExt.Core;
 using ToolkitExt.Mod.UX;
+using ToolkitExt.Mod.Windows;
 using UnityEngine;
 using Verse;
 
@@ -35,20 +36,14 @@ namespace ToolkitExt.Mod
     [UsedImplicitly]
     public class PollGameComponent : GameComponent
     {
-        private readonly PollDisplayDrawer _drawer = new PollDisplayDrawer();
         private static readonly RimLogger Logger = new RimLogger("PollGameComponent");
-        private float _lastHeight = UI.screenHeight;
         private int _lastMinute;
-        private float _lastScale = Prefs.UIScale;
-        private float _lastWidth = UI.screenWidth;
-        private volatile bool _pollStarted;
         private int _pollTracker;
-        private volatile bool _shouldInvalidate;
+        private volatile bool _shouldOpenWindow;
 
         public PollGameComponent(Game game)
         {
-            PollManager.Instance.PollStarted += (_, __) => _pollStarted = true;
-            PollManager.Instance.ViewerVoted += (_, __) => _shouldInvalidate = true;
+            PollManager.Instance.PollStarted += (_, __) => _shouldOpenWindow = true;
         }
 
         /// <inheritdoc/>
@@ -107,52 +102,18 @@ namespace ToolkitExt.Mod
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void GameComponentOnGUI()
         {
-            IPoll currentPoll = PollManager.Instance.CurrentPoll;
-
-            if (currentPoll == null || DateTime.UtcNow > currentPoll.EndedAt)
+            if (!_shouldOpenWindow)
             {
                 return;
             }
 
-            if (_pollStarted || _drawer.IsTransitioning || _shouldInvalidate)
-            {
-                _drawer.Invalidate();
-                _pollStarted = false;
-            }
-
-            ValidateGameSettings();
-            _drawer.Draw();
-        }
-
-        private void ValidateGameSettings()
-        {
-            var shouldRecalculate = false;
-
-            if (Mathf.Abs(_lastHeight - UI.screenHeight) > 0.01f)
-            {
-                _lastHeight = UI.screenHeight;
-                shouldRecalculate = true;
-            }
-
-            if (Mathf.Abs(_lastWidth - UI.screenWidth) > 0.01f)
-            {
-                _lastWidth = UI.screenWidth;
-                shouldRecalculate = true;
-            }
-
-            if (Mathf.Abs(_lastScale - Prefs.UIScale) > 0.01f)
-            {
-                _lastScale = Prefs.UIScale;
-                shouldRecalculate = true;
-            }
-
-            if (shouldRecalculate)
-            {
-                _drawer.Invalidate();
-            }
+            Logger.Debug("Opening poll window...");
+            
+            _shouldOpenWindow = false;
+            Find.WindowStack.Add(new PollWindow());
         }
 
         private static int GetCurrentMinute() => Mathf.FloorToInt(Time.unscaledTime / 60.0f);
