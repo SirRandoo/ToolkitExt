@@ -42,7 +42,7 @@ namespace ToolkitExt.Mod
 
         /// <inheritdoc/>
         [NotNull]
-        protected override ProxySettingsWindow SettingsWindow => new SettingsDialog();
+        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
 
         /// <inheritdoc/>
         public override string SettingsCategory() => Content.Name;
