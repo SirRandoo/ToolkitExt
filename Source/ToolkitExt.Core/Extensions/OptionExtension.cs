@@ -24,12 +24,16 @@ using System;
 using JetBrains.Annotations;
 using Multiplayer.API;
 using RimWorld;
+using ToolkitExt.Api;
 using ToolkitExt.Core.Models;
+using UnityEngine;
 
 namespace ToolkitExt.Core.Extensions
 {
     public static class OptionExtension
     {
+        private static readonly RimLogger Logger = new RimLogger("ToolkitExt.OptionInvoker");
+        
         [NotNull]
         public static Option ToOption([NotNull] this IncidentDef incident, IncidentParms parms)
         {
@@ -39,7 +43,16 @@ namespace ToolkitExt.Core.Extensions
         [SyncMethod]
         private static void InvokeIncident([NotNull] IncidentDef incident, IncidentParms parms)
         {
-            incident.Worker.TryExecute(parms);
+            try
+            {
+                incident.Worker.TryExecute(parms);
+            }
+            catch (Exception e)
+            {
+                string modName = incident.TryGetMod(out string name) ? name : "UNKNOWN";
+                
+                Logger.Error($@"Could not invoke incident ""{incident.defName}"" from mod ""{modName}""");
+            }
         }
     }
 }
