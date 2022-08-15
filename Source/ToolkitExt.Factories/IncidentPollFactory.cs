@@ -110,7 +110,19 @@ namespace ToolkitExt.Factories
 
                 IncidentParms @params = GetParams(entry.Incident);
 
-                if (!entry.Incident.Worker.CanFireNow(@params))
+                bool canFireNow = false;
+
+                try
+                {
+                    canFireNow = entry.Incident.Worker.CanFireNow(@params);
+                }
+                catch (Exception e)
+                {
+                    string modName = entry.Incident.TryGetMod(out string name) ? name : "UNKNOWN";
+                    Logger.Warn($@"Could not call {nameof(IncidentWorker.CanFireNow)} for incident ""{entry.Incident.defName}"" from ""{modName}""");
+                }
+
+                if (!canFireNow)
                 {
                     loops++;
                     
