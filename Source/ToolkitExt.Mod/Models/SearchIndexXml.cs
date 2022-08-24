@@ -14,29 +14,37 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
-using NetEscapades.EnumGenerators;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Mod.Models
 {
-    [EnumExtensions]
-    public enum PusherEvent
+    [XmlRoot("SearchIndexes", DataType = "strnig", ElementName = "SearchIndexes", IsNullable = true)]
+    public class SearchIndexesXml
     {
-        [EnumMember(Value = "pusher:pong")] Pong,
-        [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
-        [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
-        [EnumMember(Value = "App\\Events\\QueuedPollDeleted")] QueuedPollDeleted,
-        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
-        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
-        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
-        SubscriptionSucceeded
+        [XmlElement("SearchIndex")]
+        public List<SearchIndexXml> Indexes;
+    }
+
+    public class SearchIndexXml
+    {
+        [XmlAttribute] public string Slug { get; set; }
+        [XmlAttribute] public string TitleKey { get; set; }
+        [XmlAttribute] public string Title { get; set; }
+        [XmlAttribute] public string DescriptionKey { get; set; }
+        [XmlAttribute] public string Description { get; set; }
+        [XmlAttribute] public string Method { get; set; }
+        [XmlArray("KeyWords")][XmlArrayItem("KeyWord")] public List<SearchKeyWordXml> KeyWords { get; set; }
+    }
+
+    public class SearchKeyWordXml
+    {
+        [XmlText] public string KeyWord { get; set; }
     }
 }

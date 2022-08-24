@@ -14,29 +14,53 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
-using NetEscapades.EnumGenerators;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Mod
 {
-    [EnumExtensions]
-    public enum PusherEvent
+    public static class HubMessageLog
     {
-        [EnumMember(Value = "pusher:pong")] Pong,
-        [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
-        [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
-        [EnumMember(Value = "App\\Events\\QueuedPollDeleted")] QueuedPollDeleted,
-        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
-        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
-        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
-        SubscriptionSucceeded
+        private const int MessageLimit = 250;
+        private static readonly List<string> LOG = new List<string>();
+
+        [NotNull]
+        public static IEnumerable<string> AllMessages
+        {
+            get
+            {
+                lock (LOG)
+                {
+                    return new List<string>(LOG);
+                }
+            }
+        }
+
+        public static void LogMessage(string message)
+        {
+            lock (LOG)
+            {
+                LOG.Add(message);
+
+                if (LOG.Count > MessageLimit)
+                {
+                    LOG.RemoveAt(0);
+                }
+            }
+        }
+
+        public static void ClearMessages()
+        {
+            lock (LOG)
+            {
+                LOG.Clear();
+            }
+        }
     }
 }

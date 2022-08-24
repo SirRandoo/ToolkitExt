@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <TExt.Indexes.StreamerSettings.Title>Mod Settings</TExt.Indexes.StreamerSettings.Title>
+    <TExt.Indexes.StreamerSettings.Description>Opens your browser to the mod's dashboard on its respective site. The settings within the dashboard control how the mod functions internally, while the settings within the mod itself control how the mod displays information.</TExt.Indexes.StreamerSettings.Description>
+    
+    <TExt.Indexes.BroadcasterKey.Description>The key received from your extension configuration page. You can grab a new key from your dashboard on the mod's website.</TExt.Indexes.BroadcasterKey.Description>
+</LanguageData>

@@ -61,11 +61,21 @@ namespace ToolkitExt.Core
         public static BackendClient Instance { get; } = new BackendClient();
 
         public bool Connected => _wsClient.IsConnected;
+
+        /// <summary>
+        ///     The current state of the websocket client.
+        /// </summary>
+        public ConnectionState WsState => _wsClient.State;
         
         public string ChannelId
         {
             get => _channelId;
             private set => _channelId = value;
+        }
+
+        public async Task ReconnectAsync()
+        {
+            await _wsClient.ReconnectAsync();
         }
 
         public void RegisterHandler(IWsMessageHandler handler) => _wsClient.RegisterHandler(handler);
