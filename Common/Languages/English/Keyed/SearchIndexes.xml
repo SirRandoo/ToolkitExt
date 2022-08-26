@@ -4,4 +4,7 @@
     <TExt.Indexes.StreamerSettings.Description>Opens your browser to the mod's dashboard on its respective site. The settings within the dashboard control how the mod functions internally, while the settings within the mod itself control how the mod displays information.</TExt.Indexes.StreamerSettings.Description>
     
     <TExt.Indexes.BroadcasterKey.Description>The key received from your extension configuration page. You can grab a new key from your dashboard on the mod's website.</TExt.Indexes.BroadcasterKey.Description>
+    
+    <TExt.Indexes.Discord.Title>Mod Discord</TExt.Indexes.Discord.Title>
+    <TExt.Indexes.Discord.Description>Opens your browser to the mod's discord. If you haven't already joined the discord, you'll be prompted with an invite screen instead. Here, you can view the current roadmap for the mod, as well as ask questions, and submit bug reports.</TExt.Indexes.Discord.Description>
 </LanguageData>

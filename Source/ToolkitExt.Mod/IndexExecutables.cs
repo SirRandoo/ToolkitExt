@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using JetBrains.Annotations;
 using ToolkitExt.Api;
 using ToolkitExt.Mod.Windows;
@@ -31,6 +32,8 @@ namespace ToolkitExt.Mod
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class IndexExecutables
     {
+        private static readonly Uri DiscordUrl = new Uri("https://discord.gg/qrtg224");
+        
         public static void OpenToBroadcasterKey()
         {
             Find.WindowStack.Add(new SettingsDialog());
@@ -44,6 +47,11 @@ namespace ToolkitExt.Mod
         public static void OpenStreamerSettings()
         {
             Application.OpenURL(SiteMap.Dashboard.AbsoluteUri);
+        }
+
+        public static void OpenDiscordLink()
+        {
+            Application.OpenURL(DiscordUrl.AbsoluteUri);
         }
     }
 }

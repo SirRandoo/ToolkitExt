@@ -23,4 +23,17 @@
             <KeyWord>key</KeyWord>
         </KeyWords>
     </SearchIndex>
+    <SearchIndex Slug="mod-discord" TitleKey="TExt.Indexes.Discord.Title" DescriptionKey="TExt.Indexes.Discord.Description" Method="ToolkitExt.Mod.IncidentExecutables:OpenDiscordLink">
+        <KeyWords>
+            <KeyWord>discord</KeyWord>
+            <KeyWord>support</KeyWord>
+            <KeyWord>chat</KeyWord>
+            <KeyWord>bugs</KeyWord>
+            <KeyWord>feature requests</KeyWord>
+            <KeyWord>extension</KeyWord>
+            <KeyWord>toolkit extension</KeyWord>
+            <KeyWord>toolkitext</KeyWord>
+            <KeyWord>roadmap</KeyWord>
+        </KeyWords>
+    </SearchIndex>
 </SearchIndexes>
