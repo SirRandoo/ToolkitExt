@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SearchIndexes>
+    <SearchIndex Slug="mod-discord" TitleKey="TExt.Indexes.Discord.Title" DescriptionKey="TExt.Indexes.Discord.Description" Method="ToolkitExt.Mod.IncidentExecutables:OpenDiscordLink">
+        <KeyWords>
+            <KeyWord>discord</KeyWord>
+            <KeyWord>support</KeyWord>
+            <KeyWord>chat</KeyWord>
+            <KeyWord>bugs</KeyWord>
+            <KeyWord>feature requests</KeyWord>
+            <KeyWord>extension</KeyWord>
+            <KeyWord>toolkit extension</KeyWord>
+            <KeyWord>toolkitext</KeyWord>
+            <KeyWord>roadmap</KeyWord>
+        </KeyWords>
+    </SearchIndex>
+    <SearchIndex Slug="live-channels" TitleKey="TExt.Indexes.Live.Title" DescriptionKey="TExt.Indexes.Live.Description" Method="ToolkitExt.Mod.IncidentExecutable:OpenLiveChannels">
+        <KeyWords>
+            <KeyWord>live</KeyWord>
+            <KeyWord>streamer</KeyWord>
+            <KeyWord>toolkitext</KeyWord>
+            <KeyWord>toolkit extension</KeyWord>
+            <KeyWord>channels</KeyWord>
+            <KeyWord>streaming</KeyWord>
+        </KeyWords>
+    </SearchIndex>
+</SearchIndexes>
