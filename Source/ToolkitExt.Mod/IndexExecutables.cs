@@ -53,5 +53,10 @@ namespace ToolkitExt.Mod
         {
             Application.OpenURL(DiscordUrl.AbsoluteUri);
         }
+
+        public static void OpenLiveChannels()
+        {
+            Application.OpenURL(SiteMap.Live.AbsoluteUri);
+        }
     }
 }

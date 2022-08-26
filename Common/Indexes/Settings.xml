@@ -36,4 +36,14 @@
             <KeyWord>roadmap</KeyWord>
         </KeyWords>
     </SearchIndex>
+    <SearchIndex Slug="live-channels" TitleKey="TExt.Indexes.Live.Title" DescriptionKey="TExt.Indexes.Live.Description" Method="ToolkitExt.Mod.IncidentExecutable:OpenLiveChannels">
+        <KeyWords>
+            <KeyWord>live</KeyWord>
+            <KeyWord>streamer</KeyWord>
+            <KeyWord>toolkitext</KeyWord>
+            <KeyWord>toolkit extension</KeyWord>
+            <KeyWord>channels</KeyWord>
+            <KeyWord>streaming</KeyWord>
+        </KeyWords>
+    </SearchIndex>
 </SearchIndexes>

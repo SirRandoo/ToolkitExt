@@ -7,4 +7,7 @@
     
     <TExt.Indexes.Discord.Title>Mod Discord</TExt.Indexes.Discord.Title>
     <TExt.Indexes.Discord.Description>Opens your browser to the mod's discord. If you haven't already joined the discord, you'll be prompted with an invite screen instead. Here, you can view the current roadmap for the mod, as well as ask questions, and submit bug reports.</TExt.Indexes.Discord.Description>
+    
+    <TExt.Indexes.Live.Title>Live Channels</TExt.Indexes.Live.Title>
+    <TExt.Indexes.Live.Description>Opens your browser to the current list of channels streaming ToolkitExt.</TExt.Indexes.Live.Description>
 </LanguageData>
