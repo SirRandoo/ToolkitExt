@@ -37,8 +37,8 @@ namespace ToolkitExt.Factories
     /// </summary>
     public abstract class IncidentPollFactory : WeightedPollFactory
     {
-        private readonly IncidentEntry[] _incidentDefs;
         private static readonly RimLogger Logger = new RimLogger("IncidentPollFactory");
+        private readonly IncidentEntry[] _incidentDefs;
 
         protected IncidentPollFactory()
         {
@@ -93,6 +93,7 @@ namespace ToolkitExt.Factories
             var loops = 0;
             var containerIndex = 0;
             var container = new IOption[2];
+            var copy = new List<IncidentEntry>(_incidentDefs);
 
             while (containerIndex < 2)
             {
@@ -101,16 +102,17 @@ namespace ToolkitExt.Factories
                     return Array.Empty<IOption>();
                 }
 
-                if (!_incidentDefs.TryRandomElementByWeight(i => GetWeightFor(i.Id), out IncidentEntry entry))
+                if (!copy.TryRandomElementWeighted(i => GetWeightFor(i.Id), out IncidentEntry entry))
                 {
                     loops++;
 
                     continue;
                 }
 
+                copy.Remove(entry);
                 IncidentParms @params = GetParams(entry.Incident);
 
-                bool canFireNow = false;
+                var canFireNow = false;
 
                 try
                 {
@@ -125,7 +127,7 @@ namespace ToolkitExt.Factories
                 if (!canFireNow)
                 {
                     loops++;
-                    
+
                     continue;
                 }
 
