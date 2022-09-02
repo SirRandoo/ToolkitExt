@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using RimWorld;
 using ToolkitExt.Api;
+using ToolkitExt.Api.DefOfs;
 using ToolkitExt.Api.Interfaces;
 using ToolkitExt.Core.Extensions;
 using ToolkitExt.Core.Models;
@@ -99,44 +100,30 @@ namespace ToolkitExt.Factories
             {
                 if (loops > 10000)
                 {
-                    return Array.Empty<IOption>();
+                    break;
                 }
 
-                if (!copy.TryRandomElementWeighted(i => GetWeightFor(i.Id), out IncidentEntry entry))
+                if (!TryGetRandomIncident(copy, out IncidentOption option))
                 {
                     loops++;
 
                     continue;
                 }
 
-                copy.Remove(entry);
-                IncidentParms @params = GetParams(entry.Incident);
+                copy.Remove(option.Entry);
 
-                var canFireNow = false;
+                container[containerIndex] = option.Entry.Incident.ToOption(option.Params);
+                float weight = GetWeightDecrease(option.Entry.Incident, GetWeightFor(option.Entry.Id));
 
-                try
-                {
-                    canFireNow = entry.Incident.Worker.CanFireNow(@params);
-                }
-                catch (Exception e)
-                {
-                    string modName = entry.Incident.TryGetMod(out string name) ? name : "UNKNOWN";
-                    Logger.Warn($@"Could not call {nameof(IncidentWorker.CanFireNow)} for incident ""{entry.Incident.defName}"" from ""{modName}""");
-                }
-
-                if (!canFireNow)
-                {
-                    loops++;
-
-                    continue;
-                }
-
-                container[containerIndex] = entry.Incident.ToOption(@params);
-                float weight = GetWeightDecrease(entry.Incident, GetWeightFor(entry.Id));
-
-                SetWeightFor(entry.Id, weight);
+                SetWeightFor(option.Entry.Id, weight);
                 containerIndex++;
                 loops++;
+            }
+
+            if (containerIndex < 2)
+            {
+                IncidentParms @params = StorytellerUtility.DefaultParmsNow(ExtIncidentDefOf.AngryTortoises.category, Find.RandomPlayerHomeMap);
+                container[1] = ExtIncidentDefOf.AngryTortoises.ToOption(@params);
             }
 
             for (var index = 0; index < container.Length; index++)
@@ -148,6 +135,32 @@ namespace ToolkitExt.Factories
             return container;
         }
 
+        [ContractAnnotation("=> true, option: notnull; => false, option: null")]
+        private bool TryGetRandomIncident([NotNull] IList<IncidentEntry> entries, out IncidentOption option)
+        {
+            if (!entries.TryRandomElementWeighted(e => GetWeightFor(e.Id), out IncidentEntry entry))
+            {
+                option = null;
+                return false;
+            }
+
+            IncidentParms @params = GetParams(entry.Incident);
+            
+            try
+            {
+                option = new IncidentOption { Entry = entry, Params = @params };
+                return entry.Incident.Worker.CanFireNow(@params);
+            }
+            catch (Exception)
+            {
+                string modName = entry.Incident.TryGetMod(out string name) ? name : "UNKNOWN";
+                Logger.Warn($@"Could not call {nameof(IncidentWorker.CanFireNow)} for incident ""{entry.Incident.defName}"" from ""{modName}""");
+
+                option = null;
+                return false;
+            }
+        }
+
         [NotNull]
         private IncidentEntry[] GetIncidents()
         {
@@ -155,7 +168,7 @@ namespace ToolkitExt.Factories
 
             foreach (IncidentDef incident in DefDatabase<IncidentDef>.AllDefs)
             {
-                if (!IsIncidentValid(incident))
+                if (incident == ExtIncidentDefOf.AngryTortoises || !IsIncidentValid(incident))
                 {
                     continue;
                 }
@@ -252,6 +265,12 @@ namespace ToolkitExt.Factories
         {
             public string Id { get; set; }
             public IncidentDef Incident { get; set; }
+        }
+
+        private sealed class IncidentOption
+        {
+            public IncidentParms Params { get; set; }
+            public IncidentEntry Entry { get; set; }
         }
     }
 }

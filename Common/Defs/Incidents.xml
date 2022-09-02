@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <IncidentDef>
+        <defName>AngryTortoises</defName>
+        <label>angry tortoises</label>
+        <description>A group of angry tortoises has come to attack your colony.</description>
+        <category>Misc</category>
+        <baseChance>0</baseChance>
+        <baseChangeWithRoyalty>0</baseChangeWithRoyalty>
+        <targetTags>
+            <li>Map_PlayerHome</li>
+        </targetTags>
+        <letterLabel>Angry Tortoises</letterLabel>
+        <letterText>A group of angry tortoises has come to your colony. Strangely, an unexpected problem seems to have summoned them from a distant place.</letterText>
+    </IncidentDef>
+</Defs>
