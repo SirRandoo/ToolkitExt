@@ -6,7 +6,7 @@
         <description>A group of angry tortoises has come to attack your colony.</description>
         <category>Misc</category>
         <baseChance>0</baseChance>
-        <baseChangeWithRoyalty>0</baseChangeWithRoyalty>
+        <baseChanceWithRoyalty>0</baseChanceWithRoyalty>
         <targetTags>
             <li>Map_PlayerHome</li>
         </targetTags>
