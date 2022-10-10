@@ -11,7 +11,7 @@
     </ItemGroup>
     <ItemGroup>
       <Reference Include="SirRandoo.CommonLib">
-        <HintPath>..\Libs\SirRandoo.CommonLib.dll</HintPath>
+        <HintPath>..\Libs\0SirRandoo.CommonLib.dll</HintPath>
       </Reference>
     </ItemGroup>
 </Project>
