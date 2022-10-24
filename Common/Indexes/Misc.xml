@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SearchIndexes>
-    <SearchIndex Slug="mod-discord" TitleKey="TExt.Indexes.Discord.Title" DescriptionKey="TExt.Indexes.Discord.Description" Method="ToolkitExt.Mod.IncidentExecutables:OpenDiscordLink">
+    <SearchIndex Slug="mod-discord" TitleKey="TExt.Indexes.Discord.Title" DescriptionKey="TExt.Indexes.Discord.Description" Method="ToolkitExt.Mod.IndexExecutables:OpenDiscordLink">
         <KeyWords>
             <KeyWord>discord</KeyWord>
             <KeyWord>support</KeyWord>
@@ -13,7 +13,7 @@
             <KeyWord>roadmap</KeyWord>
         </KeyWords>
     </SearchIndex>
-    <SearchIndex Slug="live-channels" TitleKey="TExt.Indexes.Live.Title" DescriptionKey="TExt.Indexes.Live.Description" Method="ToolkitExt.Mod.IncidentExecutable:OpenLiveChannels">
+    <SearchIndex Slug="live-channels" TitleKey="TExt.Indexes.Live.Title" DescriptionKey="TExt.Indexes.Live.Description" Method="ToolkitExt.Mod.IndexExecutables:OpenLiveChannels">
         <KeyWords>
             <KeyWord>live</KeyWord>
             <KeyWord>streamer</KeyWord>
