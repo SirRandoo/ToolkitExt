@@ -22,6 +22,7 @@
 
 using System;
 using JetBrains.Annotations;
+using RimWorld;
 using SirRandoo.CommonLib.Helpers;
 using UnityEngine;
 using Verse;
@@ -101,7 +102,9 @@ namespace ToolkitExt.Mod.Entities
 
             if (!string.IsNullOrEmpty(Index.Description))
             {
-                listing.DrawDescription(Index.Description);
+                Rect descriptionRegion = listing.GetRect(_descriptionHeightCache).Trim(Direction8Way.West, 10f);
+                
+                UiHelper.Label(descriptionRegion, Index.Description, new Color(0.72f, 0.72f, 0.72f), TextAnchor.UpperLeft, GameFont.Tiny);
             }
 
             if (Widgets.ButtonInvisible(region))
