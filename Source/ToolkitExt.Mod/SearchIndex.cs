@@ -285,26 +285,27 @@ namespace ToolkitExt.Mod
 
             foreach (SearchResult entry in FindByTitle(query))
             {
-                Log.Message($"(title) Adding {entry.Index.Slug} to search results...");
                 container.Add(entry);
             }
 
             foreach (SearchResult entry in FindByDescription(query))
             {
-                if (!container.Contains(entry))
+                if (container.Contains(entry))
                 {
-                    Log.Message($"(description) Adding {entry.Index.Slug} to search results...");
-                    container.Add(entry);
+                    continue;
                 }
+
+                container.Add(entry);
             }
 
             foreach (SearchResult entry in FindByKeyWords(query))
             {
-                if (!container.Contains(entry))
+                if (container.Contains(entry))
                 {
-                    Log.Message($"(keyword) Adding {entry.Index.Slug} to search results...");
-                    container.Add(entry);
+                    continue;
                 }
+
+                container.Add(entry);
             }
 
             return new ReadOnlyCollection<SearchResult>(new List<SearchResult>(container));
