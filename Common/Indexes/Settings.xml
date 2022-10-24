@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SearchIndexes>
+    <SearchIndex Slug="mod-broadcaster-key" TitleKey="TExt.Settings.BroadcasterKey.Label" DescriptionKey="TExt.Indexes.BroadcasterKey.Description" Method="ToolkitExt.Mod.IndexExecutables:OpenToBroadcasterKey">
+        <KeyWords>
+            <KeyWord>settings</KeyWord>
+            <KeyWord>broadcaster key</KeyWord>
+            <KeyWord>key</KeyWord>
+        </KeyWords>
+    </SearchIndex>
+    <SearchIndex Slug="large-poll-text" TitleKey="TExt.Settings.LargeText.Label" DescriptionKey="TExt.Settings.LargeText.Description" Method="ToolkitExt.Mod.IndexExecutables:OpenToLargeText">
+        <KeyWords>
+            <KeyWord>settings</KeyWord>
+            <KeyWord>large text</KeyWord>
+            <KeyWord>large poll text</KeyWord>
+            <KeyWord>polls</KeyWord>
+            <KeyWord>accessibility</KeyWord>
+        </KeyWords>
+    </SearchIndex>
+    <SearchIndex Slug="streamer-settings" TitleKey="TExt.Indexes.StreamerSettings.Title" DescriptionKey="TExt.Indexes.StreamerSettings.Description" Method="ToolkitExt.Mod.IndexExecutables:OpenStreamerSettings">
+        <KeyWords>
+            <KeyWord>settings</KeyWord>
+            <KeyWord>broadcaster key</KeyWord>
+            <KeyWord>key</KeyWord>
+        </KeyWords>
+    </SearchIndex>
+</SearchIndexes>

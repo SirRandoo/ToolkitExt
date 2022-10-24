@@ -21,25 +21,52 @@
 // SOFTWARE.
 
 using System;
+using System.Threading;
+using JetBrains.Annotations;
+using ToolkitExt.Api;
+using ToolkitExt.Core.Extensions;
+using UnityEngine;
 using Verse;
 
-namespace ToolkitExt.Api
+namespace ToolkitExt.Core.Workers
 {
-    [StaticConstructorOnStartup]
-    public static class SiteMap
+    public sealed class JifWorker : JifWorkerBase
     {
-        public static readonly Uri Base;
-        public static readonly Uri ApiBase = new Uri("https://toolkit-ext.com/api/");
-        public static readonly Uri Dashboard;
-        public static readonly Uri Live;
-
-        static SiteMap()
+        public JifWorker(params Texture[] frames) : base(frames)
         {
-            var random = new Random();
+        }
 
-            Base = random.Next(5) <= 1 ? new Uri("https://only.toolkit.fans/") : new Uri("https://toolkit-ext.com/");
-            Dashboard = new Uri(Base, "/streamer");
-            Live = new Uri(Base, "/live");
+        [CanBeNull]
+        public static JifWorker Load(string texturePath)
+        {
+            Texture2D sheet = ContentFinder<Texture2D>.Get(texturePath);
+
+            if (sheet == null)
+            {
+                return null;
+            }
+
+            Texture2D copy = sheet.CopyFromReadOnly();
+            Texture[] frames = copy.GetFramesFromSheet();
+
+            var worker = new JifWorker(frames);
+
+            worker.Timer = new Timer(
+                w =>
+                {
+                    if (!(w is JifWorkerBase @base))
+                    {
+                        return;
+                    }
+
+                    @base.Advance();
+                },
+                worker,
+                Timeout.Infinite,
+                Timeout.Infinite
+            );
+
+            return worker;
         }
     }
 }

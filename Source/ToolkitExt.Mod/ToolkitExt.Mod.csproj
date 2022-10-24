@@ -14,4 +14,7 @@
         <HintPath>..\Libs\0SirRandoo.CommonLib.dll</HintPath>
       </Reference>
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+    </ItemGroup>
 </Project>

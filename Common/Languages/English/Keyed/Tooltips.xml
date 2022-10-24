@@ -3,4 +3,15 @@
     <TExt.Tooltips.PasteBroadcasterKey>Click to paste the broadcaster key from your clipboard</TExt.Tooltips.PasteBroadcasterKey>
     <TExt.Tooltips.ToggleBroadcasterKey.Hidden>Click to show your broadcaster key</TExt.Tooltips.ToggleBroadcasterKey.Hidden>
     <TExt.Tooltips.ToggleBroadcasterKey.Visible>Click to hide your broadcaster key</TExt.Tooltips.ToggleBroadcasterKey.Visible>
+    
+    <TExt.Tooltips.ConnectionStates.Connecting>The mod is currently trying to connect to the extension backend service.</TExt.Tooltips.ConnectionStates.Connecting>
+    <TExt.Tooltips.ConnectionStates.Connected>The mod is currently connected to the extension backend service, but hasn't authenticated with it yet. If the mod is stuck at this stage, you should verify your broadcaster key is valid.</TExt.Tooltips.ConnectionStates.Connected>
+    <TExt.Tooltips.ConnectionStates.Disconnecting>The mod is currently disconnecting from the extension backend service.</TExt.Tooltips.ConnectionStates.Disconnecting>
+    <TExt.Tooltips.ConnectionStates.Disconnected>The mod is currently disconnected from the extension backend service. Usually the mod tries to reconnect a few times when it's disconnected, but if you're seeing this, the mod couldn't connect again.</TExt.Tooltips.ConnectionStates.Disconnected>
+    <TExt.Tooltips.ConnectionStates.Reconnecting>The mod is currently reconnecting to the extension backend service. Usually the mod tries this a few times, but after enough failed attempts, it'll disconnect completely.</TExt.Tooltips.ConnectionStates.Reconnecting>
+    <TExt.Tooltips.ConnectionStates.Subscribing>The mod is currently trying to connect to your channel in the extension backend service. If the mod is stuck at this stage, you should verify your broadcaster key is valid.</TExt.Tooltips.ConnectionStates.Subscribing>
+    <TExt.Tooltips.ConnectionStates.Subscribed>The mod succcessfully connected, and subscribed, to your channel on the backend service. You're all set!</TExt.Tooltips.ConnectionStates.Subscribed>
+    
+    <TExt.Tooltips.Reconnect>Click to reconnect the mod to the extension backend service.</TExt.Tooltips.Reconnect>
+    <TExt.Tooltips.Settings>Click to open the settinsg menu for the mod.</TExt.Tooltips.Settings>
 </LanguageData>
