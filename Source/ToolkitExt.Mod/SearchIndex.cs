@@ -76,7 +76,18 @@ namespace ToolkitExt.Mod
         [CanBeNull]
         private static SearchIndexEntry ConvertFromXml([NotNull] SearchIndexXml index)
         {
-            MethodInfo method = AccessTools.Method(index.Method);
+            MethodInfo method;
+
+            try
+            {
+                method = AccessTools.Method(index.Method);
+            }
+            catch (TypeInitializationException e)
+            {
+                Logger.Error($@"The search index ""{index.Slug}"" contains a malformed method; skipping...", e);
+
+                return null;
+            }
 
             if (method == null)
             {
