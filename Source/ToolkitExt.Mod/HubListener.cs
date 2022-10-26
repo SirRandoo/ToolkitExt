@@ -14,45 +14,33 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Threading.Tasks;
 using JetBrains.Annotations;
-using SirRandoo.CommonLib;
-using SirRandoo.CommonLib.Windows;
-using ToolkitExt.Mod.Windows;
-using Verse;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
+using ToolkitExt.Api.Interfaces;
 
 namespace ToolkitExt.Mod
 {
-    public class ExtensionMod : ModPlus
+    public class HubListener : IWsMessageHandler
     {
         /// <inheritdoc/>
-        public ExtensionMod(ModContentPack content) : base(content)
+        public int Priority => 0;
+
+        /// <inheritdoc/>
+        public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
         {
-            Instance = this;
-            Settings = GetSettings<ExtensionSettings>();
-        }
+            // At some point this is going to need to be reworked, but
+            // for now it's good enough.
+            HubMessageLog.LogMessage(args.EventId.ToStringFast());
 
-        public static ExtensionSettings Settings { get; private set; }
-        public static ExtensionMod Instance { get; private set; }
-
-        /// <inheritdoc/>
-        [NotNull]
-        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
-
-        /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
-
-        /// <inheritdoc/>
-        public override void WriteSettings()
-        {
-            Settings.Write();
-            Settings.SaveAuthSettings();
-            Settings.SaveClientPollSettings();
+            return await Task.FromResult(false);
         }
     }
 }

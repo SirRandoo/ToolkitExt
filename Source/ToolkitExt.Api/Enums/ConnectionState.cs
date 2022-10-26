@@ -14,45 +14,25 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using JetBrains.Annotations;
-using SirRandoo.CommonLib;
-using SirRandoo.CommonLib.Windows;
-using ToolkitExt.Mod.Windows;
-using Verse;
+using NetEscapades.EnumGenerators;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Api.Enums
 {
-    public class ExtensionMod : ModPlus
+    [EnumExtensions]
+    public enum ConnectionState
     {
-        /// <inheritdoc/>
-        public ExtensionMod(ModContentPack content) : base(content)
-        {
-            Instance = this;
-            Settings = GetSettings<ExtensionSettings>();
-        }
-
-        public static ExtensionSettings Settings { get; private set; }
-        public static ExtensionMod Instance { get; private set; }
-
-        /// <inheritdoc/>
-        [NotNull]
-        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
-
-        /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
-
-        /// <inheritdoc/>
-        public override void WriteSettings()
-        {
-            Settings.Write();
-            Settings.SaveAuthSettings();
-            Settings.SaveClientPollSettings();
-        }
+        Connecting,
+        Connected,
+        Disconnecting,
+        Disconnected,
+        Reconnecting,
+        Subscribing,
+        Subscribed
     }
 }

@@ -31,6 +31,7 @@ namespace ToolkitExt.Api
         public static readonly Uri Base;
         public static readonly Uri ApiBase = new Uri("https://toolkit-ext.com/api/");
         public static readonly Uri Dashboard;
+        public static readonly Uri Live;
 
         static SiteMap()
         {
@@ -38,6 +39,7 @@ namespace ToolkitExt.Api
 
             Base = random.Next(5) <= 1 ? new Uri("https://only.toolkit.fans/") : new Uri("https://toolkit-ext.com/");
             Dashboard = new Uri(Base, "/streamer");
+            Live = new Uri(Base, "/live");
         }
     }
 }

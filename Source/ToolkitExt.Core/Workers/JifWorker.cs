@@ -14,45 +14,59 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Threading;
 using JetBrains.Annotations;
-using SirRandoo.CommonLib;
-using SirRandoo.CommonLib.Windows;
-using ToolkitExt.Mod.Windows;
+using ToolkitExt.Api;
+using ToolkitExt.Core.Extensions;
+using UnityEngine;
 using Verse;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Core.Workers
 {
-    public class ExtensionMod : ModPlus
+    public sealed class JifWorker : JifWorkerBase
     {
-        /// <inheritdoc/>
-        public ExtensionMod(ModContentPack content) : base(content)
+        public JifWorker(params Texture[] frames) : base(frames)
         {
-            Instance = this;
-            Settings = GetSettings<ExtensionSettings>();
         }
 
-        public static ExtensionSettings Settings { get; private set; }
-        public static ExtensionMod Instance { get; private set; }
-
-        /// <inheritdoc/>
-        [NotNull]
-        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
-
-        /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
-
-        /// <inheritdoc/>
-        public override void WriteSettings()
+        [CanBeNull]
+        public static JifWorker Load(string texturePath)
         {
-            Settings.Write();
-            Settings.SaveAuthSettings();
-            Settings.SaveClientPollSettings();
+            Texture2D sheet = ContentFinder<Texture2D>.Get(texturePath);
+
+            if (sheet == null)
+            {
+                return null;
+            }
+
+            Texture2D copy = sheet.CopyFromReadOnly();
+            Texture[] frames = copy.GetFramesFromSheet();
+
+            var worker = new JifWorker(frames);
+
+            worker.Timer = new Timer(
+                w =>
+                {
+                    if (!(w is JifWorkerBase @base))
+                    {
+                        return;
+                    }
+
+                    @base.Advance();
+                },
+                worker,
+                Timeout.Infinite,
+                Timeout.Infinite
+            );
+
+            return worker;
         }
     }
 }

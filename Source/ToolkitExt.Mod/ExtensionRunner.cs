@@ -57,6 +57,9 @@ namespace ToolkitExt.Mod
             Logger.Info("Registering settings handler...");
             BackendClient.Instance.RegisterHandler(new ExtensionSettings.PollSettingsHandler());
 
+            Logger.Info("Registering message log handler...");
+            BackendClient.Instance.RegisterHandler(new HubListener());
+
             if (ExtensionMod.Settings.Auth == null)
             {
                 Logger.Warn("Authentication settings was null; connection aborted.");

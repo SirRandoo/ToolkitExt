@@ -14,45 +14,37 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using JetBrains.Annotations;
-using SirRandoo.CommonLib;
-using SirRandoo.CommonLib.Windows;
-using ToolkitExt.Mod.Windows;
-using Verse;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 
-namespace ToolkitExt.Mod
+namespace ToolkitExt.Mod.Models
 {
-    public class ExtensionMod : ModPlus
+    [XmlRoot("SearchIndexes", DataType = "strnig", ElementName = "SearchIndexes", IsNullable = true)]
+    public class SearchIndexesXml
     {
-        /// <inheritdoc/>
-        public ExtensionMod(ModContentPack content) : base(content)
-        {
-            Instance = this;
-            Settings = GetSettings<ExtensionSettings>();
-        }
+        [XmlElement("SearchIndex")]
+        public List<SearchIndexXml> Indexes;
+    }
 
-        public static ExtensionSettings Settings { get; private set; }
-        public static ExtensionMod Instance { get; private set; }
+    public class SearchIndexXml
+    {
+        [XmlAttribute] public string Slug { get; set; }
+        [XmlAttribute] public string TitleKey { get; set; }
+        [XmlAttribute] public string Title { get; set; }
+        [XmlAttribute] public string DescriptionKey { get; set; }
+        [XmlAttribute] public string Description { get; set; }
+        [XmlAttribute] public string Method { get; set; }
+        [XmlArray("KeyWords")][XmlArrayItem("KeyWord")] public List<SearchKeyWordXml> KeyWords { get; set; }
+    }
 
-        /// <inheritdoc/>
-        [NotNull]
-        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
-
-        /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
-
-        /// <inheritdoc/>
-        public override void WriteSettings()
-        {
-            Settings.Write();
-            Settings.SaveAuthSettings();
-            Settings.SaveClientPollSettings();
-        }
+    public class SearchKeyWordXml
+    {
+        [XmlText] public string KeyWord { get; set; }
     }
 }

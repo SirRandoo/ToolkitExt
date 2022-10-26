@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <TExt.Labels.ConnectionStates.Connecting>Connecting...</TExt.Labels.ConnectionStates.Connecting>
+    <TExt.Labels.ConnectionStates.Connected>Connected</TExt.Labels.ConnectionStates.Connected>
+    <TExt.Labels.ConnectionStates.Disconnecting>Disconnecting...</TExt.Labels.ConnectionStates.Disconnecting>
+    <TExt.Labels.ConnectionStates.Disconnected>Disconnected</TExt.Labels.ConnectionStates.Disconnected>
+    <TExt.Labels.ConnectionStates.Reconnecting>Reconnecting...</TExt.Labels.ConnectionStates.Reconnecting>
+    <TExt.Labels.ConnectionStates.Subscribing>Connected (Authenticating)</TExt.Labels.ConnectionStates.Subscribing>
+    <TExt.Labels.ConnectionStates.Subscribed>Connected (Authenticated)</TExt.Labels.ConnectionStates.Subscribed>
+</LanguageData>

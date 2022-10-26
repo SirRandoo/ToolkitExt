@@ -14,45 +14,53 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using JetBrains.Annotations;
-using SirRandoo.CommonLib;
-using SirRandoo.CommonLib.Windows;
-using ToolkitExt.Mod.Windows;
-using Verse;
 
 namespace ToolkitExt.Mod
 {
-    public class ExtensionMod : ModPlus
+    public static class HubMessageLog
     {
-        /// <inheritdoc/>
-        public ExtensionMod(ModContentPack content) : base(content)
+        private const int MessageLimit = 250;
+        private static readonly List<string> LOG = new List<string>();
+
+        [NotNull]
+        public static IEnumerable<string> AllMessages
         {
-            Instance = this;
-            Settings = GetSettings<ExtensionSettings>();
+            get
+            {
+                lock (LOG)
+                {
+                    return new List<string>(LOG);
+                }
+            }
         }
 
-        public static ExtensionSettings Settings { get; private set; }
-        public static ExtensionMod Instance { get; private set; }
-
-        /// <inheritdoc/>
-        [NotNull]
-        public override ProxySettingsWindow SettingsWindow => new SettingsDialog();
-
-        /// <inheritdoc/>
-        public override string SettingsCategory() => Content.Name;
-
-        /// <inheritdoc/>
-        public override void WriteSettings()
+        public static void LogMessage(string message)
         {
-            Settings.Write();
-            Settings.SaveAuthSettings();
-            Settings.SaveClientPollSettings();
+            lock (LOG)
+            {
+                LOG.Add(message);
+
+                if (LOG.Count > MessageLimit)
+                {
+                    LOG.RemoveAt(0);
+                }
+            }
+        }
+
+        public static void ClearMessages()
+        {
+            lock (LOG)
+            {
+                LOG.Clear();
+            }
         }
     }
 }

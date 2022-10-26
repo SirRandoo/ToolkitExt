@@ -21,9 +21,11 @@
 // SOFTWARE.
 
 using System.Runtime.Serialization;
+using NetEscapades.EnumGenerators;
 
 namespace ToolkitExt.Api.Enums
 {
+    [EnumExtensions]
     public enum PusherEvent
     {
         [EnumMember(Value = "pusher:pong")] Pong,

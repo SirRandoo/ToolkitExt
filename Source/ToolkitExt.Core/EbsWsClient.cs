@@ -47,6 +47,7 @@ namespace ToolkitExt.Core
         private static readonly Uri URL = new Uri("wss://ws-us3.pusher.com/app/290b2ad8d139f7d58165?protocol=7&client=js&version=7.0.6&flash=false");
         private readonly List<IWsMessageHandler> _handlers = new List<IWsMessageHandler>();
         private readonly WatsonWsClient _webSocket;
+        private volatile ConnectionState _state = ConnectionState.Disconnected;
 
         internal EbsWsClient()
         {
@@ -55,7 +56,6 @@ namespace ToolkitExt.Core
             _webSocket.ServerDisconnected += OnDisconnected;
             _webSocket.MessageReceived += OnMessageReceived;
         }
-
 
         [NotNull]
         public IEnumerable<IWsMessageHandler> Handlers
@@ -73,6 +73,11 @@ namespace ToolkitExt.Core
         ///     Invoked when a viewer votes on the extension.
         /// </summary>
         public bool IsConnected => _webSocket.Connected;
+
+        /// <summary>
+        ///     The current state of the websocket client.
+        /// </summary>
+        public ConnectionState State => _state;
 
         public void RegisterHandler(IWsMessageHandler handler)
         {
@@ -116,7 +121,7 @@ namespace ToolkitExt.Core
             return false;
         }
 
-        private async Task ReconnectAsync()
+        internal async Task ReconnectAsync()
         {
             Logger.Info("Disconnected from backend; reconnecting...");
 
@@ -139,20 +144,34 @@ namespace ToolkitExt.Core
             }
 
             Logger.Info($"Connection status: {_webSocket.Connected} ({tries} tries)");
+
+            if (!_webSocket.Connected)
+            {
+                _state = ConnectionState.Disconnected;
+            }
         }
 
         private async Task<bool> ReconnectInternalAsync() => await ReconnectInternalAsync(CancellationToken.None);
 
-        private async Task<bool> ReconnectInternalAsync(CancellationToken cancellationToken) => await _webSocket.StartWithTimeoutAsync(5, cancellationToken);
+        private async Task<bool> ReconnectInternalAsync(CancellationToken cancellationToken)
+        {
+            _state = ConnectionState.Reconnecting;
+            
+            return await _webSocket.StartWithTimeoutAsync(5, cancellationToken);
+        }
 
-        private static void OnConnected(object sender, EventArgs e)
+        private void OnConnected(object sender, EventArgs e)
         {
             Logger.Info("Connected to the backend service.");
+
+            _state = ConnectionState.Connected;
         }
 
         private void OnDisconnected(object sender, EventArgs e)
         {
             Logger.Warn("Disconnected from the backend service.");
+
+            _state = ConnectionState.Disconnected;
 
             Task.Factory.StartNew(
                 async () =>
@@ -179,15 +198,18 @@ namespace ToolkitExt.Core
             {
                 case PusherEvent.ConnectionEstablished when Json.TryDeserialize(content, out ConnectionEstablishedResponse ev):
                     Logger.Debug(@"Raising ""connection established"" event...");
+                    _state = ConnectionState.Connected;
                     OnConnectionEstablished(new ConnectionEstablishedEventArgs(ev.Data.SocketId, ev.Data.ActivityTimeout));
 
                     return;
                 case PusherEvent.Subscribe when Json.TryDeserialize(content, out SubscriptionSucceededResponse ev):
                     Logger.Debug(@"Raising ""subscribed"" event...");
+                    _state = ConnectionState.Subscribing;
                     OnSubscribed(new SubscribedEventArgs(ev.Channel));
 
                     return;
                 case PusherEvent.SubscriptionSucceeded:
+                    _state = ConnectionState.Subscribed;
                     Logger.Info("Subscription succeeded!");
 
                     return;
@@ -245,11 +267,13 @@ namespace ToolkitExt.Core
 
         internal async Task DisconnectAsync()
         {
+            _state = ConnectionState.Disconnecting;
             await _webSocket.StopAsync();
         }
 
         internal async Task ConnectAsync()
         {
+            _state = ConnectionState.Connecting;
             await _webSocket.StartAsync();
         }
 
@@ -260,6 +284,8 @@ namespace ToolkitExt.Core
 
         private void OnSubscribed(SubscribedEventArgs e)
         {
+            _state = ConnectionState.Subscribed;
+            
             Subscribed?.Invoke(this, e);
         }
     }

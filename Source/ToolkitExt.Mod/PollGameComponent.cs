@@ -86,7 +86,18 @@ namespace ToolkitExt.Mod
 
             foreach (IPollFactory factory in PollFactoryRegistry.AllFactoriesRandom)
             {
-                IPoll poll = factory.Create();
+                IPoll poll;
+
+                try
+                {
+                    poll = factory.Create();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"The factory {factory.GetType().Name} throw an exception", e);
+
+                    continue;
+                }
 
                 if (poll == null)
                 {
