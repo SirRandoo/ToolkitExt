@@ -14,30 +14,28 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Reflection;
+using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
 using Verse;
 
 namespace ToolkitExt.Mod
 {
+    [UsedImplicitly]
     [StaticConstructorOnStartup]
-    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public static class Textures
+    internal static class HarmonyRunner
     {
-        public static readonly Texture2D Gear = ContentFinder<Texture2D>.Get("UI/Gear");
-        public static readonly Texture2D Hidden = ContentFinder<Texture2D>.Get("UI/Hidden");
-        public static readonly Texture2D Visible = ContentFinder<Texture2D>.Get("UI/Visible");
-        public static readonly Texture2D Toolbox = ContentFinder<Texture2D>.Get("UI/Polls/Toolbox");
-        public static readonly Texture2D WindowAtlas = ContentFinder<Texture2D>.Get("UI/Polls/Atlas");
-        public static readonly Texture2D CurvedArrows = ContentFinder<Texture2D>.Get("UI/CurvedArrows");
-        public static readonly Texture2D GradientOverlay = ContentFinder<Texture2D>.Get("UI/Polls/Gradient");
-        public static readonly Texture2D ProgressLeftAtlas = ContentFinder<Texture2D>.Get("UI/Polls/ProgressLeft");
-        public static readonly Texture2D ProgressRightAtlas = ContentFinder<Texture2D>.Get("UI/Polls/ProgressRight");
+        private static readonly Harmony Harmony = new Harmony("com.sirrandoo.text");
+
+        static HarmonyRunner()
+        {
+            Harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
     }
 }

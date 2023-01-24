@@ -14,29 +14,33 @@
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Serialization;
-using NetEscapades.EnumGenerators;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using ToolkitExt.Api.Enums;
+using ToolkitExt.Api.Events;
+using ToolkitExt.Api.Interfaces;
 
-namespace ToolkitExt.Api.Enums
+namespace ToolkitExt.Mod
 {
-    [EnumExtensions]
-    public enum PusherEvent
+    public class HubListener : IWsMessageHandler
     {
-        [EnumMember(Value = "pusher:pong")] Pong,
-        [EnumMember(Value = "pusher:ping")] Ping,
-        [EnumMember(Value = "App\\Events\\ViewerVoted")] ViewerVoted,
-        [EnumMember(Value = "pusher:subscribe")] Subscribe,
-        [EnumMember(Value = "App\\Events\\QueuedPollCreated")] QueuedPollCreated,
-        [EnumMember(Value = "App\\Events\\QueuedPollDeleted")] QueuedPollDeleted,
-        [EnumMember(Value = "App\\Events\\PollSettingsUpdate")] PollSettingsUpdated,
-        [EnumMember(Value = "pusher:connection_established")] ConnectionEstablished,
-        [EnumMember(Value = "pusher_internal:subscription_succeeded")]
-        SubscriptionSucceeded
+        /// <inheritdoc/>
+        public int Priority => 0;
+
+        /// <inheritdoc/>
+        public async Task<bool> Handle([NotNull] WsMessageEventArgs args)
+        {
+            // At some point this is going to need to be reworked, but
+            // for now it's good enough.
+            HubMessageLog.LogMessage(args.EventId.ToStringFast());
+
+            return await Task.FromResult(false);
+        }
     }
 }
