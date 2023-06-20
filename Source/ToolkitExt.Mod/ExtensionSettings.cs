@@ -41,6 +41,7 @@ namespace ToolkitExt.Mod
 
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] internal AuthSettings Auth;
         [UsedImplicitly(ImplicitUseKindFlags.Assign)] public PollSettings Polls;
+        [UsedImplicitly(ImplicitUseKindFlags.Assign)] public WindowSettings Windows;
 
         internal void LoadAuthSettings()
         {
@@ -96,6 +97,33 @@ namespace ToolkitExt.Mod
             }
         }
 
+        internal void LoadClientWindowSettings()
+        {
+            try
+            {
+                Windows = Json.Load<WindowSettings>(FilePaths.PollSettings);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(
+                    $"Could not load window settings from {new Uri(GenFilePaths.SaveDataFolderPath).MakeRelativeUri(new Uri(FilePaths.WindowSettings))}. Preferences will be lost.",
+                    e
+                );
+            }
+        }
+
+        internal void SaveClientWindowSettings()
+        {
+            try
+            {
+                Json.Save(FilePaths.WindowSettings, Windows);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Could not save window settings. Window preferences will be lost next session.", e);
+            }
+        }
+
         internal void OnPollSettingsUpdated(object sender, [NotNull] PollSettingsUpdatedEventArgs e)
         {
             Polls.Interval = e.Interval;
@@ -142,6 +170,12 @@ namespace ToolkitExt.Mod
             /// </summary>
             [JsonIgnore]
             public bool AutomatedPolls { get; set; }
+        }
+
+        public class WindowSettings
+        {
+            [JsonProperty("poll_x")] public int PollX { get; set; }
+            [JsonProperty("poll_y")] public int PollY { get; set; }
         }
 
         internal sealed class PollSettingsHandler : FilteredMessageHandler

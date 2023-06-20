@@ -51,6 +51,9 @@ namespace ToolkitExt.Mod
             Logger.Info("Loading client poll settings...");
             ExtensionMod.Settings.LoadClientPollSettings();
 
+            Logger.Info("Loading client window settings...");
+            ExtensionMod.Settings.LoadClientWindowSettings();
+
             Logger.Info("Registering settings handler...");
             BackendClient.Instance.RegisterHandler(new ExtensionSettings.PollSettingsHandler());
 
@@ -80,6 +83,7 @@ namespace ToolkitExt.Mod
 
             Task.Run(async () => await DoStartupOperationsAsync());
         }
+        
         private static async Task DoStartupOperationsAsync()
         {
             Logger.Info("Connecting to the ebs...");
