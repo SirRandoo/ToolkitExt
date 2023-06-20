@@ -1,15 +1,48 @@
 ﻿<Project>
+    <!-- Compile Time Properties -->
     <PropertyGroup>
+        <LangVersion>8</LangVersion>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    
+    <!-- Build Properties -->
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
         <RimWorldVersion>1.4</RimWorldVersion>
-        <AssemblyName>Z$(MSBuildProjectName)</AssemblyName>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <_OutputDirectory>..\..\Releases\Core\$(RimWorldVersion)\Assemblies\</_OutputDirectory>
     </PropertyGroup>
+    
+    <!-- Assembly Metadata -->
+    <PropertyGroup>
+        <AssemblyTitle>ToolkitExt</AssemblyTitle>
+        <Product>ToolkitExt - Twitch Toolkit within an extension</Product>
+        
+        <Authors>SirRandoo, and Hodl</Authors>
+        <InformationalVersion>1.2</InformationalVersion>
+        <AssemblyName>Z$(MSBuildProjectName)</AssemblyName>
+        <Copyright>MIT (c) $([System.DateTime]::Now.ToString("yyyy")) Copyright SirRandoo</Copyright>
+        
+        <!-- Git Repository Metadata -->
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/sirrandoo/toolkitext</RepositoryUrl>
+    </PropertyGroup>
+    
+    <!-- Build Configuration -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <OutputPath>..\..\Releases\Core\$(RimWorldVersion)\Assemblies</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <OutputPath>..\..\Releases\Core\$(RimWorldVersion)\Assemblies</OutputPath>
     </PropertyGroup>
+    
+    <!-- Global Dependencies -->
+    <ItemGroup>
+        <PackageReference Include="RimWorld.MultiplayerAPI" Version="0.4.0"/>
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3510-beta" ExcludeAssets="runtime"/>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

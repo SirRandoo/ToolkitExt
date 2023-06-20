@@ -1,9 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <TargetFramework>net472</TargetFramework>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\ToolkitExt.Api\ToolkitExt.Api.csproj" />
         <ProjectReference Include="..\ToolkitExt.Core\ToolkitExt.Core.csproj" />
