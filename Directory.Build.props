@@ -20,7 +20,7 @@
         <Product>ToolkitExt - Twitch Toolkit within an extension</Product>
         
         <Authors>SirRandoo, and Hodl</Authors>
-        <InformationalVersion>1.2</InformationalVersion>
+        <InformationalVersion>1.3</InformationalVersion>
         <AssemblyName>Z$(MSBuildProjectName)</AssemblyName>
         <Copyright>MIT (c) $([System.DateTime]::Now.ToString("yyyy")) Copyright SirRandoo</Copyright>
         
