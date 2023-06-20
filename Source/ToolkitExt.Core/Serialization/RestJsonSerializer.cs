@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#nullable enable
 using JetBrains.Annotations;
 using RestSharp;
 using RestSharp.Serialization;
@@ -30,8 +31,7 @@ namespace ToolkitExt.Core.Serialization
     public class RestJsonSerializer : IRestSerializer
     {
         /// <inheritdoc/>
-        [CanBeNull]
-        public string Serialize(object obj) => IsSerializedString(obj, out string serializedString) ? serializedString : Json.Serialize(obj);
+        public string? Serialize(object obj) => IsSerializedString(obj, out string? serializedString) ? serializedString : Json.Serialize(obj);
 
         /// <inheritdoc/>
         public string ContentType { get; set; } = RestSharp.Serialization.ContentType.Json;
